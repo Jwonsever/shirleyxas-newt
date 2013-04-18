@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html>
+  <head><title>WebXS at NERSC</title>
+    <!-- Add meta data? -->
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content="WebXS" />
+    <meta name="keywords" content="WebXS" />
+    <meta name="author" content="James Wonsever" />
+    
+    <!--Stylesheet-->
+    <link rel="stylesheet" href="ShirleyXAS.css">
+
+    <!--Headers and Locations-->
+    <script src="GlobalValues.js"></script>
+
+    <!--External Libraries-->
+    <script src="javascript/jquery.min.js"></script>
+
+    <!--Jmol-->
+    <script src="javascript/jmol-13-0/Jmol.js"></script>
+    <script src="javascript/jmol-13-0/JmolCore.js"></script>
+    <script src="javascript/jmol-13-0/JmolApplet.js"></script>
+    <script src="javascript/jmol-13-0/JmolControls.js"></script>
+    <script src="javascript/jmol-13-0/JmolApi.js"></script>
+    <script src="javascript/jmol-13-0/JmolJME.js"></script>
+
+    <!--Flot-->
+    <script src="javascript/Flot/jquery.flot.js"></script>
+    <script src="javascript/Flot/jquery.flot.navigate.js"></script>
+    <script src="mynewt.js"></script>
+
+    <!--File upload on non-modern browsers?-->
+    <script src="ajaxfileupload.js"></script>
+
+    <!--Internal Libraries-->
+    <script src="ShirleyXAS.js"></script>
+    <script src="jmolScripts.js"></script>
+    
+    <!--Applet, Initialization, And Options-->
+    <script>
+      var mainApplet = "mainApplet";
+      var previewApplet = "previewApplet";
+      var resultsApplet = "resultsApplet";
+
+      var JmolInfo = {
+      width: 400,
+      height: 400,
+      debug: false,
+      color: "black",
+      addSelectionOptions: false,
+      serverURL: "http://portal.nersc.gov/project/mftheory/WebXS",
+      jarPath: "javascript/jmol-13-0",
+      jarFile: "JmolAppletSigned.jar",
+      isSigned: true,
+      script: ""
+      };
+      
+      var mainJme = "mainJme";
+      var JMEInfo = {
+      jarPath: "javascript/",
+      jarFile: "JME.jar"
+      };
+      
+      Jmol.setGrabberOptions(
+      [["$", "NCI(small molecules)"],
+      [":", "PubChem(small molecules)"],
+      ["=", "RCSB(macromolecules)"]]);
+
+    </script>
+  </head>
+
+  <body>
+    <br><br>
+    <center>
+      <table width=880 class='blueBackground' cellpadding=20>
+	<tr>
+	  <td width=200 valign=top>
+	    <div id='menu'>
+	      <br><br>
+	      <a href="javascript: switchToInfo();">What is this?</a><br><br>
+	      <a href="javascript: switchToSearchDB();">Search Database</a><br><br>
+	      <a href="javascript: switchToRunning();">Running Calculations</a><br><br>
+	      <a href="javascript: switchToPrevious(); ">Finished Calculations</a><br><br>
+	      <a href="javascript: switchToSubmitForm();">Submit Calculations</a><br><br>
+	      <a href="javascript: switchToDrawMolecule();">Draw Molecule</a><br><br>
+	    </div>
+	  </td>
+
+	  <td align=right valign=top>
+	    <div id='main'>
+	      <div id='auth'></div><hr><br>
+	      <div id='individualjob' style="display: none;"></div>
+	      <div id='runningjobs' style="display: none;"></div>
+	      <div id='previousjobs' style="display: none;"></div>
+	      <div id='searchDB' style="display: none;">
+		<h2 align="left">MFTheory Core Excitation Database</h2>
+		<p align="left">
+		  If you cannot find what you are looking for, try these:<br>
+		<a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
+		<a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a><br><br>
+		--WebXS predicted Spectra<br>
+		<input type="Text" id="searchTerms" value=""/>
+		<button onclick="searchDB()">Search</button>
+		</p>
+		<div id="searchResults"></div>
+	      </div>
+	      
+	      <!--What is ShirleyXAS and what does it do?-->
+	      <div id='shirleyinfo'>
+		<img src="images/WebXS.png" style="padding:10px" align="left" height="200" width="200"/> <br>
+		<p align="left">
+To facilitate the simulation of near-edge x-ray absorption fine structure (NEXAFS) spectra using established methods based on constrained density functional theory (DFT), we have developed a web-based interface which enables the user to launch such simulations on high-performance computing resources at the National Energy Research Scientific Computing Center (NERSC). Using the NERSC web toolkit (NEWT), we have written a web-interface to run highly parallelized DFT calculations based on this Web2.0 API. The interface enables the user to upload/build their molecule/crystal of choice, visualize it, generate its NEXAFS spectrum and interpret spectral features based on visualization of electronic excited states.<br><br>This tool is not meant to work with IE.  Please use a different browser, such as Firefox or Google chrome.<br><br> Currently computing K-edge spectra for Li, B, C, N, O, F, Cd, S, and Ti.  More coming soon. <br><br> Please send questions and comments regarding the website to jwonsever@lbl.gov.
+		<!--Needs work-->
+		<button valign="middle" onclick="window.open( 'http://portal.nersc.gov/project/mftheory/WebXS/faq.html');">FAQ and Tutorial</button></p>
+		<p align="left">In cooperation with:<center>
+		<img src="images/MFLogo.png" width="300px" height="100px"/>
+		<img src="images/NERSCLogo.png" width="200px" height="100px"/>
+		<img src="images/jmolLogo.png" width="200px" height="100px"/>
+		<img src="images/newt-logo.png" width="200px" height="100px"/>
+		</center><p>
+	      </div>
+	      <!-- End -->
+
+	      <!--All Functions for editing and manipulating molecules-->
+	      <div id='moleculeEditor' style="display:none;">
+		<table width=100%><th align=left>Jmol Molecular Viewer</th>
+		</table><br>
+
+		<a href="javascript:Jmol.showInfo(mainApplet, true)">2D</a>
+		<a href="javascript:Jmol.showInfo(mainApplet, false)">3D</a>
+		<script>
+		  JmolInfo.width = 600;
+		  mainApplet =Jmol.getApplet(mainApplet, JmolInfo);
+		  mainJme = Jmol.getJMEApplet(mainJme, JMEInfo, mainApplet);
+		  setTimeout("initMainApp();", 200);
+		</script>
+		<br> 
+		<a href="#" onclick="window.open('http://chemapps.stolaf.edu/jmol/docs?ver=13.0');")>Command Line Instructions</a><br>
+		<script>
+		  Jmol.jmolCommandInput(mainApplet);
+		</script>
+
+		<form id='loadfile'>
+		  <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/><br></form>	      
+		<button onClick="minimizeStructure()">Minimize Structure</button>
+		<button onClick="toggleModelkitMode()">Edit Structure</button>
+		<button onClick="portCoordinates()">Port Coordinates</button><br>
+	      </div> 
+	      <!-- End -->
+
+	      <!-- Submitting a job form. -->
+	      <div id='submitjobs' style="display: none; font-size: 12pt;" align=left>
+		<table width=100%><th align=left>Submit Calculation</th><tr><td>
+		<form id='inputs' name='inputs' METHOD="GET">
+		  Material Name<br>
+		  <input type='text' name='MOLNAME' id='material' value="MolName"/><br>
+		  Excited Atoms<br>
+		  <input type="text" name="XASELEMENTS" id="XASELEMENTS" value="C" onkeyup="addSelections();"/><br>
+		  </td></tr></tr><td>
+		  Coordinates<br><div id = "Coordinates"></div>
+		  <script>makeCoordsDiv()</script></td><td>
+		  <!--Molecule Preview -->
+		  Preview<br>
+		  <div style="background-color:black;color:#AA2222;">
+		    <span id="previewLoadingText" style="float:left;">Please Wait for Jmol to load....</span>
+		    <script>
+		      JmolInfo.width = 200;
+		      JmolInfo.height = 200;
+		      previewApplet = Jmol.getApplet(previewApplet, JmolInfo);
+		      setTimeout("initPreviewApp();", 200);
+		    </script>
+		  </div>
+		  <input type='button' value='Animate' onClick="animatePreview()">
+		  <input type='button' value='Supercell' onClick="supercellPreview()"/>
+		  </td></tr><tr><td width=100%>
+		  Upload Coordinates<br>
+		  <input type=file id='uploadfile' name='uploadfile' onchange="uploadCoordinates()">
+		  <!-- Adds a new coordinates, upload loads to the current coordinates. -->
+		  <br>
+		  <div id="advancedOptions" style="display:none;"><br>
+		    <b>Advanced Options</b><br>
+		  <!--Advanced Options-->
+		  <input type="Checkbox" onchange="makeCellSize()" id="CrystalFlag" value="True"/>Crystal?
+		  <br>
+		  <input type="Text" id="IBRAV" size="4" value="14"/> Bravais Lattice
+		  <br>Cell Size Attributes:<br>
+		  <input type="text" size="10" onchange="drawMolInPreview()" id="CellA" value="10"/> A
+		  <input type="text" size="10" onchange="drawMolInPreview()" id="CellB" value="10"/> B
+		  <input type="text" size="10" onchange="drawMolInPreview()" id="CellC" value="10"/> C
+		  <input type="text" size="10" onchange="drawMolInPreview()" id="CellAlpha" value="90"/> &alpha;
+		  <input type="text" size="10" onchange="drawMolInPreview()" id="CellBeta" value="90"/> &beta;
+		  <input type="text" size="10" onchange="drawMolInPreview()" id="CellGamma" value="90"/> &gamma;
+		  <br>
+		  Output Directory<input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
+		  Warning, will NOT be able to locate non-default output files automatically.	  
+		  <br>
+		  Cluster 
+		  <select name="Select Cluster" id="machine" onchange="form.PPP.value=24; updateStatus(this.value);" value="hopper">
+		    <option value="hopper">Hopper</option>
+                  </select> <span id='clusterStatus'></span>
+		  
+		  Nodes Per Atom
+		  <input type="Text" id="NPERATOM" value="1"/><br>
+		  NBND_FAC
+		  <input type="Text" id="NBANDFAC" value="8"/><br>
+		  Total Charge
+		  <input type="Text" id="TOTCHG" value="0"/><br>
+
+		  Queue
+		  <select name="Select Queue" id="Queue" value="regular"
+			  onChange="if(this.value=='debug') $('#wallTime').val('00:30:00'); else $('#wallTime').val('01:30:00');">
+		    <option value="regular">Regular</option>
+		    <option value="debug">Debug</option>
+		    <option value="low">Low priority</option>
+		    <option value="premium">Premium*</option>
+		    <option value="scavenger">Scavenger**</option>
+                  </select>
+		  <a href="#" onclick="window.open('http://www.nersc.gov/users/computational-systems/hopper/running-jobs/queues-and-policies/');")>About</a>
+		  
+		  <br>
+		  Walltime <input type="Text" id="wallTime" value="01:30:00"/>
+		  <br>
+
+		  <!-- Hidden From User -->
+		  <input type="hidden" id="NNODES" value="1"/>
+		  <input type="hidden" id="PPP" value="24"/> 
+
+		  <input id="lessAdvanced" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
+		  <!-- End Advanced Options -->
+		  </div>
+		  <input id="AdvancedButton" data-inline='true' type='button' value='Advanced Options' onClick="showAdvancedOptions()"/>
+
+		  <input id="Submit" data-inline='true' type='button' value='Submit' onClick="validateInputs(this.form)"/>
+		  <div id="subStatus"></div>
+		</form>
+		</td></tr></table>
+	      </div>
+	    </div>
+	  </td>
+	</tr>
+      </table>
+      <br>
+      WebXS is a LBNL Project
+      <br>
+      Version 1.B (Beta)
+      <br>
+    </center>
+
+    <br>
+
+    <!--Scripts to Start after building the Webpage-->
+    <script type="text/javascript">
+      myUsername = "invalid";
+      checkAuth();
+      makeCoordsDiv();
+      getXCHShift();
+    </script>
+
+  </body>
+</html>

@@ -1,0 +1,25 @@
+#USAGE: Update both this file AND globalVaules.js, these two files MUST MATCH up to //END
+
+#Where this version of the code is
+CODE_BASE_DIR="/project/projectdirs/als/www/jack-area"
+SERVER_URL="http://portal.nersc.gov/project/als/jack-area/WebXS"
+
+# Shirley and Psuedos
+SHIRLEY_ROOT=/project/projectdirs/als/www/jack-area/WebXS/xas_input/shirley_QE4.3-www
+PSEUDO_DIR=/project/projectdirs/mftheory/pseudos
+
+#Relative locations
+CODE_LOC="WebXS"
+DATA_LOC="Shirley-data"
+XCH_SHIFTS="xas_input/XCHShifts.csv"
+
+#Other locations
+JMOL_VERSION="jmol-13-0"
+JAVASCRIPT="javascript/"
+JMOL_SCRIPTS="jmolScripts/"
+IMAGES="images"
+SERVER_SCRIPTS="shell_commands"
+XAS_INPUTS="xas_input"
+DEFAULT_INPUT_BLOCK="xas_input/InputBlock.in"
+
+#END

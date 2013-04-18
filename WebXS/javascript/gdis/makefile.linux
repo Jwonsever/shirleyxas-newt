@@ -1,0 +1,7 @@
+# --- gdis Makefile for linux
+# CC = gcc
+
+# -pg -> use gprof
+CC = gcc -pg
+
+CFLAGS = -ggdb -Wall -O2

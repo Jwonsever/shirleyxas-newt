@@ -1,0 +1,19 @@
+You probably have to recompile pango with the modules linked into the main library.
+
+Do:
+>sudo port edit pango
+add --with-included-modules to the configure.args part.
+>sudo port -f uninstall pango
+>sudo port install pango
+
+edit gdis.app.template/Contents/Resources/script and set the right version of GTK, e.g. 2.10.0.
+
+Set the PLATYPUS environment variable to point at the platypus executable.
+export PLATYPUS=/usr/local/bin/platypus
+
+build gdis, by running:
+>./install
+just set the installation path to anywhere, it does not matter.
+
+>./make_gdis.app.macports
+>make gdis.dmg

@@ -1,0 +1,26 @@
+
+.PHONY: clean
+clean:
+	/bin/rm -f $(OBJ) gdis
+	/bin/rm -fr gdis.app
+	/bin/rm -f gdis.dmg
+
+.PHONY: tgz
+tgz:
+	tar -czvf gdis-source.tgz \
+	install makefile makefile.* \
+	README CHANGELOG TODO GPL.txt gdis.manual gdis.elements gdis.library \
+	*.c *.h *.xpm grisu.wsdl grisu*.nsmap;
+
+.PHONY: zip
+zip:
+	zip gdis-source.zip \
+	install makefile makefile.* \
+	README CHANGELOG TODO GPL.txt gdis.manual gdis.elements gdis.library \
+	*.c *.h *.xpm grisu.wsdl grisu*.nsmap;
+
+.PHONY: binzip
+binzip:
+	zip -r gdis-bin.zip \
+	gdis gdis.elements gdis.library gdis.manual lib/init.jar lib/sggc.jar
+
