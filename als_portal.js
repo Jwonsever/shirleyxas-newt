@@ -37,7 +37,7 @@ function myCheckAuthALS() {
             $("#login-area").show();
             checkAuthCallback()
        } else {
-            tmpText="<font color=white>Welecome "+myUsername+"&nbsp;&nbsp;&nbsp;</font>";
+            tmpText="<font color=white>Welcome "+myUsername+"&nbsp;&nbsp;&nbsp;</font>";
             $('#auth-spinner').hide();
             $("#username-area").html(tmpText);
             $("#username-area").trigger('create');
