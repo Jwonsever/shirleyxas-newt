@@ -4,8 +4,6 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 05/2012 -> Present
 
-Started by Ben Han
-
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
  */
@@ -13,6 +11,10 @@ These scripts generally are used to send and retrieve data from NERSC computers.
 function checkAuthCallback() {
     $('#outputDir').val(GLOBAL_SCRATCH_DIR + myUsername);
 }
+
+//Globals for multiple models and related functions, to control jmol and submission of multiple files...
+var models = ["C -0.00025 -0.00025 -0.00025\nH 0.64018 0.64018 0.64018\nH -0.64075 -0.64075 0.64049\nH -0.64075 0.64049 -0.64075\nH 0.64049 -0.64075 -0.64075"];
+activeModel = 0;
 
 //Lists all of the jobs currently running on Hopper, by ajax qstat.
 var machines=["hopper"]; //var machines=["hopper", "carver", "dirac"];
@@ -1296,10 +1298,6 @@ function expandXAS(XAS, form) {
     return XAS.slice(0, -1);//get rid of last whitespace
 }
 
-//Multiple Models and related functions, to control jmol and submission of multiple files...
-var models = ["C -0.00025 -0.00025 -0.00025\nH 0.64018 0.64018 0.64018\nH -0.64075 -0.64075 0.64049\nH -0.64075 0.64049 -0.64075\nH 0.64049 -0.64075 -0.64075"];
-activeModel = 0;
-
 function makeCoordsDiv() {
     var myHtml = '';
     for (m in models) {
@@ -1323,10 +1321,10 @@ function switchToModel(i) {
     drawMolInPreview();
 }
 function removeCurrentModel() {
-    index = Number(activeModel);
+    var mIndex = Number(activeModel);
     if (models.length == 1) return;
-    models = models.slice(0,index).concat(models.slice(index+1));
-    switchToModel(Math.max(index-1, 0));
+    models = models.slice(0,mIndex).concat(models.slice(mIndex+1));
+    switchToModel(Math.max(mIndex-1, 0));
 }
 function addNewModel() {
     models.push("Please Enter or Upload Model Cooridnates");
@@ -1454,20 +1452,10 @@ function searchWrapper() {
 
 //Div Functions.  Formats webpage.
 function viewJobFiles(myJobId, machine) {
-    //$('#runningjobs').hide();
-    //$('#previousjobs').hide();
-    //$('#shirleyinfo').hide();
-    //$('#submitjobs').hide();
-    //$('#individualjob').show();
     individualJobWrapper(myJobId, machine);
 }
 
 function viewJob(myJobId, machine) {
-    //$('#runningjobs').hide();
-    //$('#previousjobs').hide();
-    //$('#shirleyinfo').hide();
-    //$('#submitjobs').hide();
-    //$('#individualjob').show();
     resultsAppReady = false; //app needs to load, put everywhere?? dunno how to structure this test
     viewJobOutputWrapper(myJobId, machine);
 }
@@ -1476,68 +1464,24 @@ function switchToSubmitForm() {
     document.inputs.Submit.disabled=false;
     updateStatus(document.inputs.machine.value);
     makeCoordsDiv();
-    //$('#runningjobs').hide();
-    //$('#previousjobs').hide();
-    //$('#individualjob').hide();
-    //$('#shirleyinfo').hide();
-    //$('#subStatus').hide();
-    //$('#searchDB').hide();
-    //$('#moleculeEditor').hide();
-    //$('#submitjobs').show();
-    //window.clearInterval(autoInterval);
+    window.clearInterval(autoInterval);
 }
 function switchToPrevious() {
-    //$('#runningjobs').hide();
-    //$('#submitjobs').hide();
-    //$('#searchDB').hide();
-    //$('#individualjob').html("");
-    //$('#individualjob').hide();
-    //$('#shirleyinfo').hide();
-    //$('#moleculeEditor').hide();
-    //$('#previousjobs').show();
-    //window.clearInterval(autoInterval);
+    window.clearInterval(autoInterval);
     previousJobsWrapper();
 }
 function switchToRunning() {
-    //$('#previousjobs').hide();
-    //$('#searchDB').hide();
-    //$('#submitjobs').hide();
-    //$('#shirleyinfo').hide();
-    //$('#individualjob').hide();
-    //$('#moleculeEditor').hide();
-    //$('#runningjobs').show();
-    //window.clearInterval(autoInterval);
+    window.clearInterval(autoInterval);
     runningJobsWrapper();
 }
 function switchToDrawMolecule() {
-    //$('#previousjobs').hide();
-    //$('#submitjobs').hide();
-    //$('#individualjob').hide();
-    //$('#shirleyinfo').hide();
-    //$('#runningjobs').hide();
-    //$('#searchDB').hide();
-    //$('#moleculeEditor').show();
-    //window.clearInterval(autoInterval);
+    window.clearInterval(autoInterval);
     editMoleculeWrapper();
 }
 function switchToInfo() {
-    //$('#previousjobs').hide();
-    //$('#submitjobs').hide();
-    //$('#individualjob').hide();
-    //$('#runningjobs').hide();
-    //$('#moleculeEditor').hide();
-    //$('#searchDB').hide();
-    //$('#shirleyinfo').show();
-    //window.clearInterval(autoInterval);
+    window.clearInterval(autoInterval);
 }
 function switchToSearchDB() {
-    //$('#previousjobs').hide();
-    //$('#submitjobs').hide();
-    //$('#individualjob').hide();
-    //$('#runningjobs').hide();
-    //$('#moleculeEditor').hide();
-    //$('#shirleyinfo').hide();
-    //$('#searchDB').show();
-    //window.clearInterval(autoInterval);
+    window.clearInterval(autoInterval);
     searchWrapper();
 }
