@@ -6,7 +6,7 @@ molName=$2
 state=$3
 
 file="${dir}state.${state}.cube"
-tmpDir="/project/projectdirs/als/www/jack-area/Shirley-data/tmp/${molName}"
+tmpDir="/project/projectdirs/als/www/james-xs/Shirley-data/tmp/${molName}"
 
 rm -rf $tmpDir
 mkdir $tmpDir

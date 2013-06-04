@@ -16,7 +16,7 @@ walltime=$8
 dir="${1}/${MOLNAME}"
 cd $dir
 
-cp /project/projectdirs/als/www/jack-area/WebXS/xas_input/Input_Block.in .
+cp /project/projectdirs/als/www/james-xs/WebXS/xas_input/Input_Block.in .
 #mv Input_Block2.in Input_Block.in 
 echo -e ${inputs} >> ./Input_Block.in
 
@@ -64,8 +64,8 @@ refPBS+="export NO_STOP_MESSAGE=1\n\n"
 echo -e ${xasPBS} > ./xas.qscript
 echo -e ${refPBS} > ./ref.qscript
 
-cat /project/projectdirs/als/www/jack-area/WebXS/xas_input/XAS-xyz.sh >> ./xas.qscript
-cat /project/projectdirs/als/www/jack-area/WebXS/xas_input/XAS-xyz-ref.sh >> ./ref.qscript
+cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XAS-xyz.sh >> ./xas.qscript
+cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XAS-xyz-ref.sh >> ./ref.qscript
 
 ## Submit xas and xas-ref
 ref_id=`/usr/common/nsg/bin/qsub ref.qscript `
@@ -79,7 +79,7 @@ echo -e ${analPBS} > ./anal.qscript
 
 qstat -f $ref_id | grep Account >> stats.txt
 
-cat /project/projectdirs/als/www/jack-area/WebXS/xas_input/XASAnalyse-xyz.sh >> ./anal.qscript
+cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XASAnalyse-xyz.sh >> ./anal.qscript
 
 ## Submit xas-analyse, dependent on successful completion of xas.sh
 /usr/common/nsg/bin/qsub anal.qscript
