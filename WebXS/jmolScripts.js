@@ -142,7 +142,7 @@ function makeCrystalCellSize() {
     var coordinates = sterilize(models[0]).split("\n");
     var xyzmin = [10000, 10000, 10000];
     var xyzmax = [-10000, -10000, -10000];
-    for (i in coordinates) {
+    for (i =0; i < coordinates.length; i++) {
 	line = coordinates[i].split(" ");
 	xyzmin[0] = Math.min(line[1], xyzmin[0]);
 	xyzmin[1] = Math.min(line[2], xyzmin[1]);
@@ -172,7 +172,7 @@ function makeAbstractCellSize() {
 
     var xyzmin = [10000, 10000, 10000];
     var xyzmax = [-10000, -10000, -10000];
-    for (i in coordinates) {
+    for (i =0; i < coordinates.length; i++) {
 	line = coordinates[i].split(" ");
 	if (line.length < 3) continue;
 	xyzmin[0] = Math.min(line[1], xyzmin[0]);
@@ -303,8 +303,9 @@ function getUnitCell() {
     return scr;
 }
 function initPreviewApp() {
-    setTimeout("drawMol('preview');$('#previewLoadingText').hide();", 1000);
+    setTimeout("drawMol('preview');$('#previewLoadingText').hide();", 100);
     //This is a weird first load issue, that seems to be solved by a short timeout call.
+    //allows selections to work (about) immediately, dom issue?
 }
 function drawMolInPreview() {
     var scr = "unbind 'RIGHT';";
@@ -316,14 +317,14 @@ function drawMolInPreview() {
     //Open Try on successful load
     scr += "try{\nLOAD \"@xyz\" ";
     scr += getUnitCell() + ";";
-    scr += "selectionHalos on; ";
+    scr += "selectionHalos on;";
     scr += "set PickCallback \"jmolscript:javascript selectionCallback();\";";
     scr += "set picking select atom;";
-    scr += "unitcell ON;";
-    scr += "javascript addSelections(); refresh;";
+    scr += "unitcell ON; javascript addSelections(); refresh;";
     scr += "}catch(e){echo e;}";
     //console.log(scr);
     Jmol.script(previewApplet, scr);
+    $(document).ready(addSelections());
 }
 
 //Redraw the molecule according to coordinates
@@ -333,7 +334,6 @@ function drawMol(suffix) {
     } else {
 	var xyz = makeXYZfromCoords();
 	var scr = "try{\nLOAD DATA \"mod\"\n" + xyz + "\nEND \"mod\" {1, 1, 1}}catch(e){}";
-	console.log(suffix + "\n" + scr);
 	Jmol.script(mainApplet, scr);
     }
 }
@@ -343,7 +343,7 @@ function addSelections() {
     var XAS = document.getElementById('inputs').XASELEMENTS.value;
     XAS = XAS.split(" ");
     var scr = "select ";
-    for (e in XAS) {
+    for (var e = 0; e < XAS.length; e++) {
 	element = XAS[e];
 	if (element.match(/^[a-zA-Z]{1,2}\d+$/) != null) {
 	    scr += element + " OR ";
@@ -353,6 +353,7 @@ function addSelections() {
 	}
     }
     scr += "none";
+    console.log(scr);
     Jmol.script(previewApplet, scr);
 }
 function selectionCallback() {

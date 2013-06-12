@@ -1020,6 +1020,7 @@ function sterilize(xyzcoords) {
     var out = "";
     for (l in lines) {
 	var line = lines[l];
+	if (typeof line != "string") continue;
 	//removes whitespace
 	//console.log(line);
 	line = line.replace(/^\s*/g, '').replace(/\s*$/g, '');
@@ -1300,18 +1301,20 @@ function expandXAS(XAS, form) {
 
 function makeCoordsDiv() {
     var myHtml = '';
-    for (m in models) {
+    console.log(models.length);
+    for (var m = 0; m < models.length; m++ ) {
+	console.log(models[m]);
 	var n = Number(m)+1;
 	myHtml+='<input type="button" class="mybutton" onclick="switchToModel('+m+')" value="'+n+'"/>';
     }
     myHtml += '<input type="button" class="mybutton" onclick="addNewModel()" style="color:green" value="+"/>';
     myHtml += '<input type="button" class="mybutton" onclick="removeCurrentModel()" style="color:red" value="X"/>';
-    myHtml+='<br><TEXTAREA id="activeCoords" class="field span5" rows="12" cols="30" onchange="updateModels()">'+models[activeModel]+'</TEXTAREA><br>';
+    myHtml+='<br><TEXTAREA id="activeCoords" class="field span5" rows="12" cols="30" onkeyup="updateModels()">'+models[activeModel]+'</TEXTAREA><br>';
     $('#Coordinates').html(myHtml);
 }
 
 function updateModels() {
-    models[activeModel] = $('#activeCoords').attr('value');
+    models[activeModel] = $('#activeCoords').val();
     if(CrystalSymmetry) drawMolInPreview();
     else makeCellSize();
 }
@@ -1440,7 +1443,7 @@ function viewJobOutputWrapper(myJobId, machine) {
     }
 }
 function editMoleculeWrapper() {
-    drawMol('main');
+    //drawMol('main');
 }
 function searchWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
@@ -1464,6 +1467,7 @@ function switchToSubmitForm() {
     document.inputs.Submit.disabled=false;
     updateStatus(document.inputs.machine.value);
     makeCoordsDiv();
+    initPreviewApp();
     window.clearInterval(autoInterval);
 }
 function switchToPrevious() {
