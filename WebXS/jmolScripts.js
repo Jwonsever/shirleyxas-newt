@@ -12,7 +12,7 @@ Used with the moleculeEditor <div> in index.html.
 //Editor Functions-----------------
 //---------------------------------
 function initMainApp() {
-     drawMol('main');
+    setTimeout("drawMol('main');", 100);
 }
 
 function showOrbitals() {
@@ -37,12 +37,12 @@ function helpHelper(app, msg) {
 
 //Button to minimize structure
 function minimizeStructure() {
-    Jmol.scriptWait(mainApplet,"minimize");
+    Jmol.script(mainApplet,"minimize");
 }
 
 //Currently turns on modelkit mode, may be expanded.
 function toggleModelkitMode() {
-    Jmol.scriptWait(mainApplet, "set modelKitMode");
+    Jmol.script(mainApplet, "set modelKitMode");
 }
 
 //upload files directly to the jmol main editor.
@@ -353,7 +353,7 @@ function addSelections() {
 	}
     }
     scr += "none";
-    console.log(scr);
+    //console.log(scr);
     Jmol.script(previewApplet, scr);
 }
 function selectionCallback() {

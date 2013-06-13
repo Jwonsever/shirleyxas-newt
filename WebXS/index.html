@@ -13,6 +13,7 @@
     <link href="../als_portal.css" rel="stylesheet" type="text/css" />
     <!-- <link rel="stylesheet" href="ShirleyXAS.css"> -->
 
+
     <!-- Als Bootstrap, etc-->
     <script src="../jquery-latest.js"></script>    
     <script src="../bootstrap/js/bootstrap.min.js"></script>
@@ -87,7 +88,7 @@
       }
       
       var JMEInfo = {
-      use: "HTML5"
+      use: "HTML5",
 
       //for the java version
       //jarPath: "javascript/",
@@ -185,8 +186,36 @@
             <div class="tab-content">
 
 	      <div id='runningjobs' class="tab-pane"></div>
-	      <div id='previousjobs' class="tab-pane"></div>
+	      
+	      <div id='previousjobs' class="tab-pane">
+		<div id='previousjobslist' style="display: none;"></div>
+		<div id='previousjobsfiles' style="display: none;"></div>
+		<div id='previousjobresults' style="display: none;">
+		  <div id='jobHeader'></div>
+		  <table width=95%>
+		    <tr style="vertical-align: top;">
+		      <td width=55%>
+			<div id='jobresults'></div>
+		      </td><td>
+			<br>
+			<div id='jmolactivediv'> 
+			  <script>
+			    JmolInfo.width = 375;
+			    JmolInfo.height = 375;
+			    resultsApplet=Jmol.getApplet(resultsApplet, JmolInfo);
+			  </script>
+			</div>
+			<br>
+			<div id='jmolOptions'></div>
+			<br><br>
+			<div id='states'></div>
+		      </td>
+		    </tr>
+		  </table>
+		</div>
+	      </div>
 
+	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
 	  	<h2 align="left">MFTheory Core Excitation Database</h2>
                 <p align="left">
@@ -199,6 +228,7 @@
                 </p>
 		<div id="searchResults"></div>
 	      </div>
+	      <!-- End -->
 	      
  	      <!--What is ShirleyXAS and what does it do?-->
 	      <div id='shirleyinfo' class="tab-pane active">
@@ -225,12 +255,14 @@ website to jrdeslippe@lbl.gov.
 	      <div id='moleculeEditor' class="tab-pane">
 		    <h3>Jmol Molecular Viewer</h3><br>
 
-		    <a href="javascript:Jmol.showInfo(mainApplet, true)">2D</a>
-		    <a href="javascript:Jmol.showInfo(mainApplet, false)">3D</a>
+		    <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
+		    <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
 		    <script>
 		      JmolInfo.width = 600;
 		      mainApplet =Jmol.getApplet(mainApplet, JmolInfo);
 		      mainJme = Jmol.getJMEApplet(mainJme, JMEInfo, mainApplet);
+		      initMainApp();
+		      //Sometimes the JME seems to dissapear and not render, what the hell.
 		    </script>
 		    <br> 
 		    <a href="#" onclick="window.open('http://chemapps.stolaf.edu/jmol/docs?ver=13.0');")>Command Line Instructions</a><br>
