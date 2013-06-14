@@ -512,8 +512,7 @@ function postProcessing(atomNo, activeMo, state) {
 function drawState(atomNo, activeMo, state) {
     var jobName = $('#jobName').text();
     var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+atomNo+"/";
-    var command = SHELL_CMD_DIR + "/fetchState.sh " + activeDir + " " + jobName + " " + state;
-    //alert("Running command "+command)
+    var command = SHELL_CMD_DIR + "fetchState.sh " + activeDir + " " + jobName + " " + state;
     $.newt_ajax({type: "POST",
 		    url: "/command/hopper",
 		    data: {"executable": command},
@@ -522,21 +521,35 @@ function drawState(atomNo, activeMo, state) {
 			 alert("This state has not been calculated yet, please run this calculation first. It will take a few minutes to complete, so please be paitent.");return;}
 		     var stateFile = "../Shirley-data/tmp/"+jobName+"/state."+state+".cube";
 		     var scr = "zap;set echo top left;font echo 16;echo \"loading...\";refresh;";
-		     scr += "try{load "+stateFile+";\n";
-		     scr += "isosurface pos .001 '"+stateFile+"';color isosurface translucent;\n";
-		     scr += "isosurface neg -.001 '"+stateFile+"';color isosurface translucent;\n";
-		     scr += "selectionHalos on;select none;}catch(e){}";
-		     if (resultsAppReady) {
-			 jmolScript(scr, 'results');
-			 $('#currModel').val(Number(activeMo) + 1);
-		     }
-		     //should remove the dir here...
+		     scr += "load "+stateFile+";";
+		     scr += "isosurface pos .001 '"+stateFile+"';color isosurface translucent;";
+		     scr += "isosurface neg -.001 '"+stateFile+"';color isosurface translucent;";
+		     scr += "selectionHalos on;select none;javascript deleteStateFileFromServer();";
+		     //Draw to Jmol
+		     Jmol.script(resultsApplet, scr);
+		     //Match state - active model
+		     $('#currModel').val(Number(activeMo) + 1);
+		     //should remove the tmpfile here...
 	            },
 	 	    error: function(request,testStatus,errorThrown) {
 		     console.log("Failed!");
 	    },});
     
 }
+//This Function stops pollution on the server while enabling state file loading
+function deleteStateFileFromServer() {
+    var jobName = $('#jobName').text();
+    var command = SHELL_CMD_DIR + "wipeState.sh " + jobName;
+    $.newt_ajax({type: "POST",
+		    url: "/command/hopper",
+		    data: {"executable": command},
+		    success: function(res) {
+		console.log("successful delete");
+	    },
+		    error: function(request,testStatus,errorThrown) {
+		console.log("Failed!");
+	    },});
+}   
 
 //XCH Shift Functions
 var cachedShifts = {pulled:false, elements:{}};
