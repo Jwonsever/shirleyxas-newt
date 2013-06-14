@@ -1377,7 +1377,7 @@ function searchDB() {
 		var results = res.output.split("\n");
 		var myText = "<table width=100\% cellpadding=5><tr><th width=20\%>Name</th>"
 		    + "<th>Date</th><th>User</th><th>Element</th><th>EVShift</th></tr>";
-		for (r in results) {
+		for (r = 0; r < results.length; r++) {
 		    res = results[r].split(" ");
 		    if (res.length < 6) continue;
 		    myText += "<tr class='listitem'>";

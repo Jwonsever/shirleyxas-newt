@@ -43,8 +43,11 @@ var JMEInfo = {
   //,"jme" : startingStructure   
 }
 
-Jmol.setGrabberOptions([["$", "NCI"]])
-        
+Jmol.setGrabberOptions(
+[["$", "NCI(small molecules)"],
+[":", "PubChem(small molecules)"],
+["=", "RCSB(macromolecules)"]]);
+     
 </script>
 </head>
 <body>

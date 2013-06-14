@@ -359,7 +359,7 @@ function addSelections() {
 function selectionCallback() {
     var atoms = Jmol.getPropertyAsArray(previewApplet, "atomInfo", "selected");
     var XAS = "";
-    for (a in atoms) {
+    for (a = 0; a < atoms.length; a++) {
 	atom = atoms[a];
 	XAS += atom.sym + atom.atomno + " ";
     }

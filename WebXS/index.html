@@ -270,6 +270,10 @@ website to jrdeslippe@lbl.gov.
 		      Jmol.jmolCommandInput(mainApplet);
 		    </script>
 
+		    <!-- Seems to only search through the NCI database?? -->
+		    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
+		    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
+
 		    <form id='loadfile'>
 		      <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/>
 		      <br></form>	 
@@ -364,6 +368,7 @@ website to jrdeslippe@lbl.gov.
 			  initPreviewApp();
 		        </script>
 		      </div><br>
+		      <br>
 		      <input type='button' value='Animate' onClick="animatePreview()">
 		      <input type='button' value='Supercell' onClick="supercellPreview()"/>
 		      </td></tr></table>
