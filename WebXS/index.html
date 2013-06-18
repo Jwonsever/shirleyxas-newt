@@ -24,14 +24,6 @@
     <!-- Major Function Values (incomplete)-->
     <script src="GlobalValues.js"></script>
 
-    <!-- JMOL java scripts.  To Be Removed >
-    <script src="javascript/jmol-13-0/Jmol.js"></script>
-    <script src="javascript/jmol-13-0/JmolCore.js"></script>
-    <script src="javascript/jmol-13-0/JmolApplet.js"></script>
-    <script src="javascript/jmol-13-0/JmolControls.js"></script>
-    <script src="javascript/jmol-13-0/JmolApi.js"></script>
-    <script src="javascript/jmol-13-0/JmolJME.js"></script-->
-
     <!--Scripts required for JME injection-->
     <script src="javascript/jsmol-13.1.15/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
     </script>
@@ -54,7 +46,7 @@
     <!--Applet, Initialization, And Options-->
     <script>
       var mainApplet = "mainApplet";
-      var mainJme = "mainJme";
+      var jmeApplet = "jmeApplet";
       var previewApplet = "previewApplet";
       var resultsApplet = "resultsApplet";
 
@@ -81,19 +73,20 @@
       //jarFile: "JmolAppletSigned.jar",
       //isSigned: true,
 
-      disableJ2SLoadMonitor: true,
-      disableInitialConsole: true,
+      //disableJ2SLoadMonitor: true,
+      //disableInitialConsole: true,
       allowJavaScript: true,
+      console:"none",
       script: ""
-      }
+      };
       
       var JMEInfo = {
-      use: "HTML5",
+      use: "HTML5"
 
       //for the java version
       //jarPath: "javascript/",
       //jarFile: "JME.jar"
-      }
+      };
       
 
       Jmol.setGrabberOptions(
@@ -260,10 +253,9 @@ website to jrdeslippe@lbl.gov.
 		    <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
 		    <script>
 		      JmolInfo.width = 600;
-		      mainApplet =Jmol.getApplet(mainApplet, JmolInfo);
-		      mainJme = Jmol.getJMEApplet(mainJme, JMEInfo, mainApplet);
+		      mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
+		      jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
 		      initMainApp();
-		      //Sometimes the JME seems to dissapear and not render, what the hell.
 		    </script>
 		    <br> 
 		    <a href="#" onclick="window.open('http://chemapps.stolaf.edu/jmol/docs?ver=13.0');")>Command Line Instructions</a><br>

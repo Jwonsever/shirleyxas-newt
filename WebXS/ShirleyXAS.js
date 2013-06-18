@@ -1482,7 +1482,7 @@ function viewJobOutputWrapper(myJobId, machine) {
     }
 }
 function editMoleculeWrapper() {
-    drawMol('main');
+    initMainApp();
 }
 function searchWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
