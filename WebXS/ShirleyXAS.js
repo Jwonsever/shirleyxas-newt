@@ -274,11 +274,10 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     }
     
     myHtml = "View Spectra of: &nbsp;&nbsp;";
-
     for (var x = 0; x<XASElements.length; x++) {
 	var xe = XASElements[x];
 	myHtml+= '<input type="button" class="mybutton" ';
-	myHtml+= 'onclick=updateSpectraOptions("'+xe+'","'+XAS+'","'+directory+'") value="'+xe+'"/>';
+	myHtml+= 'onclick=updateSpectraOptions("'+xe+'","'+directory+'") value="'+xe+'"/>';
     }
 
     myHtml += "<br><br><div id=\"flotwrapper\"><center><b>Core Excitation Spectra of <span id='titleElem'>" + activeElement + "</span></b></center>";
@@ -395,22 +394,25 @@ function deleteJobFiles(dir, machine) {
 		success: function(res) {switchToPrevious();},});
 }
 //Updates the page on change of activeElement
-function updateSpectraOptions(elem, XAS, directory) {
+function updateSpectraOptions(elem, directory) {
+    //Throw Loading img.
+    $('#placeholder').html("<center><img src=\"ajax-loader-2.gif\" width=40></center>");
+
     var myHtml = "";
-    console.log(elem);
+
     activeElement = elem;
     var jobName = $('#jobName').text();
     $('#titleElem').text(activeElement);
 
-    XAS = XAS.split(',');
+    var XAS = $('#xasAtoms').html().split(" ");//All excited atoms & elements
 
     var firstInit;
-    for (i in XAS) {
+    for (i = 0; i < XAS.length; i++) {
 	 var element = XAS[i];
 	 var regex = new RegExp("^" + activeElement + "\\d*$");
 	 if (!element.match(regex)) continue;
-	 if (!firstInit) firstInit = "#spect"+i.toString();
-	 myHtml += "<input id='spect"+i.toString()+"' name=\""+element.toString()+"\" type='checkbox' onchange='makePlotWrapper(\""+directory + "\",\""+jobName + "\")'/>" + element;
+	 if (!firstInit) firstInit = "#spect"+i;
+	 myHtml += "<input id='spect"+i+"' name=\""+element.toString()+"\" type='checkbox' onchange='makePlotWrapper(\""+directory + "\",\""+jobName + "\")'/>" + element;
     }
 
     $('#selectableXAS').html(myHtml);
@@ -667,7 +669,7 @@ function animateResults(dir, numModels) {
 		     var scr = "try{mod = '" + modata + "';";
 		     console.log(scr);
 		     scr += "\nLOAD '@mod';reset mod;selectionHalos on;select none;animation mode LOOP 1.0; frame PLAY;}";
-		     if (resultsAppReady) {jmolScript(scr, 'results');}
+		     if (resultsAppReady) {Jmol.script(resultsApplet, scr);}
 		 } else {
 		     modata += "\n";
 		 }
@@ -681,12 +683,12 @@ function unitcell(dir, jobName) {
 }
 function savePNG() {
     var scr = "write IMAGE 300 300 PNG 2 " + $('#jobName').text() + ".png";
-    if (resultsAppReady) jmolScript(scr, 'results');
+    if (resultsAppReady) Jmol.script(resultsApplet, scr);
 }
 function savePOV() {
     var scr = "write POVRAY " + $('#jobName').text() + ".pov";
     console.log(scr);
-    if (resultsAppReady) jmolScript(scr, 'results');
+    if (resultsAppReady) Jmol.script(resultsApplet, scr);
 }
 function savePlotFile(dir) {
     var files = getSelectedElems();
@@ -760,6 +762,9 @@ function getSelectedModels() {
 }
 //makePlotWrapper
 function makePlotWrapper(dir, jobName, elems, dataset) {
+
+    $('#placeholder').html("<center><img src=\"ajax-loader-2.gif\" width=40></center>");
+    
     if (!elems) {
 	elems = getSelectedElems();
     }
@@ -795,8 +800,6 @@ function makePlotWrapper(dir, jobName, elems, dataset) {
 //Draw the plot
 function makePlot(dir, jobName, elems, dataset, lim) {
 
-    $('#placeholder').html("<center><img src=\"ajax-loader-2.gif\" width=40></center>");
-    
 
     if(elems.length == 0 && dataset.length == 0) {
 	$('#placeholder').html("<center>No Spectra Active.</center>");
@@ -1328,9 +1331,9 @@ function expandXAS(XAS, form) {
 
 function makeCoordsDiv() {
     var myHtml = '';
-    console.log(models.length);
+    //console.log(models.length);
     for (var m = 0; m < models.length; m++ ) {
-	console.log(models[m]);
+	//console.log(models[m]);
 	var n = Number(m)+1;
 	myHtml+='<input type="button" class="mybutton" onclick="switchToModel('+m+')" value="'+n+'"/>';
     }

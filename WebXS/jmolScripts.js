@@ -56,7 +56,7 @@ function uploadToEditor(form) {
 		scr += String(reader.result);
 		scr +="\nEND \"mod\" {1, 1, 1};}catch(e){}";
 		//alert(scr);
-		Jmol.scriptWait(mainApplet, scr);
+		Jmol.script(mainApplet, scr);
 		//drawMol();
 	    }
 	    reader.readAsText(file);	
@@ -204,13 +204,13 @@ function readCoordsFromJmol() {
     while (i <= modelNum) {
 	var coords = "";
 	var atoms = Jmol.getPropertyAsArray(previewApplet, "atomInfo", "1." + i);
-	for (atom in atoms) {
+	console.log(atoms);
+	for (atom = 0; atom < atoms.length; atom++) {
 	    coords += atoms[atom].sym + " ";
 	    coords += atoms[atom].x + " ";
 	    coords += atoms[atom].y + " ";
 	    coords += atoms[atom].z + " ";
 	    coords += "\n";
-	    //console.log(coords);
 	}
 	//Upload to the active model...
 	models.push(coords);
@@ -237,33 +237,16 @@ function uploadCoordinates() {
 	    reader.onload = function(r) {
 		var scr = "try{\nLOAD DATA \"mod\"\n";
 		scr += String(reader.result);
-		scr +="\nEND \"mod\";}catch(e){}";
-		Jmol.scriptWait(previewApplet, scr);
+		scr +="\nEND \"mod\" {1, 1, 1};}catch(e){}";
+		Jmol.script(previewApplet, scr);
+
 		var gotCrystal = tryToGrabCrystalData();
 		readCoordsFromJmol();
 		if (!gotCrystal) {
 		    makeAbstractCellSize();
 		}
-		else {
-		    var xyz = makeXYZfromCoords(models.length-1);
-		    models.splice(models.length-1, 1);
-		    console.log(xyz);
-		    scr = "xyz = \"" + xyz + "\";";
-		    //Open Try on successful load
-		    var a = form.CellA.value-1;
-		    var b = form.CellB.value-1;
-		    var c = form.CellC.value-1;
-		    var alp = form.CellAlpha.value;
-		    var bet = form.CellBeta.value;
-		    var gam = form.CellGamma.value;
-		    var vector = "{"+a+" "+b+" "+c+" "+alp+" "+bet+" "+gam+"}";
-		    scr += "try{\nLOAD \"@xyz\" {1 1 0} ";
-		    scr += " unitcell " + vector + ";";
-		    scr += " delete !unitcell;}catch(e){}";
-		    Jmol.scriptWait(previewApplet, scr);
-		    readCoordsFromJmol();
-		}
-		switchToModel(models.length-1);
+		
+		//switchToModel(models.length-1);
 	    }
 	    reader.readAsText(file);	
 	} catch(err) {
@@ -308,6 +291,11 @@ function initPreviewApp() {
     //allows selections to work (about) immediately, dom issue?
 }
 function drawMolInPreview() {
+    //Set Animation Button
+    $('#animatePreviewButton').show();
+    $('#animatePreviewStop').hide();
+
+    //Draw Molecule
     var scr = "unbind 'RIGHT';";
     scr += "unbind 'LEFT' '_clickFrank'; "; 
     scr += "set defaultLattice {1 1 1}; ";
@@ -367,6 +355,11 @@ function selectionCallback() {
     //edit so Knows to write "C" if all C's are selected
 }
 function animatePreview() {
+    //Change Button
+    $('#animatePreviewButton').hide();
+    $('#animatePreviewStop').show();
+
+    //Run Script
     var scr = "unbind 'RIGHT';";
     scr += "unbind 'LEFT' '_clickFrank'; "; 
     scr += "set defaultLattice {1 1 1}; ";
@@ -389,6 +382,10 @@ function animatePreview() {
     Jmol.script(previewApplet, scr);
 }
 function supercellPreview() {
+    var inx = Number($('#SupercellX').val());
+    var iny = Number($('#SupercellY').val());
+    var inz = Number($('#SupercellZ').val());
+
     var scr = "unbind 'RIGHT';";
     scr += "unbind 'LEFT' '_clickFrank'; "; 
     scr += "set defaultLattice {1 1 1}; ";
@@ -407,13 +404,15 @@ function supercellPreview() {
     var gam = myform.CellGamma.value;
     var vector = "{"+a+" "+b+" "+c+" "+alp+" "+bet+" "+gam+"}";
     var offset = "{"+(a/2.0)+" "+(b/2.0)+" "+(c/2.0)+"}";
+    var cellParams = "{" + "555" + " " + (4+inx) + (4+iny) + (4+inz) + " 1}";
 
+    console.log(cellParams);
     if (!CrystalSymmetry) {
-	scr += " {444 666 1} ";
+	scr += " " + cellParams + " ";
 	scr += "unitcell " + vector;
 	scr += " offset " + offset;
     } else {
-	scr += " {444 666 1} ";
+	scr += " " + cellParams + " ";
 	scr += "spacegroup \""+ CrystalSymmetry + "\"";
 	scr += " unitcell " + vector;
     }
@@ -422,8 +421,8 @@ function supercellPreview() {
     scr += "set PickCallback \"jmolscript:javascript selectionCallback();\";";
     scr += "set picking select atom;";
     scr += "unitcell ON;";
-    scr += "unitcell {444 666 1};";
-    scr += "javascript addSelections();";
+    scr += "unitcell " + cellParams + "; ";
+    scr += "javascript addSelections(); refresh;";
     scr += "}catch(e){}";
     //console.log(scr);
     Jmol.script(previewApplet, scr);

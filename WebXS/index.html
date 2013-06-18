@@ -195,6 +195,7 @@
 		  <table width=95%>
 		    <tr style="vertical-align: top;">
 		      <td width=55%>
+			<br>
 			<div id='jobresults'></div>
 		      </td><td>
 			<br>
@@ -369,8 +370,24 @@ website to jrdeslippe@lbl.gov.
 		        </script>
 		      </div><br>
 		      <br>
-		      <input type='button' value='Animate' onClick="animatePreview()">
-		      <input type='button' value='Supercell' onClick="supercellPreview()"/>
+
+		      <span id="animatePreviewButton">
+			<input type='button' value='Animate' onClick="animatePreview();">
+		      </span><span id="animatePreviewStop" style="display:none">
+			<input type='button' value='Stop Animation' onClick="drawMolInPreview();">
+		      </span>
+		      <span> Supercell Options: X
+		      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px"/>
+		         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+	              </select> Y
+		      <select id='SupercellY' onChange="supercellPreview()" style="width: 50px"/>
+                         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+	              </select> Z
+		      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px"/>
+                         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+	              </select>
+                      </span>
+
 		      </td></tr></table>
 	       </div>
 	    </div>
