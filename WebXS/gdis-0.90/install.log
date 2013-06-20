@@ -1,162 +1,112 @@
 Must specify package names on the command line
-make: Warning: File `makefile' has modification time 5.3 s in the future
-main.c: In function 'read_gdisrc':
-main.c:90:9: warning: variable 'element_flag' set but not used [-Wunused-but-set-variable]
-main.c:90:6: warning: variable 'i' set but not used [-Wunused-but-set-variable]
-coords.c: In function 'coords_compute':
-coords.c:627:19: warning: variable 'orig' set but not used [-Wunused-but-set-variable]
-matrix.c: In function 'vectmat':
-matrix.c:240:9: warning: variable 'x' set but not used [-Wunused-but-set-variable]
-type.c: In function 'type_dreiding_gasteiger':
-type.c:625:9: warning: ignoring return value of 'system', declared with attribute warn_unused_result [-Wunused-result]
-edit.c: In function 'delete_commit':
-edit.c:157:19: warning: variable 'flag2' set but not used [-Wunused-but-set-variable]
-select.c: In function 'construct_backbone':
-select.c:1254:18: warning: variable 'current_link' set but not used [-Wunused-but-set-variable]
-select.c:1249:6: warning: variable 'match' set but not used [-Wunused-but-set-variable]
-select.c: In function 'construct_ribbon':
-select.c:1549:25: warning: variable 'join1' set but not used [-Wunused-but-set-variable]
-surface.c: In function 'plane_compute_vectors':
-surface.c:136:8: warning: variable 'rec_work_lat' set but not used [-Wunused-but-set-variable]
-surface.c: In function 'generate_surface':
-surface.c:728:8: warning: variable 'rec_s' set but not used [-Wunused-but-set-variable]
-surface.c:726:8: warning: variable 'rec_work_lat' set but not used [-Wunused-but-set-variable]
-spatial.c: In function 'spatial_destroy_by_label':
-spatial.c:149:5: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
 project.c: In function 'project_read':
-project.c:318:5: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-project.c:358:5: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-project.c:363:9: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-project.c:276:6: warning: 'grid[1]' may be used uninitialized in this function [-Wuninitialized]
-project.c:276:6: warning: 'grid[0]' may be used uninitialized in this function [-Wuninitialized]
+project.c:280: warning: 'grid[0]' may be used uninitialized in this function
+project.c:280: warning: 'grid[1]' may be used uninitialized in this function
 grid.c: In function 'grid_application_set':
-grid.c:61:1: warning: 'return' with a value, in function returning void [enabled by default]
+grid.c:61: warning: 'return' with a value, in function returning void
 grid.c: In function 'grid_application_remove':
-grid.c:83:1: warning: 'return' with a value, in function returning void [enabled by default]
+grid.c:83: warning: 'return' with a value, in function returning void
 molsurf.c: In function 'ms_cube':
-molsurf.c:2116:22: warning: unused variable 'jobEndTime' [-Wunused-variable]
-molsurf.c:2115:5: warning: variable 'errorStat' set but not used [-Wunused-but-set-variable]
-molsurf.c:2109:6: warning: variable 'jjmTmp' set but not used [-Wunused-but-set-variable]
-zone.c: In function 'zone_visible_init':
-zone.c:542:12: warning: variable 'flag' set but not used [-Wunused-but-set-variable]
-library.c: In function 'library_init':
-library.c:129:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-library.c:135:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-library.c:149:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-library.c:155:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-library.c:161:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-space.c: In function 'space_lookup':
-space.c:305:45: warning: variable 'iMatrix' set but not used [-Wunused-but-set-variable]
-space.c: In function 'space_make_images':
-space.c:705:17: warning: variable 'num_images' set but not used [-Wunused-but-set-variable]
-defect.c: In function 'defect_compliance_get':
-defect.c:144:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-crystal_graph.c: In function 'free_key':
-crystal_graph.c:96:3: warning: 'g_mem_chunk_free' is deprecated (declared at /usr/include/glib-2.0/glib/deprecated/gallocator.h:56) [-Wdeprecated-declarations]
+molsurf.c:2116: warning: unused variable 'jobEndTime'
 crystal_graph.c: In function 'run_gulp':
-crystal_graph.c:133:3: warning: implicit declaration of function 'system' [-Wimplicit-function-declaration]
+crystal_graph.c:133: warning: implicit declaration of function 'system'
 crystal_graph.c: In function 'calculate_crystal_graph':
-crystal_graph.c:170:3: warning: 'g_mem_chunk_new' is deprecated (declared at /usr/include/glib-2.0/glib/deprecated/gallocator.h:45) [-Wdeprecated-declarations]
-crystal_graph.c:180:3: warning: implicit declaration of function 'type_dreiding_gasteiger' [-Wimplicit-function-declaration]
-crystal_graph.c:221:15: warning: 'g_mem_chunk_alloc' is deprecated (declared at /usr/include/glib-2.0/glib/deprecated/gallocator.h:52) [-Wdeprecated-declarations]
-mesch_core.c: In function 'm_resize':
-mesch_core.c:952:13: warning: operation on 'A->me' may be undefined [-Wsequence-point]
-mesch_core.c:963:15: warning: operation on 'A->base' may be undefined [-Wsequence-point]
-mesch_core.c: In function 'v_resize':
-mesch_core.c:1026:13: warning: operation on 'x->ve' may be undefined [-Wsequence-point]
-host.c: In function 'host_file_read':
-host.c:638:6: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c:644:7: warning: ignoring return value of 'read', declared with attribute warn_unused_result [-Wunused-result]
-host.c: In function 'host_file_write_experimental':
-host.c:603:6: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c:612:10: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c:613:10: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c:616:8: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c: In function 'host_talk':
-host.c:478:6: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c:479:6: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c: In function 'host_disconnect':
-host.c:459:6: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
-host.c: In function 'host_connect':
-host.c:409:10: warning: ignoring return value of 'write', declared with attribute warn_unused_result [-Wunused-result]
+crystal_graph.c:180: warning: implicit declaration of function 'type_dreiding_gasteiger'
 file.c: In function 'read_raw_frame':
-file.c:1163:6: warning: unused variable 'i' [-Wunused-variable]
-file.c: In function 'file_save_as':
-file.c:1483:6: warning: variable 'id' set but not used [-Wunused-but-set-variable]
+file.c:1163: warning: unused variable 'i'
 file_gulp.c: In function 'write_gulp':
-file_gulp.c:1047:3: warning: implicit declaration of function 'ff_gulp_write' [-Wimplicit-function-declaration]
-file_gulp.c: In function 'gulp_is_keyword':
-file_gulp.c:1156:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-file_gulp.c: In function 'gulp_is_option':
-file_gulp.c:1177:3: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-file_gulp.c: In function 'read_gulp':
-file_gulp.c:1515:13: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-file_gulp.c: In function 'read_trj_frame':
-file_gulp.c:3838:16: warning: variable 'periodic' set but not used [-Wunused-but-set-variable]
+file_gulp.c:1047: warning: implicit declaration of function 'ff_gulp_write'
 file_gulp.c: In function 'exec_gulp':
-file_gulp.c:4210:1: warning: implicit declaration of function 'task_sync' [-Wimplicit-function-declaration]
-file_gulp.c:4193:6: warning: ignoring return value of 'chdir', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c: In function 'read_trj_frame':
-file_gulp.c:3854:1: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3876:1: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3896:3: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3907:3: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3975:3: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3976:8: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3977:3: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3980:3: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3996:8: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3997:3: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c: In function 'read_trj_header':
-file_gulp.c:3795:1: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3796:6: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3807:1: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3809:1: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3811:6: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3815:6: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_gulp.c:3818:1: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_xyz.c: In function 'read_xyz':
-file_xyz.c:237:6: warning: variable 'flag' set but not used [-Wunused-but-set-variable]
-file_fdf.c: In function 'seista_density_files':
-file_fdf.c:924:5: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:925:10: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:926:5: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c: In function 'siesta_header_read':
-file_fdf.c:732:5: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:733:10: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:734:5: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:736:5: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:737:10: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_fdf.c:738:5: warning: ignoring return value of 'fread', declared with attribute warn_unused_result [-Wunused-result]
-file_xml.c: In function 'xml_start_element':
-file_xml.c:556:19: warning: variable 'model' set but not used [-Wunused-but-set-variable]
-file_povray.c: In function 'write_povray':
-file_povray.c:312:27: warning: variable 'xmax' set but not used [-Wunused-but-set-variable]
-file_povray.c:312:9: warning: variable 'xmin' set but not used [-Wunused-but-set-variable]
-file_povray.c:310:14: warning: variable 'scale' set but not used [-Wunused-but-set-variable]
-file_castep.c: In function 'read_castep_out_block':
-file_castep.c:48:6: warning: variable 'last_frame' set but not used [-Wunused-but-set-variable]
+file_gulp.c:4210: warning: implicit declaration of function 'task_sync'
+file_fdf.c: In function 'write_fdf':
+file_fdf.c:392: warning: call to function 'print_file_energy_units' without a real prototype
+file_fdf.c:48: note: 'print_file_energy_units' was declared here
+file_fdf.c:438: warning: call to function 'print_file_energy_units' without a real prototype
+file_fdf.c:48: note: 'print_file_energy_units' was declared here
+file_fdf.c:446: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c:454: warning: call to function 'print_file_temperature_units' without a real prototype
+file_fdf.c:52: note: 'print_file_temperature_units' was declared here
+file_fdf.c:508: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c:515: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c:522: warning: call to function 'print_file_pressure_units' without a real prototype
+file_fdf.c:53: note: 'print_file_pressure_units' was declared here
+file_fdf.c:539: warning: call to function 'print_file_force_units' without a real prototype
+file_fdf.c:54: note: 'print_file_force_units' was declared here
+file_fdf.c:548: warning: call to function 'print_file_time_units' without a real prototype
+file_fdf.c:51: note: 'print_file_time_units' was declared here
+file_fdf.c:554: warning: call to function 'print_file_temperature_units' without a real prototype
+file_fdf.c:52: note: 'print_file_temperature_units' was declared here
+file_fdf.c:565: warning: call to function 'print_file_temperature_units' without a real prototype
+file_fdf.c:52: note: 'print_file_temperature_units' was declared here
+file_fdf.c:572: warning: call to function 'print_file_mominert_units' without a real prototype
+file_fdf.c:55: note: 'print_file_mominert_units' was declared here
+file_fdf.c:578: warning: call to function 'print_file_mominert_units' without a real prototype
+file_fdf.c:55: note: 'print_file_mominert_units' was declared here
+file_fdf.c:600: warning: call to function 'print_file_time_units' without a real prototype
+file_fdf.c:51: note: 'print_file_time_units' was declared here
+file_fdf.c:606: warning: call to function 'print_file_pressure_units' without a real prototype
+file_fdf.c:53: note: 'print_file_pressure_units' was declared here
+file_fdf.c:613: warning: call to function 'print_file_pressure_units' without a real prototype
+file_fdf.c:53: note: 'print_file_pressure_units' was declared here
+file_fdf.c:620: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c: In function 'read_fdf_block':
+file_fdf.c:1386: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_fdf.c:1672: warning: call to function 'set_energy_units' without a real prototype
+file_fdf.c:40: note: 'set_energy_units' was declared here
+file_fdf.c:1725: warning: call to function 'set_energy_units' without a real prototype
+file_fdf.c:40: note: 'set_energy_units' was declared here
+file_fdf.c:1752: warning: call to function 'set_temperature_units' without a real prototype
+file_fdf.c:41: note: 'set_temperature_units' was declared here
+file_fdf.c:1869: warning: call to function 'set_true_false' without a real prototype
+file_fdf.c:39: note: 'set_true_false' was declared here
+file_fdf.c:1891: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_fdf.c:1904: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_fdf.c:1917: warning: call to function 'set_force_units' without a real prototype
+file_fdf.c:43: note: 'set_force_units' was declared here
+file_fdf.c:1930: warning: call to function 'set_pressure_units' without a real prototype
+file_fdf.c:44: note: 'set_pressure_units' was declared here
+file_fdf.c:1961: warning: call to function 'set_time_units' without a real prototype
+file_fdf.c:45: note: 'set_time_units' was declared here
+file_fdf.c:1968: warning: call to function 'set_time_units' without a real prototype
+file_fdf.c:45: note: 'set_time_units' was declared here
+file_fdf.c:1978: warning: call to function 'set_temperature_units' without a real prototype
+file_fdf.c:41: note: 'set_temperature_units' was declared here
+file_fdf.c:1991: warning: call to function 'set_temperature_units' without a real prototype
+file_fdf.c:41: note: 'set_temperature_units' was declared here
+file_fdf.c:2003: warning: call to function 'set_true_false' without a real prototype
+file_fdf.c:39: note: 'set_true_false' was declared here
+file_fdf.c:2015: warning: call to function 'set_pressure_units' without a real prototype
+file_fdf.c:44: note: 'set_pressure_units' was declared here
+file_fdf.c:2063: warning: call to function 'set_mominert_units' without a real prototype
+file_fdf.c:46: note: 'set_mominert_units' was declared here
+file_fdf.c:2075: warning: call to function 'set_mominert_units' without a real prototype
+file_fdf.c:46: note: 'set_mominert_units' was declared here
+file_fdf.c:2104: warning: call to function 'set_time_units' without a real prototype
+file_fdf.c:45: note: 'set_time_units' was declared here
+file_fdf.c:2116: warning: call to function 'set_pressure_units' without a real prototype
+file_fdf.c:44: note: 'set_pressure_units' was declared here
+file_fdf.c:2128: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
 file_castep.c: In function 'read_castep_out':
-file_castep.c:366:2: warning: implicit declaration of function 'read_cell' [-Wimplicit-function-declaration]
-file_rietica.c: In function 'read_rietica':
-file_rietica.c:72:5: warning: 'g_strncasecmp' is deprecated (declared at /usr/include/glib-2.0/glib/gstrfuncs.h:175) [-Wdeprecated-declarations]
-file_dmol.c: In function 'read_dmol':
-file_dmol.c:169:6: warning: variable 'flag' set but not used [-Wunused-but-set-variable]
-file_dlpoly.c: In function 'read_dlpoly_pbc':
-file_dlpoly.c:155:22: warning: ignoring return value of 'fgets', declared with attribute warn_unused_result [-Wunused-result]
+file_castep.c:366: warning: implicit declaration of function 'read_cell'
 file_bgf.c: In function 'read_bgf':
-file_bgf.c:144:27: warning: unused variable 'core_bond_to' [-Wunused-variable]
-file_bgf.c:143:19: warning: unused variable 'buff2' [-Wunused-variable]
-file_bgf.c:142:16: warning: unused variable 'i' [-Wunused-variable]
-file_bgf.c:142:13: warning: unused variable 'w' [-Wunused-variable]
+file_bgf.c:144: warning: unused variable 'core_bond_to'
+file_bgf.c:143: warning: unused variable 'buff2'
+file_bgf.c:142: warning: unused variable 'i'
+file_bgf.c:142: warning: unused variable 'w'
 file_cgf.c: In function 'write_cgf':
-file_cgf.c:198:11: warning: unused variable 'buff' [-Wunused-variable]
-file_cgf.c:195:27: warning: unused variable 'core_to' [-Wunused-variable]
-file_cgf.c:191:79: warning: variable 'offset_counter' set but not used [-Wunused-but-set-variable]
-file_cgf.c:191:63: warning: unused variable 'num_tokens' [-Wunused-variable]
+file_cgf.c:198: warning: unused variable 'buff'
+file_cgf.c:195: warning: unused variable 'core_to'
+file_cgf.c:191: warning: unused variable 'num_tokens'
 file_cgf.c: In function 'read_cgf':
-file_cgf.c:282:12: warning: unused variable 'bond_strengths' [-Wunused-variable]
-file_cgf.c:337:9: warning: 'spacename' may be used uninitialized in this function [-Wuninitialized]
+file_cgf.c:282: warning: unused variable 'bond_strengths'
+file_cgf.c:337: warning: 'spacename' may be used uninitialized in this function
 file_gromacs.c: In function 'write_gromacs_gro':
-file_gromacs.c:219:18: warning: unused variable 'shell' [-Wunused-variable]
-make: warning:  Clock skew detected.  Your build may be incomplete.
+file_gromacs.c:219: warning: unused variable 'shell'
