@@ -1,0 +1,2 @@
+gcc *.o -o gdis -Wl,-Bstatic libgtkglext-x11-1.0.a libgdkglext-x11-1.0.a /usr/X11R6/lib/libXmu.a -Wl,-Bdynamic `pkg-config --libs gtk+-2.0 gthread-2.0 gmodule-2.0` -lGL -lGLU
+

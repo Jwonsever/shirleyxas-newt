@@ -265,13 +265,14 @@ website to jrdeslippe@lbl.gov.
 
 		    <!-- Seems to only search through the NCI database?? -->
 		    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
+		    <span style="display:none"><select id="jmol_select"><option value=":" selected="">PubChem</option></select></span>
 		    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
 
 		    <form id='loadfile'>
 		      <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/>
 		      <br></form>	 
      
-		    <button onClick="minimizeStructure()">Minimize Structure</button>
+		    <button onClick="minimizeStructure()">Optimize Structure</button>
 		    <button onClick="toggleModelkitMode()">Edit Structure</button>
 		    <button onClick="portCoordinates()">Port Coordinates</button><br>
 	      </div> 
@@ -333,7 +334,8 @@ website to jrdeslippe@lbl.gov.
 		      &nbsp;&nbsp;<a href="#" onclick="window.open('http://www.nersc.gov/users/computational-systems/hopper/running-jobs/queues-and-policies/');")>About</a>
                       </td></tr>		  
 
-		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/>
+		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/></tr>
+		      <tr><td>Account:</td><td><input type="Text" id="acctHours" value="m1707"/>
 		      </td></tr>
                       </table>
 

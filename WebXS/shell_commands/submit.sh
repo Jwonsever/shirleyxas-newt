@@ -68,10 +68,12 @@ cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XAS-xyz.sh >> ./xas.qs
 cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XAS-xyz-ref.sh >> ./ref.qscript
 
 ## Submit xas and xas-ref
-ref_id=`/usr/common/nsg/bin/qsub ref.qscript `
-xas_id=`/usr/common/nsg/bin/qsub xas.qscript `
+ref_id=`qsub ref.qscript `
+xas_id=`qsub xas.qscript `
 
-analPBS+="#PBS -W depend=afterok:${xas_id}@sdb\n\n"
+echo -e ${xas_id} > ./jobid.txt
+
+analPBS+="#PBS -W depend=afterok:${xas_id}@hopper11\n\n"
 analPBS+="cd ${dir}\n"
 analPBS+="export NO_STOP_MESSAGE=1\n\n"
 
@@ -82,6 +84,9 @@ qstat -f $ref_id | grep Account >> stats.txt
 cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XASAnalyse-xyz.sh >> ./anal.qscript
 
 ## Submit xas-analyse, dependent on successful completion of xas.sh
-/usr/common/nsg/bin/qsub anal.qscript
+#/usr/common/nsg/bin/ Previous Location
+qsub anal.qscript
+
+
 
 exit

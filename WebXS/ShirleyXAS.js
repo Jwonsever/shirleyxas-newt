@@ -109,7 +109,7 @@ function runningCalcs(res) {
     }
 }
 function killJob(job) {
-    var jobid = job.replace(".sdb","");
+    var jobid = job.replace(".hopper11",""); // was .sdb
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
 		data: {"executable": "/usr/common/nsg/bin/qdel "+jobid},
@@ -622,74 +622,6 @@ function loadJmolResultsApp(dir, jobName) {
 
 }
 
-//Jmol Functions //todo (Move to jmol.js)
-function resultsReady() {
-    resultsAppReady = true;
-    console.log("ready");
-}
-
-var showUnitcellFlag = false;
-function redrawModel(dir, jobName) {
-     var model = $('#currModel').val() - 1;
-     var file = dir +"/" + jobName + "_"+model+".xyz";
-     $.newt_ajax({type: "GET",
-		url: file + "?view=read",
-		success: function(res){
-		 res = res + ""; 
-		 res = res.replace(/\r\n|\r|\n/g, "\n");
-		 var scr = "try{mod = '" + res + "';";
-		 scr += "\nLOAD '@mod'";
-		 if (showUnitcellFlag) {
-		     var unitcellinfo = $('#unitcellData').text().replace(/,/g," ").replace(/[\[\]]/g,"");
-		     var oscalc = unitcellinfo.split(" ");
-		     var offsetinfo = oscalc[0]/2 + " " + oscalc[1]/2 + " " + oscalc[2]/2;			 
-		     scr += " {1 1 1} unitcell {" + unitcellinfo + "} offset {" + offsetinfo + "};";
-		 }
-		 console.log(scr);
-		 scr += ";reset mod;selectionHalos on;select none;}catch(e){}";
-		 if (resultsAppReady) {Jmol.script(resultsApplet, scr);}
-	     },});
-}
-
-function animateResults(dir, numModels) {
-     var jobName = $('#jobName').text();
-     var modata = "";
-     var count = 0;
-     for (var i = 0; i < numModels; i++) {
-	 var model = i;
-	 var file = dir +"/" + jobName + "_"+model+".xyz";
-	 $.newt_ajax({type: "GET",
-		url: file + "?view=read",
-		success: function(res){
-		 res = res + ""; 
-		 res = res.replace(/\r\n|\r|\n/g, "\n");
-		 modata += res;
-		 count ++;
-		 if (count == numModels) {
-		     var scr = "try{mod = '" + modata + "';";
-		     console.log(scr);
-		     scr += "\nLOAD '@mod';reset mod;selectionHalos on;select none;animation mode LOOP 1.0; frame PLAY;}";
-		     if (resultsAppReady) {Jmol.script(resultsApplet, scr);}
-		 } else {
-		     modata += "\n";
-		 }
-		 },});
-     }
-}
-
-function unitcell(dir, jobName) {
-    showUnitcellFlag = !showUnitcellFlag;
-    redrawModel(dir, jobName);
-}
-function savePNG() {
-    var scr = "write IMAGE 300 300 PNG 2 " + $('#jobName').text() + ".png";
-    if (resultsAppReady) Jmol.script(resultsApplet, scr);
-}
-function savePOV() {
-    var scr = "write POVRAY " + $('#jobName').text() + ".pov";
-    console.log(scr);
-    if (resultsAppReady) Jmol.script(resultsApplet, scr);
-}
 function savePlotFile(dir) {
     var files = getSelectedElems();
     var jobName = $('#jobName').text();
@@ -1268,6 +1200,7 @@ function executeJob(form, materialName) {
     command += machine + " ";
     command += form.Queue.value + " ";
     command += form.wallTime.value + " ";
+    command += form.acctHours.value + " ";
     //console.log(command);
  
     var webdata = materialName + "\n"; //[0] Name
