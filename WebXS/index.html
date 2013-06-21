@@ -45,6 +45,9 @@
 
     <!--Applet, Initialization, And Options-->
     <script>
+      var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
+	
+
       var mainApplet = "mainApplet";
       var jmeApplet = "jmeApplet";
       var previewApplet = "previewApplet";
@@ -122,7 +125,8 @@
                   <li><a href="#">GISAXS Code 2</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
-                  <li class="active"><a href="#">Shirley XAS</a></li>
+                  <li class="active"><a href="#">WebXS</a></li>
+		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
                   <li><a href="#">FEFF</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">Photoemission</li>
@@ -237,6 +241,7 @@ Currently computing K-edge spectra for Li, B, C, N, O, F, Cd, S, and Ti.  More c
 website to jrdeslippe@lbl.gov.
   	  	    <!--Needs work-->
 		    <button valign="middle" onclick="window.open( 'http://portal.nersc.gov/project/als/james-xs/WebXS/faq.html');">FAQ and Tutorial</button></p>
+		    <a href="../WebDynamics/index.html">WebDynamics</a>
 		    <p><center>
 		    <img src="images/MFLogo.png" width="300px" height="100px"/>
 		    <img src="images/NERSCLogo.png" width="200px" height="100px"/>
@@ -273,7 +278,7 @@ website to jrdeslippe@lbl.gov.
 		      <br></form>	 
      
 		    <button onClick="minimizeStructure()">Optimize Structure</button>
-		    <button onClick="toggleModelkitMode()">Edit Structure</button>
+		    <button onClick="toggleModelkitMode()" id="mkmode" value="Off">Toggle Model Kit Mode</button>
 		    <button onClick="portCoordinates()">Port Coordinates</button><br>
 	      </div> 
 	      <!-- End -->
@@ -370,7 +375,7 @@ website to jrdeslippe@lbl.gov.
 		      </span><span id="animatePreviewStop" style="display:none">
 			<input type='button' value='Stop Animation' onClick="drawMolInPreview();">
 		      </span>
-		      <span> Supercell Options: X
+		      <span>&nbsp&nbsp<b> Supercell:</b> X
 		      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px"/>
 		         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
 	              </select> Y

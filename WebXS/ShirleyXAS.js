@@ -112,7 +112,7 @@ function killJob(job) {
     var jobid = job.replace(".hopper11",""); // was .sdb
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
-		data: {"executable": "/usr/common/nsg/bin/qdel "+jobid},
+		data: {"executable": "qdel "+jobid},
 		success: function(res){
 		console.log("Job deleted. It may take a few minutes for status to update.");
 	    },
@@ -146,6 +146,8 @@ function previousJobs() {
 				url: "/queue/completedjobs/"+myUsername+"&limit=1500",
 				success: function(res){
 				if (res != null && res.length > 0) {
+				    //why arent the new ones showing up
+				    console.log(res);
 				    var occurs =[];
                                     var mycount = 0;
 				    for (var i = 0 ; i < res.length ; i++) {					
@@ -1035,6 +1037,7 @@ function makeXYZfromCoords(i) {
     var coords = sterilize(models[i]);
     var numberOfAtoms = coords.split("\n").length;
     var xyz = numberOfAtoms + "\n" + materialName + "\n" + coords;
+    //console.log(xyz);
     return xyz;
 }
 
@@ -1272,6 +1275,7 @@ function makeCoordsDiv() {
     }
     myHtml += '<input type="button" class="mybutton" onclick="addNewModel()" style="color:green" value="+"/>';
     myHtml += '<input type="button" class="mybutton" onclick="removeCurrentModel()" style="color:red" value="X"/>';
+    myHtml += '<input type="button" class="mybutton" onclick="removeAllModels()" style="color:red" value="Clear"/>';
     myHtml+='<br><TEXTAREA id="activeCoords" class="field span5" rows="12" cols="30" onkeyup="updateModels()">'+models[activeModel]+'</TEXTAREA><br>';
     $('#Coordinates').html(myHtml);
 }
@@ -1291,6 +1295,10 @@ function removeCurrentModel() {
     if (models.length == 1) return;
     models = models.slice(0,mIndex).concat(models.slice(mIndex+1));
     switchToModel(Math.max(mIndex-1, 0));
+}
+function removeAllModels() {
+    models = [""];
+    switchToModel(0);
 }
 function addNewModel() {
     models.push("Please Enter or Upload Model Cooridnates");

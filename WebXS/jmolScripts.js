@@ -29,7 +29,10 @@ function minimizeStructure() {
 
 //Currently turns on modelkit mode, may be expanded.
 function toggleModelkitMode() {
-    Jmol.script(mainApplet, "set modelKitMode");
+    var currentState = ($('#mkmode').val() == 'Off') ? 'On' : 'Off';
+    Jmol.script(mainApplet, "set allowModelKit " + (currentState == 'On'));
+    $('#mkmode').prop('value', currentState);
+    if (currentState == 'On') Jmol.script(mainApplet, "set modelKitMode");
 }
 
 //upload files directly to the jmol main editor.
@@ -41,9 +44,16 @@ function uploadToEditor(form) {
 	    reader.onload = function(r) {
 		var scr = "try{LOAD DATA \"mod\"\n";
 		scr += String(reader.result);
-		scr +="\nEND \"mod\" {1, 1, 1};}catch(e){}";
+		scr +="\nEND \"mod\" {1, 1, 1};unitcell ON;}catch(e){}";
 		//alert(scr);
 		Jmol.script(mainApplet, scr);
+				    
+		var AmIACrystal = Jmol.getPropertyAsJavaObject(mainApplet, "auxiliaryinfo.models[0].infoUnitcell", "all");
+		console.log(AmIACrystal);
+		if (AmIACrystal) {
+		    //Send through Gdis && Keep Data
+		}
+
 		//drawMol();
 	    }
 	    reader.readAsText(file);	
@@ -191,7 +201,7 @@ function readCoordsFromJmol() {
     while (i <= modelNum) {
 	var coords = "";
 	var atoms = Jmol.getPropertyAsArray(previewApplet, "atomInfo", "1." + i);
-	console.log(atoms);
+	//console.log(atoms);
 	for (atom = 0; atom < atoms.length; atom++) {
 	    coords += atoms[atom].sym + " ";
 	    coords += atoms[atom].x + " ";
@@ -212,18 +222,26 @@ function uploadCoordinates() {
     var file = form.uploadfile.files[0];
     //console.log(file);
 
-    var name = form.uploadfile.value;
-    name = name.split("//");
+    var filename = form.uploadfile.value;
+    filename = filename.replace("C:\\fakepath\\", "");//Chrome Bug
+    var name = filename.split("//");
     name = name[name.length-1].replace(/\..*/, "");
-    name = name.replace("C:\\fakepath\\", "");//Chrome Bug
+
     form.MOLNAME.value = name;
 
     if (typeof FileReader !== "undefined") {
 	var reader = new FileReader();
+
+	//level supercell
+	$('#SupercellX').val(1);
+	$('#SupercellY').val(1);
+	$('#SupercellZ').val(1);
+
 	try {
 	    reader.onload = function(r) {
+		var filedata = String(reader.result);
 		var scr = "try{\nLOAD INLINE \"";
-		scr += String(reader.result);
+		scr += filedata;
 		scr +="\";}catch(e){}";
 
 		Jmol.script(previewApplet, scr);
@@ -231,12 +249,14 @@ function uploadCoordinates() {
 		var gotCrystal = tryToGrabCrystalData();
 		readCoordsFromJmol();
 		if (!gotCrystal) {
-		    makeAbstractCellSize();
+		makeAbstractCellSize();
+		} else {
+		    runThroughGdisAndReload(filedata, filename);		    
 		}
 		
 		//switchToModel(models.length-1);
 	    }
-	    reader.readAsText(file);	
+	    reader.readAsText(file);
 	} catch(err) {
 	    form.coordinates.value="ERROR";
 	    return;
@@ -245,6 +265,52 @@ function uploadCoordinates() {
 	alert("Your browser does not support file uploading, please use google chrome or firefox.");
     }
 }
+
+/*Push file to server		      
+  Execute Gdis
+  return file to jmol
+  remove files
+  quit
+*/
+function runThroughGdisAndReload(filedata, filename) {
+    //Clean dirty charcters from filename
+    filename = filename.replace(/[|&;$%@"<>()+,]/g, "");
+    //"//Emacs coloring bug (Serves no purpose other then making my screen look nicer)
+
+    //post webdata
+    $.newt_ajax({type: "PUT", 
+		url: "/file/"+"hopper" + CODE_BASE_DIR + DATA_LOC + "/tmp/" + filename,
+		data: filedata,
+		success: function(res) {runGdis(filedata, filename);},});
+}
+function runGdis(filedata, filename) {
+    command = SHELL_CMD_DIR + "convertUsingGdis.sh " + filename + " .xyz";
+    $.newt_ajax({type: "POST",
+		url:"/command/hopper",
+		data: {"executable": command},
+		success: function(res) {console.log(res);reloadGdisOutput(filedata, filename);},});
+}
+function reloadGdisOutput(filedata, filename) {
+    var convertedFile = "../Shirley-data/tmp/"+filename+".xyz";
+    var scr = "try{load "+convertedFile+";}catch(e){};";
+    //Draw to Jmol
+    Jmol.script(previewApplet, scr);
+    //rewrite new coordinates
+    models = models.slice(0, -1);
+    readCoordsFromJmol();
+    switchToModel(models.length-1);
+    //Get rid of temporary file
+    deleteGdisOutputFile(filename);
+}
+function deleteGdisOutputFile(filename) {
+    command = "/bin/rm " + CODE_BASE_DIR + DATA_LOC + "/tmp/" + filename + ".xyz";
+    $.newt_ajax({type: "POST",
+		url:"/command/hopper",
+		data: {"executable": command},
+		success: function(res) {console.log("successful delete of gdis output");},});
+}
+
+
 function getUnitCell() {
     var myform = document.getElementById('inputs');
     var a = myform.CellA.value;
@@ -278,14 +344,22 @@ function initPreviewApp() {
     //This is a weird first load issue, that seems to be solved by a short timeout call.
     //allows selections to work (about) immediately, dom issue?
 }
+function unbindMobileClicks() {
+    var scr = "";
+    scr += "unbind 'RIGHT';";
+    scr += "unbind 'LEFT' '_clickFrank'; ";
+    return scr;
+}
+
 function drawMolInPreview() {
     //Set Animation Button
     $('#animatePreviewButton').show();
     $('#animatePreviewStop').hide();
 
     //Draw Molecule
-    var scr = "unbind 'RIGHT';";
-    scr += "unbind 'LEFT' '_clickFrank'; "; 
+    var scr = "";
+    if (amIMobile) {scr += unbindMobileClicks();}
+    
     scr += "set defaultLattice {1 1 1}; ";
     //change to load all of the models....
     var xyz = makeXYZfromCoords(activeModel);
@@ -309,7 +383,9 @@ function drawMol(suffix) {
 	drawMolInPreview();
     } else {
 	var xyz = makeXYZfromCoords();
-	var scr = "try{\nLOAD DATA \"mod\"\n" + xyz + "\nEND \"mod\" {1, 1, 1}}catch(e){}";
+	var scr = "";
+	if (amIMobile) {scr += unbindMobileClicks();}
+	scr += "try{\nLOAD DATA \"mod\"\n" + xyz + "\nEND \"mod\" {1, 1, 1}}catch(e){}";
 	Jmol.script(mainApplet, scr);
     }
 }
@@ -431,7 +507,10 @@ function redrawModel(dir, jobName) {
 		success: function(res){
 		 res = res + ""; 
 		 res = res.replace(/\r\n|\r|\n/g, "\n");
-		 var scr = "try{mod = '" + res + "';";
+		 
+		 var scr = "";
+		 if (amIMobile) {scr += unbindMobileClicks();}
+		 scr = "try{mod = '" + res + "';";
 		 scr += "\nLOAD '@mod'";
 		 if (showUnitcellFlag) {
 		     var unitcellinfo = $('#unitcellData').text().replace(/,/g," ").replace(/[\[\]]/g,"");

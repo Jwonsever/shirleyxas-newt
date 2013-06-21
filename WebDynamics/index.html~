@@ -10,9 +10,7 @@
       }
     </style>
     <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
     <link href="als_portal.css" rel="stylesheet" type="text/css" />
-    <link href="bxslider/jquery.bxslider.css" rel="stylesheet" />
   </head>
   <body>
 
@@ -27,10 +25,10 @@
           <div class="nav-collapse collapse">
             <ul class="nav">
               <li><img src="alslogo.png" width=56 padding=0 border=0></li>
-              <li><a href="index.html">Home</a></li>
+              <li class="active"><a href="#">Home</a></li>
               <li><a href="about.html">About</a></li>
               <li><a href="status.html">Status</a></li>
-              <li class="active"><a href="#">Data Browser</a></li>
+              <li><a href="data.html">Data Browser</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
                 <ul class="dropdown-menu">
@@ -40,7 +38,6 @@
                   <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
                   <li><a href="WebXS/index.html">Shirley XAS</a></li>
-		  <li><a href="WebDynamics/index.html">WebDynamics</a></li>
                   <li><a href="#">FEFF</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">Photoemission</li>
@@ -48,7 +45,7 @@
                 </ul>
               </li>
             </ul>
-            <div class="pull-right" id="auth-spinner"><img src="white-ajax-loader.gif"></div>
+            <div class="pull-right" id="auth-spinner"> <img src="white-ajax-loader.gif"></div>
             <div id=login-area style='display:none;' class="pull-right">
               <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
                 <input class="span2" type="text" placeholder="Username" id="id_username">
@@ -68,31 +65,29 @@
     </div>
 
     <div class="container">
+      <div class="hero-unit">
+        <h2>Welcome to the ALS Data and Simulation Portal</h2>
+        <p>This site is a very large work in progress. Log in with your NERSC account at the top right to gain access to NERSC compute resources 	
+           (required for simulation and analysis tools).</p>
+        <p><a class="btn btn-primary btn-large" href="about.html">Learn more. &raquo;</a></p>
+      </div>
 
       <div class="row">
-
         <div class="span4">
-          <div class="well sidebar-nav">
-            <form class="navbar-search pull-left" method=POST action='javascript: fileSearch();'>
-              <input type="text" class="search-query" placeholder="Search" id=file-search-box >
-            </form>
-            <br><br>
-            <ul class="nav nav-list" id=file-list>
-            </ul>
-            <br>
-            <div id=files-loading style='display:none;'><center><img src="blue-ajax-loader.gif" width=35></center></div>
-          </div><!--/.well -->
+        <center><img src='lbl1.png' width=250></center>
         </div>
-        <div class="span8">
-          <div class="hero-unit" style='min-height:400px;' id=item-info-box>
-            <span id="attributes"><h2>Click on an item to view its attributes here.</h2></span>
-            <div id="option" style="text-align:right; display:none" class="input">
-              <br><form><label class='add-on'><span>Show more attributes:&nbsp;&nbsp;</span><input id='watch-me' type='checkbox' /></label></form><br>
-            </div>
-            <span id="hiddenattributes"></span>
-          </div>
+        <div class="span4">
+        <center>
+        <img src='als1.jpg' width=250>
+        </center>
+        </div>
+        <div class="span4">
+        <center>
+        <img src='nersc1.jpg' width=250>
+        </center>
         </div>
       </div>
+
       <hr>
 
       <footer>
@@ -101,27 +96,12 @@
 
     </div> <!-- /container -->
 
-    <div id="imageModal" class="modal hide fade" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
-      <div class="modal-header">
-        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">x</button>
-        <h3 id="imageModalLabel">Modal header</h3>
-      </div>
-      <div class="modal-body" id="imageModalBody">
-        <p>The body…</p>
-      </div>
-      <div class="modal-footer">
-        <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
-      </div>
-    </div>
-
-    <script src="jquery-latest.js"></script>    
+    <!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
+    <script src="jquery-latest.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
     <script src="mynewt.js"></script>
     <script src="alsapi.js"></script>
     <script src="als_portal.js"></script>
-    <script src="file_list.js"></script>
-    <script src="data_browser.js"></script>
-    <script src="bxslider/jquery.bxslider.min.js"></script>
 
     <script>
       myCheckAuth();

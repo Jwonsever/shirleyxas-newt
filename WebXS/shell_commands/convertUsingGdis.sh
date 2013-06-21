@@ -1,10 +1,14 @@
 #!/bin/bash
 
+homedir="/project/projectdirs/als/www/james-xs/Shirley-data/tmp";
+
+cd $homedir;
+
 infile=${1}
 outfile=${2}
-fullfile=$infile + $outfile
 
-echo "copy ${infile} ${outfile}" | ../gdis-0.90/gdis >& /dev/null
+echo "copy ${infile} ${outfile}" | ../../WebXS/gdis-0.90/gdis
 
 #Run Cleanup
 rm $infile
+chmod 777 $infile$outfile

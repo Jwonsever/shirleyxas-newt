@@ -9,8 +9,7 @@ procsPerPool=$5
 machine=$6
 queue=$7
 walltime=$8
-
-#account=$9
+account=$9
 #Add option to use own account hours.
 
 dir="${1}/${MOLNAME}"
@@ -23,6 +22,7 @@ echo -e ${inputs} >> ./Input_Block.in
 xasPBS="#!/bin/bash\n"
 xasPBS+="#PBS -q ${queue}\n"
 xasPBS+="#PBS -V\n"
+xasPBS+="#PBS -A ${account}\n"
 
 refPBS="$xasPBS"
 analPBS="$xasPBS"
@@ -73,20 +73,20 @@ xas_id=`qsub xas.qscript `
 
 echo -e ${xas_id} > ./jobid.txt
 
-analPBS+="#PBS -W depend=afterok:${xas_id}@hopper11\n\n"
+#Kill this line to match new qsub reqs.
+#analPBS+="#PBS -W depend=afterok:${xas_id}@hopper11\n\n"
 analPBS+="cd ${dir}\n"
 analPBS+="export NO_STOP_MESSAGE=1\n\n"
 
 echo -e ${analPBS} > ./anal.qscript
 
-qstat -f $ref_id | grep Account >> stats.txt
+qstat -f $ref_id | grep $account >> stats.txt
 
 cat /project/projectdirs/als/www/james-xs/WebXS/xas_input/XASAnalyse-xyz.sh >> ./anal.qscript
 
 ## Submit xas-analyse, dependent on successful completion of xas.sh
-#/usr/common/nsg/bin/ Previous Location
-qsub anal.qscript
-
+#/usr/common/nsg/bin/qsub anal.qscript (Previous version)
+qsub -W depend=afterok:${xas_id}@hopper11 anal.qscript >> stats.txt
 
 
 exit
