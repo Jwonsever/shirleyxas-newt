@@ -142,12 +142,18 @@ function previousJobs() {
 		    myText += "<table width=100\%><tr><th width=62\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
 		    myText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
 		    var files = res;
+
+		    //Potentially rewok this from a LS and text triggers on completed jobs??
+
+		    //Find some way to display unfinished jobs.  Give a rerun option. (Try this tomorrow)
+
 		    $.newt_ajax({type: "GET",
 				url: "/queue/completedjobs/"+myUsername+"&limit=1500",
 				success: function(res){
 				if (res != null && res.length > 0) {
 				    //why arent the new ones showing up
 				    console.log(res);
+
 				    var occurs =[];
                                     var mycount = 0;
 				    for (var i = 0 ; i < res.length ; i++) {					
