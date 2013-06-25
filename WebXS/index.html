@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ALS Data and Simulation Portal</title>
+    <title>Web XS</title>
+
     <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -36,7 +37,7 @@
     <script src="javascript/Flot/jquery.flot.js"></script>
     <script src="javascript/Flot/jquery.flot.navigate.js"></script>
 
-    <!-- Potential for improved browser support -->
+    <!-- Potential for improved browser support, uploads on older browsers -->
     <script src="ajaxfileupload.js"></script>
 
     <!-- Local JS-->
@@ -305,7 +306,7 @@ website to jrdeslippe@lbl.gov.
 		      <input type="Checkbox" onchange="makeCellSize()" id="CrystalFlag" value="True"/> Crystal?
 		      <br>
 		      <input type="Text" id="IBRAV" size="4" value="14"/> Bravais Lattice<br>
-		      <br>Cell Size Attributes:<br>
+		      <br>Cell Size Attributes: (In &#8491;ngstr&#246;ms)<br>
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellA" value="10"/> A
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellB" value="10"/> B
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellC" value="10"/> C

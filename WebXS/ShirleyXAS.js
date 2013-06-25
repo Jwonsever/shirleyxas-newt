@@ -1254,14 +1254,16 @@ function expandXAS(XAS, form) {
     var coo = models[0];
     coo = coo.split("\n");
     var xas = XAS.split(" ");
+
     XAS = "";
     for (var x = 0; x < xas.length; x++) {
+
 	if (xas[x].match(/^[A-Z][a-z]?$/)) { //get all of the averaged elements
 	    XAS += xas[x] + " ";
 	    for (var c = 0; c < coo.length; c++)
 		if (coo[c].split(" ")[0] == xas[x]) 		    
 		    XAS += xas[x]+(Number(c)+1)+" ";
-	} else if (xas[x].match(/^[A-Z][a-z]?\d+$/) && coo[Number(xas[x].match(/\d+/))-1].split(" ")[0] == xas[x].replace(/\d*/g, '')) {
+	} else if (xas[x].match(/^[A-Z][a-z]?\d+$/) && coo[Number(xas[x].match(/\d+/)[0])-1].split(" ")[0] == xas[x].replace(/\d*/g, '')) {
 	    if (XAS.indexOf(xas[x].replace(/\d*/g, '')+ " ") == -1) {
 		XAS += xas[x].replace(/\d*/g, '') + " ";
 	    }

@@ -19,6 +19,68 @@
     <script src="../alsapi.js"></script>
     <script src="../als_portal.js"></script>
 
+    
+    <!--Scripts required for JME injection-->
+    <script src="javascript/jsmol-13.1.15/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
+    </script>
+
+    <!--jsMol-->
+    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/JSmol.min.nojq.js"></script>
+    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/js/JSmolJME.js"></script>
+
+    <script>
+      var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
+	
+
+      var mainApplet = "mainApplet";
+      var jmeApplet = "jmeApplet";
+
+      // logic is set by indicating order of USE -- default is HTML5 for this test page, though
+      var use = "HTML5"; // JAVA HTML5 WEBGL IMAGE  are all otions     
+      var s = document.location.search;
+      Jmol.debugCode = (s.indexOf("debugcode") >= 0);
+
+
+      var JmolInfo = {
+      width: 500,
+      height: 500,
+      debug: false,
+      color: "black",
+      addSelectionOptions: false,
+      serverURL: "./javascript",
+
+      //for jsmol
+      use: "HTML5",
+      j2sPath: "javascript/jsmol-13.1.15/jsmol/j2s",
+
+      //These are for java version
+      //jarPath: "javascript/jmol-13-0",
+      //jarFile: "JmolAppletSigned.jar",
+      //isSigned: true,
+
+      //disableJ2SLoadMonitor: true,
+      //disableInitialConsole: true,
+      allowJavaScript: true,
+      console:"none",
+      script: "load :methane;"
+      };
+      
+      var JMEInfo = {
+      use: "HTML5"
+
+      //for the java version
+      //jarPath: "javascript/",
+      //jarFile: "JME.jar"
+      };
+      
+
+      Jmol.setGrabberOptions(
+      [["$", "NCI(small molecules)"],
+      [":", "PubChem(small molecules)"],
+      ["=", "RCSB(macromolecules)"]]);
+    </script>
+
+
   </head>
   <body>
 
@@ -80,6 +142,26 @@
  crystal structure interpretations, manipulation of chemical structures, and computation
 of molecular dynamics and trajectories.  These advanced, realistic structures can then be
 sent to and accessed by other tools located in the portal.  Work in progress. </p>
+	<div id="options">
+	  <ul>
+	    <li>Search</li>
+	    <li>Model Kit</li>
+	    <li>Trajectory Analysis</li>
+	    <li>Upload</li>
+	    <li>Relaxations</li>
+	    <li>Dynamic Modeling</li>
+	    <li>Enhanced JSmol Console</li>
+	  </ul>
+	</div>
+	</div id="jmolApp">
+	  <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
+	  <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
+	  <script>
+	    JmolInfo.width = 600;
+	    mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
+	    jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
+	  </script>
+	</div>
       </div>
 
       <p><center>
@@ -91,7 +173,8 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
       <hr>
 
       <footer>
-        <p>&copy; LBL LDRD 2013</p>
+	<p>JSmol: an open-source HTML5 viewer for chemical structures in 3D. http://www.jmol.org/<br>
+	  &copy; LBL LDRD 2013</p>
       </footer>
 
     </div> <!-- /container -->
