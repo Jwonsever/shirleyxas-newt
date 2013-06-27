@@ -109,7 +109,7 @@ function runningCalcs(res) {
     }
 }
 function killJob(job) {
-    var jobid = job.replace(".hopper11",""); // was .sdb
+    var jobid = job.replace(".hopper11",".hopper11"); // was .sdb
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
 		data: {"executable": "qdel "+jobid},
@@ -534,7 +534,7 @@ function drawState(atomNo, activeMo, state) {
 		     scr += "load "+stateFile+";";
 		     scr += "isosurface pos .001 '"+stateFile+"';color isosurface translucent;";
 		     scr += "isosurface neg -.001 '"+stateFile+"';color isosurface translucent;";
-		     scr += "selectionHalos on;select none;javascript deleteStateFileFromServer();";
+		     scr += "selectionHalos on;select "+atomNo+";javascript deleteStateFileFromServer();";
 		     //Draw to Jmol
 		     Jmol.script(resultsApplet, scr);
 		     //Match state - active model
