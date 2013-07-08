@@ -6,74 +6,95 @@ from re import match
 from math import fabs
 from operator import itemgetter
 
-fileinput.close()
+def main(argv = None):
+    if argv is None:
+        argv = sys.argv
 
-if (len(sys.argv) < 4):
-    print 'bad arguments'
-    exit(0)
+    fileinput.close()
 
-path = sys.argv[1]
-molName = sys.argv[2]
-activeEv = float(sys.argv[3])
-ebars = .5 #finds peaks within 1 ev
+    if (len(argv) < 4):
+        print 'bad arguments to TopEvContributors.py'
+        exit(0)
 
-os.chdir(path)
-ls = os.listdir('.')
+    path = argv[1]
+    molName = argv[2]
+    activeEv = float(argv[3])
 
-webdata = fileinput.input('webdata.in')
-webdata.next()
-webdata.next()
-xasAtoms = webdata.next().split()
-webdata.next()
-models = int(webdata.next())
-totalAtoms = str(int(webdata.next()))
-webdata.close()
-topBands = []
+    ebars = .5 #finds peaks within 1 ev
+    if (len(argv) >= 5):
+        ebars = float(argv[4])
 
-def addBand(properties):
-    topBands.append(properties)
+    os.chdir(path)
+    ls = os.listdir('.')
+    
+    webdata = fileinput.input('webdata.in')
+    webdata.next()
+    webdata.next()
+    xasAtoms = webdata.next().split()
+    webdata.next()
+    models = int(webdata.next())
+    totalAtoms = str(int(webdata.next()))
+    webdata.close()
 
-for model in range(models):
-    for atom in xasAtoms:
+    topBands = []
+    def addBand(properties):
+        topBands.append(properties)
 
-        if match('^[A-Za-z]{1,2}$', atom):
-            continue
+    for model in range(models):
+        for atom in xasAtoms:
 
-        #take care of those wierd 0's in the names
-        longatom = atom
-
-        if (match('^[A-Za-z]{1,2}\d{1}$', atom) and len(totalAtoms) > 2):
-            longatom = longatom[0:-1] + "00" + longatom[-1]
-        elif (match('^[A-Za-z]{1,2}\d{1}$', atom) and len(totalAtoms) > 1):
-            longatom = longatom[0:-1] + "0" + longatom[-1]
-
-        if (match('^[A-Za-z]{1,2}\d{2}$', atom) and len(totalAtoms) > 2):
-            longatom = longatom[0:-2] + "0" + longatom[-2:]
-
-        fileloc = 'XAS/' + molName + '_' + str(model) + '/' + atom + '/'
-        filename = fileloc+molName+'.'+longatom+"-XCH.xas.5.stick.  0"
-        for line in fileinput.input(filename):
-            l = line.split()
-            state = int(l[0])
-            kpoint = int(l[1])
-            if (kpoint != 1):
-                break
-            ev = float(l[2])
-            ostrength = float(l[3])
-
-            if (fabs(ev - activeEv) > ebars):
+            if match('^[A-Za-z]{1,2}$', atom):
                 continue
-            
-            l.insert(0, model)
-            l.insert(0, atom)
-            l.pop()
-            l.pop()
-            l.pop()
-            addBand(l)
-        fileinput.close()
 
-topBands.sort(key = lambda row: -1 * float(row[5]))
-for l in topBands:
-    print str(l[0]) + ',' + str(l[1]+1) + ',' + str(l[2]) + ',' + str(round(float(l[4]), 2)) + ',' + str(round(float(l[5])*1000000, 2))
+            #take care of those wierd 0's in the names
+            longatom = atom
+
+            if (match('^[A-Za-z]{1,2}\d{1}$', atom) and len(totalAtoms) > 2):
+                longatom = longatom[0:-1] + "00" + longatom[-1]
+            elif (match('^[A-Za-z]{1,2}\d{1}$', atom) and len(totalAtoms) > 1):
+                longatom = longatom[0:-1] + "0" + longatom[-1]
+
+            if (match('^[A-Za-z]{1,2}\d{2}$', atom) and len(totalAtoms) > 2):
+                longatom = longatom[0:-2] + "0" + longatom[-2:]
+
+            fileloc = 'XAS/' + molName + '_' + str(model) + '/' + atom + '/'
+            filename = fileloc+molName+'.'+longatom+"-XCH.xas.5.stick.  0"
+            for line in fileinput.input(filename):
+                l = line.split()
+                state = int(l[0])
+                kpoint = int(l[1])
+                if (kpoint != 1):
+                    break
+                ev = float(l[2])
+                ostrength = float(l[3])
+
+                #Not strong enough
+                if (round(float(l[5])*1000000, 2) == 0):
+                    continue
+
+                #Not close enough
+                if (fabs(ev - activeEv) > ebars):
+                    continue
             
-fileinput.close()
+                l.insert(0, model)
+                l.insert(0, atom)
+                l.pop()
+                l.pop()
+                l.pop()
+                addBand(l)
+
+            fileinput.close()
+
+    topBands.sort(key = lambda row: -1 * float(row[5]))
+
+    goodStates = [];
+    for l in topBands:
+        goodStates.append(str(l[0]) + ',' + str(l[1]+1) + ',' + str(l[2]) + ',' + str(round(float(l[4]), 2)) + ',' + str(round(float(l[5])*1000000, 2)))
+            
+    fileinput.close()
+    return goodStates
+
+if __name__ == '__main__':
+    out = main()
+    for x in out:
+        print x

@@ -11,6 +11,7 @@
     </style>
     <link href="../bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
     <link href="../als_portal.css" rel="stylesheet" type="text/css" />
+    <link href="wd.css" rel="stylesheet" type="text/css" />
 
     <!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
     <script src="../jquery-latest.js"></script>
@@ -27,6 +28,13 @@
     <!--jsMol-->
     <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/JSmol.min.nojq.js"></script>
     <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/js/JSmolJME.js"></script>
+
+    <!--Downloadify (Req. Flash 10)-->
+    <script type="text/javascript" src="javascript/Downloadify/js/swfobject.js"></script>
+    <script type="text/javascript" src="javascript/Downloadify/js/downloadify.min.js"></script>
+
+    <!--Local-->
+    <script type="text/javascript" src="WebDynamics.js"></script>
 
     <script>
       var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
@@ -141,37 +149,112 @@
         <p>This page is meant for the searching of chemical structures, DFT relaxations,
  crystal structure interpretations, manipulation of chemical structures, and computation
 of molecular dynamics and trajectories.  These advanced, realistic structures can then be
-sent to and accessed by other tools located in the portal.  Work in progress. </p>
-	<div id="options">
-	  <ul>
-	    <li>Search</li>
-	    <li>Model Kit</li>
-	    <li>Trajectory Analysis</li>
-	    <li>Upload</li>
-	    <li>Relaxations</li>
-	    <li>Dynamic Modeling</li>
-	    <li>Enhanced JSmol Console</li>
-	  </ul>
-	</div>
-	</div id="jmolApp">
+sent to and accessed by other tools located in the portal.  Work in progress. </p><hr>
+
+	<div id="jmolApp">
 	  <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
 	  <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
 	  <script>
-	    JmolInfo.width = 600;
 	    mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
 	    jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
 	  </script>
 	</div>
+
+	<div id="optionsWrapper">
+	  <ul class="optionsNavBar">
+	    <li class="optionsDivider"></li>
+	    <li><a href="#Search" onclick="CngClass($('#searchOptions'))">Search</a></li>
+	    <li class="optionsDivider"></li>
+	    <li><a href="#ModelKit" onclick="CngClass($('#ModelKitOptions'))">Model Kit</a></li>
+	    <li class="optionsDivider"></li>
+	    <li><a href="#Coordinates" onclick="CngClass($('#CoordinatesOptions'));readCoordsFromJmol();">Coordinates</a></li>
+	    <li class="optionsDivider"></li>
+	    <li><a href="#Upload" onclick="CngClass($('#UploadOptions'))">Upload Files</a></li>
+	    <li class="optionsDivider"></li><br><li class="optionsDivider"></li>
+	    <li><a href="#Relaxations" onclick="CngClass($('#RelaxationOptions'))">Molecular Relaxations</a></li>
+	    <li class="optionsDivider"></li>
+	    <li><a href="#MolecularDynamics" onclick="CngClass($('#DynamicsOptions'))">Molecular Dynamics</a></li>
+	    <li class="optionsDivider"></li>
+	    <li><a href="#JmolConsole" onclick="CngClass($('#JmolConsole'))">Jmol Console</a></li>
+	    <li class="optionsDivider"></li>
+	  </ul>
+	  <div id="searchOptions" class="optionsDiv">
+	    <br>
+	    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
+	    <select id="mainApplet_select">
+	      <option value="$" selected>NCI(small molecules)</option>
+	      <option value=":">PubChem(small molecules)</option>
+	      <option value="=">RCSB(macromolecules)</option></select>
+	    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
+	    <br>
+
+	  </div>
+	  <div id="ModelKitOptions" class="optionsDiv">
+	    Right click on the JSMol application in model-kit mode, and options for editing the molecule will appear.
+	    <br>
+	    <button onClick="toggleModelkitMode()" id="mkmode" value="Off">Toggle Model Kit Mode</button><br>
+	    <button onClick="minimizeStructure()">Optimize Structure</button><br>
+	    <button onClick="minimizeAddHydrogens()">Optimize Structure and Add Hydrogens</button>	    
+	  </div>
+
+	  <div id="CoordinatesOptions" class="optionsDiv">
+	    Active Molecular Coordinates.  Editable.
+	    <div id = "Coordinates"></div>
+	    <script> var models = [""]; var activeModel = 0; makeCoordsDiv(); </script>
+	  </div>
+
+	  <div id="UploadOptions" class="optionsDiv">
+	    Upload file, as crystal, specify cell?
+	    <br>
+	    <input type=file id='uploadfile' name='uploadfile' onchange="uploadCoordinates(this)">
+	    <br>
+	    Add feature to save current unitcells/coordinates
+	  </div>
+
+	  <div id="RelaxationOptions" class="optionsDiv">
+	    Empirical Jmol Relaxations
+	    <button onClick="minimizeStructure()">Optimize Structure</button><br>
+	    <button onClick="minimizeAddHydrogens()">Optimize Structure and Add Hydrogens</button>	    
+	    <hr>
+	    Empirical Avagadro Relaxations
+	    <hr>
+	    Quantum Espresso DFT Relaxations
+	    (<a href="#" onclick="alert(Submits a torque job, will appear here after completion.)">Warning</a>)
+	    <br>Name your relaxation:<input id="name" type="text" />
+	    <div id="completedRelaxations">
+	      Here will be listed, in order, all successful relaxations completed, and names/dates
+	    </div>
+	  </div>
+
+	  <div id="DynamicsOptions" class="optionsDiv">
+	    trajectories, move an atom and show what happens in between, temerature vibrations.
+	  </div>
+
+	  <div id="JmolConsole" class="optionsDiv">
+	   Full jmol console, with help links
+	   <script>
+	    Jmol.jmolCommandInput("mainApplet");
+	   </script>
+	  </div>
+
+	  <span id="optionsBottomBar">
+	    <button onClick="sendToWebXS()">NEXAFS</button>
+	    <button onClick="SaveFile()">Save on Hopper:</button>
+	    <span><object id="downloadify"></object></span>
+	    <button onClick="">Undo</button>
+	    <button onClick="">Redo</button>
+	  </span>
+	</div>
+	
       </div>
 
-      <p><center>
+      <center>
 	  <img src="./MFLogo.png" width="300px" height="100px"/>
 	  <img src="./NERSCLogo.png" width="200px" height="100px"/>
 	  <img src="./JSmol_logo13.png" width="250px" height="100px"/><br>
-      </center><p>
+      </center>
 
-      <hr>
-
+      <r>
       <footer>
 	<p>JSmol: an open-source HTML5 viewer for chemical structures in 3D. http://www.jmol.org/<br>
 	  &copy; LBL LDRD 2013</p>
@@ -181,6 +264,27 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 
     <script>
       myCheckAuth();
+
+      //todo
+      Downloadify.create('downloadify',{
+      filename: function(){
+      return "WebDynamics.xyz";
+      },
+      data: function(){ 
+      return "tempDATA";
+      },
+      onComplete: function(){ alert('Your File Has Been Saved!'); },
+      onCancel: function(){ alert('You have cancelled the saving of this file.'); },
+      onError: function(){ alert('You must put something in the File Contents or there will be nothing to save!'); },
+      transparent: false,
+      swf: 'javascript/Downloadify/media/downloadify.swf',
+      downloadImage: 'javascript/Downloadify/images/download.png',
+      width: 100,
+      height: 30,
+      transparent: false,
+      append: false
+      });
+		
     </script>
 
   </body>

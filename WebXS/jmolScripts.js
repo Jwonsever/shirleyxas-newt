@@ -193,6 +193,17 @@ function makeAbstractCellSize() {
     //console.log(abc);
     return abc;
 }
+function adjustToSupercell() {
+    readCoordsFromJmol();
+    var inx = Number($('#SupercellX').val());
+    var iny = Number($('#SupercellY').val());
+    var inz = Number($('#SupercellZ').val());
+    var myform = document.getElementById('inputs');
+    myform.CellA.value ="" + (Number(myform.CellA.value) * inx);
+    myform.CellB.value ="" + (Number(myform.CellB.value) * iny);
+    myform.CellC.value ="" + (Number(myform.CellC.value) * inz);
+    drawMolInPreview();
+}
 function readCoordsFromJmol() {
     //fix to check for multiple models being uploaded
     var modelInfo = Jmol.getPropertyAsArray(previewApplet, "modelInfo", "all");
@@ -249,12 +260,12 @@ function uploadCoordinates() {
 		var gotCrystal = tryToGrabCrystalData();
 		readCoordsFromJmol();
 		if (!gotCrystal) {
-		makeAbstractCellSize();
+		    makeAbstractCellSize();
+		    switchToModel(models.length-1);
 		} else {
 		    runThroughGdisAndReload(filedata, filename);		    
 		}
 		
-		//switchToModel(models.length-1);
 	    }
 	    reader.readAsText(file);
 	} catch(err) {
@@ -375,6 +386,13 @@ function drawMolInPreview() {
     //console.log(scr);
     Jmol.script(previewApplet, scr);
     $(document).ready(addSelections());
+
+    $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/24) + 1));
+}
+
+function numAtoms(xyz) {
+    //console.log("Num Atoms " + Number(xyz.split("\n")[0]));
+    return Number(xyz.split("\n")[0]);
 }
 
 //Redraw the molecule according to coordinates

@@ -109,10 +109,10 @@ function runningCalcs(res) {
     }
 }
 function killJob(job) {
-    var jobid = job.replace(".hopper11",".hopper11"); // was .sdb
+    var jobid = job.replace(".hopper11",""); // was .sdb
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
-		data: {"executable": "qdel "+jobid},
+		data: {"executable":"/opt/torque/4.2.3.1/bin/qdel "+jobid},
 		success: function(res){
 		console.log("Job deleted. It may take a few minutes for status to update.");
 	    },
@@ -527,6 +527,7 @@ function drawState(atomNo, activeMo, state) {
 		    url: "/command/hopper",
 		    data: {"executable": command},
 		    success: function(res) {
+		     console.log("fetched");
 		     if (res.output=="File does not exist\n") {
 			 alert("This state has not been calculated yet, please run this calculation first. It will take a few minutes to complete, so please be paitent.");return;}
 		     var stateFile = "../Shirley-data/tmp/"+jobName+"/state."+state+".cube";
@@ -1059,10 +1060,10 @@ function validateInputs(form) {
     //Set NNODES See if passes;
     var XAS = form.XASELEMENTS.value;
     //references number of excited from the first model, no checking others
-    var coordinates = sterilize(models[0]).split("\n");   
+    var coordinates = sterilize(models[0]).split("\n");
     form.NNODES.value = getExcitedElementsTotal(coordinates, XAS.split(" "));
     if (form.NNODES.value <= 0) {
-	message += "Must excite at least one atom in coordinates. \"Xx\" matches all of element Xx, \"Xx2\" matches the Xx atom in the second row of your corrdinates. \n";
+	message += "Must excite at least one atom in coordinates. \"Xx\" matches all of element Xx, \"Xx2\" matches the Xx atom in the second row of your corrdinates. Different atoms must be separated by whitespace.\n";
 	invalid = true; }
     //Check that all models have the same number of equivalent atoms
     var control = coordinates;
@@ -1272,6 +1273,29 @@ function expandXAS(XAS, form) {
     }
     return XAS.slice(0, -1);//get rid of last whitespace
 }
+
+//Opening a transfered file from webDynamics
+function openTransferFile() {
+    $.newt_ajax({type: "GET",
+		url: "/file/hopper"+DATABASE_DIR+"/tmp/transferFile.xyz?view=read",
+		success: function (res) {
+
+		//TODO
+		//Open the submit form and read this file in, on page load.
+		console.log(res);
+		Jmol.script(previewApplet, "LOAD INLINE '"+res+"';javascript readInTransferedFile();");
+	    },  error: function(request,testStatus,errorThrown) { 
+		console.log("noTransferFile");
+	    },
+	});
+}
+function readInTransferedFile() {
+    readCoordsFromJmol();
+    models.splice(0, 1);
+    drawMolInPreview();
+    makeCoordsDiv();
+}
+
 
 function makeCoordsDiv() {
     var myHtml = '';

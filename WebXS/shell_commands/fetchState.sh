@@ -12,7 +12,13 @@ rm -rf $tmpDir
 mkdir $tmpDir
 cp ${file} "${tmpDir}/"
 if [ $? -ne 0 ]; then
-echo "File does not exist"
+    tar -cvzf state.${state}.cube.tar.gz ${dir}state.${state}.cube
+    cp ${file} "${tmpDir}/"
+    if [ $? -ne 0 ]; then
+	echo "File does not exist"
+    else
+	cp ${file} "${tmpDir}/"
+    fi
 fi
 
 chmod 777 $tmpDir
