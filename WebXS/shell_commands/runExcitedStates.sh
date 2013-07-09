@@ -4,7 +4,7 @@
 #GZIP STATE FILES, Remove Other Files
 #James Wonsever
 
-SHELL_ROOT_SCRIPTS="/project/projectdirs/als/www/james-xs/WebXS/shell_commands/"
+SHELL_ROOT_SCRIPTS="/project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/"
 
 WHERE_AM_I=`pwd`
 JOB_NAME=`basename ${WHERE_AM_I}`

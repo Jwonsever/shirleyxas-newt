@@ -1,6 +1,6 @@
 #!/bin/bash
 
-homedir="/project/projectdirs/als/www/james-xs/Shirley-data/tmp";
+homedir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp";
 
 cd $homedir;
 

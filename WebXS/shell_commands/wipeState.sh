@@ -3,7 +3,7 @@
 
 molName=$1
 
-tmpDir="/project/projectdirs/als/www/james-xs/Shirley-data/tmp/${molName}"
+tmpDir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp/${molName}"
 
 rm -rf $tmpDir
 

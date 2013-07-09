@@ -19,12 +19,12 @@ TODO:
 
 //GlobalValues.in
 //Where this version of the code is 
-var CODE_BASE_DIR="/project/projectdirs/als/www/james-xs/";
-var SERVER_URL = "http://portal.nersc.gov/project/als/james-xs/WebXS";
+var CODE_BASE_DIR="/project/projectdirs/mftheory/www/james-xs/";
+var SERVER_URL = "http://portal.nersc.gov/project/mftheory/james-xs/WebXS";
 
 
 //Shirley and Psuedos
-var SHIRLEY_ROOT="/project/projectdirs/als/www/james-xs/WebXS/xas_input/shirley_QE4.3-www";
+var SHIRLEY_ROOT="/project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/shirley_QE4.3-www";
 var PSEUDO_DIR="/project/projectdirs/mftheory/pseudos";
 
 //Relative locations
@@ -46,18 +46,18 @@ var DEFAULT_INPUT_BLOCK="xas_input/InputBlock.in";
 
 /* Constants */
 var FILES_PER_PAGE = 20; //for reading results/jobs (OLD)
-var SHELL_CMD_DIR = "/project/projectdirs/als/www/james-xs/WebXS/shell_commands/"; //Where related bash scritps are.
-var DATABASE_DIR = "/project/projectdirs/als/www/james-xs/Shirley-data/"; //Where spectra-database is.  Also home to temp state files.
+var SHELL_CMD_DIR = "/project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/"; //Where related bash scritps are.
+var DATABASE_DIR = "/project/projectdirs/mftheory/www/james-xs/Shirley-data/"; //Where spectra-database is.  Also home to temp state files.
 var GLOBAL_SCRATCH_DIR = "/global/scratch/sd/"; //postpend USER, global output Directory
 var LOCAL_SCRATCH_DIR = "${SCRATCH}"; //Dont postpend USER, local output dir
-var SHIFTS_DATABASE_CSV = "/project/projectdirs/als/www/james-xs/WebXS/xas_input/XCHShifts.csv";//EV Shifts
+var SHIFTS_DATABASE_CSV = "/project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/XCHShifts.csv";//EV Shifts
 
 /* App Flags */
 var appletReady = false;
 var previewReady = false;
 var resultsAppReady = false;
 
-var JMOL_SCRIPT_DIR = "http://portal.nersc.gov/project/als/www/james-xs/jmolScripts/"; //Where related jmol scritps are. (NOT USED)
+var JMOL_SCRIPT_DIR = "http://portal.nersc.gov/project/mftheory/www/james-xs/jmolScripts/"; //Where related jmol scritps are. (NOT USED)
 
 /* Molecular System Parameters */
 var MIN_CELL_SIZE = 10;//angstroms (Can be overridden)
