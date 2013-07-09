@@ -7,4 +7,4 @@ tmpDir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp/${molName}"
 
 rm -rf $tmpDir
 
-# empty the directories
+# empty the directories after fetching a state

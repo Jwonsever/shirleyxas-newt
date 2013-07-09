@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #Run Excited States After Completion of XAS-ANALYZE
-#GZIP STATE FILES, Remove Other Files
+#BZIP2 STATE FILES, Remove Other Files
 #James Wonsever
 
 SHELL_ROOT_SCRIPTS="/project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/"
@@ -53,9 +53,13 @@ do
    plot $state $prefix
 done < states.csv
 
-#Gzip all cube files
-find ./ -type f -name "*.cube" -exec tar -cvzf '{}'.tar.gz {} \;
+#bzip all cube files
+find ./ -type f -name "*.cube" -exec bzip2 -k9 {} \;
+
+#Archive Everything
+#todo
+
 #Remove all excess Data
-#${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
+${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
 
 exit

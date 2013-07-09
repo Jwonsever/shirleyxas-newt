@@ -11,8 +11,13 @@ Used with the moleculeEditor <div> in index.html.
 //---------------------------------
 //Editor Functions-----------------
 //---------------------------------
+
 function initMainApp() {
-    setTimeout("drawMol('main');", 200);
+    setTimeout("drawMol('main');", 100);
+}
+
+function initPreviewApp() {
+    setTimeout("drawMol('preview');$('#previewLoadingText').hide();", 100);
 }
 
 function help() {
@@ -349,11 +354,6 @@ function getUnitCell() {
     }
     //console.log(scr);
     return scr;
-}
-function initPreviewApp() {
-    setTimeout("drawMol('preview');$('#previewLoadingText').hide();", 100);
-    //This is a weird first load issue, that seems to be solved by a short timeout call.
-    //allows selections to work (about) immediately, dom issue?
 }
 function unbindMobileClicks() {
     var scr = "";

@@ -5,14 +5,14 @@ dir=$1
 molName=$2
 state=$3
 
-file="${dir}state.${state}.cube"
+file="${dir}state.${state}.cube.bz2"
 tmpDir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp/${molName}"
 
 rm -rf $tmpDir
 mkdir $tmpDir
 cp ${file} "${tmpDir}/"
 if [ $? -ne 0 ]; then
-    tar -cvzf state.${state}.cube.tar.gz ${dir}state.${state}.cube
+    bzip2 -k9 ${dir}state.${state}.cube
     cp ${file} "${tmpDir}/"
     if [ $? -ne 0 ]; then
 	echo "File does not exist"
@@ -25,7 +25,7 @@ chmod 777 $tmpDir
 cd $tmpDir
 chmod 777 *
 
-gzip -d < state.${state}.cube.tar.gz | tar xvf - 
-wait
+#unzip
+bzip2 -d ./state.${state}.cube.bz2
 
-#find some way to empty the directories
+wait

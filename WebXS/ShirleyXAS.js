@@ -507,7 +507,7 @@ function getStates(cmnd, ev) {
 				 var evshift = roundNumber(Number(line[3]) + getXCHShift(activeElement), 2);
 				 myHtml += "<td>"+line[0] + "|" + line[1] + "|" + line[2] + "|" + evshift + "|" + line[4] + "</td>";
                                  myHtml += "<td width=20></td>"
-				 myHtml += "<td><button onclick='postProcessing(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>Run</button></td>";
+				 //Dont Give Run Option anymore myHtml += "<td><button onclick='postProcessing(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>Run</button></td>";
 				 myHtml += "<td><button onclick='drawState(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>View</button></td></tr>";
 			     }
                              myHtml += "</table>"
@@ -1243,9 +1243,9 @@ function executeJob(form, materialName) {
     inputs+="A="+form.CellA.value+"\\n";
     inputs+="B="+form.CellB.value+"\\n";
     inputs+="C="+form.CellC.value+"\\n";
-    inputs+="COSBC="+form.CellAlpha.value+"\\n";
-    inputs+="COSAC="+form.CellBeta.value+"\\n";
-    inputs+="COSAB="+form.CellGamma.value+"\\n";
+    inputs+="cosBC="+form.CellAlpha.value+"\\n";
+    inputs+="cosAC="+form.CellBeta.value+"\\n";
+    inputs+="cosAB="+form.CellGamma.value+"\\n";
     inputs+="NJOB="+form.NNODES.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";
