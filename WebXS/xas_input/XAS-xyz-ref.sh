@@ -9,6 +9,9 @@ fi
 # Load user variables
 . ./Input_Block.in
 
+#Reset NJOB (7/8/13)
+NJOB=1
+
 # number of processors
 if [[ -n $PBS_NODEFILE ]]; then
   # Maybe we are at NERSC

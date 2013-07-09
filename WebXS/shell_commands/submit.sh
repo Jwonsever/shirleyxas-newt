@@ -58,7 +58,7 @@ if [ "$machine" == "carver" ]; then
 
 else 
     xasWidth=$(echo "$numberNodes*$procsPerPool" | bc)
-    refWidth=$(echo "$numberNodes*$procsPerPool" | bc)
+    refWidth=$(echo "$procsPerPool" | bc)
     analWidth=$(echo "$procsPerPool" | bc)
     stateWidth=$(echo "$procsPerPool" | bc)
     xasPBS+="#PBS -l mppnppn=${procsPerPool}\n"

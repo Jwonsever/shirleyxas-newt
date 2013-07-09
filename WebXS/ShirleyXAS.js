@@ -167,22 +167,45 @@ function previousJobs() {
 					for (var j = 0; j < files.length; j++) {
 					    if (files[j].name == jname) {suc = true;break;}
 					} if (!suc) continue;
+					
+					//Does it exist AND did it exceed Walltime?
+					if (res[i].wallclock > 1) {
+					    console.log("exceeded" + res[i].jobname);
+
+					    //ADD it! for resubmission!
+					    mycount = mycount + 1;
+					    if (mycount%2 == 0) {	
+						myText += "<tr class='warningodd'>";
+					    } else {
+						myText += "<tr class='warning'>";
+					    }
+					    myText += "<td width=62\%>" + jname
+						+ "</td><td class=\"statusnone\" width=15\% align=center>"
+						+ "Unfinished</td><td><button onClick=\"resubmit(\'" 
+						+ jname + "\', \'" + res[i].hostname
+						+ "\')\" type=\"button\">Resubmit</button></td><td>"
+						+ "<button onClick=\"viewJobFiles(\'" 
+						+ jname + "\', \'" + res[i].hostname
+						+ "\')\" type=\"button\">View Files</button></td><tr>"
+					}
+
 					//does it finish all 3 tasks?
 					if(occurs[jname]) {
 					    occurs[jname][0]++; //log hours, occurances
 					    occurs[jname][1]+= Number(res[i].rawhours);
 					} else occurs[jname]=[1, Number(res[i].rawhours)];
-
 					if(occurs[jname][0] < 3) continue;
 			
-                                        mycount = mycount + 1;
-
 					//Passes, display this job!
+					
+                                        mycount = mycount + 1;
                                         if (mycount%2 == 0) {	
  					  myText += "<tr class='warningodd'>";
                                         } else {
  					  myText += "<tr class='warning'>";
                                         }
+					
+
 					myText += "<td width=62\%>" + jname
 					    + "</td><td class=\"statusnone\" width=15\% align=center>"
 					    + (occurs[jname][1]+'').substr(0, 6)
@@ -220,6 +243,22 @@ function previousJobs() {
 		$('#previousjobslist').trigger('create');
 	    },
 		});
+}
+
+//Rubmission function
+function resubmit(jobName, machine) {
+    var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
+    var command = SHELL_CMD_DIR+"resubmit.sh " + shortDir;
+    //Post job.
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": command},
+		success: function(res){
+		console.log("successfully restarted.");
+	    },
+		error: function(request,testStatus,errorThrown) {
+		console.log("restart failed.");
+	    },});
 }
 
 //view results function
@@ -329,7 +368,8 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     $('#jmolOptions').html(jmolOptsHtml);
 
     
-    myHtml += "<div id=\"postprocessing\"></div>";
+    myHtml += "<div id='postprocessing' style='width=600px;overflow:auto;'></div>";
+    $('#states').html("");
     //console.log(myHtml);
 
     $('#jobresults').html(myHtml);
@@ -338,42 +378,51 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     //add
     //Postprocessing
 
-    //Can It crash in different models????? YES
-    var file = directory +"/XAS/" + jobName + "_0/GS/CRASH";
-    $.newt_ajax({type: "GET",
-		url: file + "?view=read",
+    //Can It crash in different models????? YES     
+    var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
+    var findCrash = "/usr/bin/find " + shortDir + " -type f -name 'CRASH'";
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": findCrash},
 		success: function(res){
+		console.log(res);
 		//Has a crash file in ground state.
-		$('#postprocessing').html("<h3>This job crashed!!</h3><br>Error Message:<br>"+res);
+		if (res.output != "") {
+		    $('#postprocessing').html("<h3>This job crashed!!</h3><br>Crash Files Here:<br>"+res.output);
+		} else {
+		//no crash file in ground state, give postprocessing options
+
+		    //TODO REDO, THIS DOESNT MAKE SENSE WITH THE CURRENT VERSION
+		    var ppHtml = "<h4>Postprocessing Options</h4>";
+		    var stHtml = "<b>View States: </b>";
+		    
+		    var cmnd = SHELL_CMD_DIR + "topEvWrapper.sh " + directory.slice(12) + " " + jobName + " ";
+		    ppHtml += "<b>Energy </b><input id='x' size='6' type='textbox' value='0'>";
+		    ppHtml += "&nbsp;&nbsp;<button onclick='getStates(\""+cmnd+"\")'>Get States</button><br>";
+		    ppHtml += "<br><button onclick='saveOutput(\""+directory+"\",\""+jobName+"\")'>";
+		    ppHtml += "Save This Spectra To MFTheory Database</button><br>";
+		    
+		    stHtml += "<button style='float: right;' onclick=\"$('#customStateForm').show();\">Load Custom State</button><br><br>";
+		    stHtml += "<div id='topStates' style='min-height:100px;width:100\%;padding:0.1em;margin: 0.1em;border-style:solid;border-width:1px;'>No contributing states.</div>";
+		    stHtml += "Note, these will take a few minutes to load.";
+
+		    //This is hidden unless the user opens it
+		    stHtml += "<div id='customStateForm' style='text-align:center;display:none;'>";
+		    stHtml += "Atm#<input id='cuAt' type='text' size='4' value='"+XAS[0]+"'/> ";
+		    stHtml += "M#<input id='cuMo' type='text' size='4' value='1'/> ";
+		    stHtml += "St#<input id='cuSt' type='text' size='4' value='1'/><br>";
+		    stHtml += "<button onclick=\"$('#customStateForm\').hide();\">Cancel</button> ";
+		    stHtml += "&nbsp;&nbsp;<button onclick=\"postProcessing($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());";		
+		    stHtml += "\">Run</button> ";
+		    stHtml += "&nbsp;&nbsp;<button onclick=\"drawState($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());"
+		    stHtml += "\">View</button></div>";
+		    
+		    $('#postprocessing').html(ppHtml);
+		    $("#states").html(stHtml); 
+		}
 	    },
 		error: function(request,testStatus,errorThrown) {
-		//no crash file in ground state, give postprocessing options
-		var ppHtml = "<h4>Postprocessing Options</h4>";
-		var stHtml = "<b>View States: </b>";
-		
-		var cmnd = SHELL_CMD_DIR + "topEvWrapper.sh " + directory.slice(12) + " " + jobName + " ";
-		ppHtml += "<b>Energy </b><input id='x' size='6' type='textbox' value='0'>";
-		ppHtml += "&nbsp;&nbsp;<button onclick='getStates(\""+cmnd+"\")'>Get States</button><br>";
-		ppHtml += "<br><button onclick='saveOutput(\""+directory+"\",\""+jobName+"\")'>";
-		ppHtml += "Save This Spectra To MFTheory Database</button><br>";
-		
-		stHtml += "<button style='float: right;' onclick=\"$('#customStateForm').show();\">Load Custom State</button><br><br>";
-		stHtml += "<div id='topStates' style='min-height:100px;width:100\%;padding:0.1em;margin: 0.1em;border-style:solid;border-width:1px;'>No contributing states.</div>";
-		stHtml += "Note, these will take a few minutes to load.";
-
-		//This is hidden unless the user opens it
-		stHtml += "<div id='customStateForm' style='text-align:center;display:none;'>";
-		stHtml += "Atm#<input id='cuAt' type='text' size='4' value='"+XAS[0]+"'/> ";
-		stHtml += "M#<input id='cuMo' type='text' size='4' value='1'/> ";
-		stHtml += "St#<input id='cuSt' type='text' size='4' value='1'/><br>";
-		stHtml += "<button onclick=\"$('#customStateForm\').hide();\">Cancel</button> ";
-		stHtml += "&nbsp;&nbsp;<button onclick=\"postProcessing($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());";		
-		stHtml += "\">Run</button> ";
-		stHtml += "&nbsp;&nbsp;<button onclick=\"drawState($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());"
-		stHtml += "\">View</button></div>";
-		
-		$('#postprocessing').html(ppHtml);
-		$("#states").html(stHtml);
+		console.log("failed to run find command, no knowledge of crash state");
 	    },});
     
     $("#placeholder").bind("plothover", function (event, pos, item) {
@@ -1192,9 +1241,9 @@ function executeJob(form, materialName) {
     inputs+="A="+form.CellA.value+"\\n";
     inputs+="B="+form.CellB.value+"\\n";
     inputs+="C="+form.CellC.value+"\\n";
-    inputs+="cosBC="+form.CellAlpha.value+"\\n";
-    inputs+="cosAC="+form.CellBeta.value+"\\n";
-    inputs+="cosAB="+form.CellGamma.value+"\\n";
+    inputs+="COSBC="+form.CellAlpha.value+"\\n";
+    inputs+="COSAC="+form.CellBeta.value+"\\n";
+    inputs+="COSAB="+form.CellGamma.value+"\\n";
     inputs+="NJOB="+form.NNODES.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";
