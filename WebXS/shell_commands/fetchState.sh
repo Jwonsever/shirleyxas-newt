@@ -24,6 +24,8 @@ fi
 chmod 777 $tmpDir
 cd $tmpDir
 chmod 777 *
+
+gzip -d < state.${state}.cube.tar.gz | tar xvf - 
 wait
 
 #find some way to empty the directories

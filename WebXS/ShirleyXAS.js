@@ -169,6 +169,8 @@ function previousJobs() {
 					} if (!suc) continue;
 					
 					//Does it exist AND did it exceed Walltime?
+
+					//This shows jobs after-resubmission....
 					if (res[i].wallclock > 1) {
 					    console.log("exceeded" + res[i].jobname);
 
@@ -189,12 +191,12 @@ function previousJobs() {
 						+ "\')\" type=\"button\">View Files</button></td><tr>"
 					}
 
-					//does it finish all 3 tasks?
+					//does it finish all 3 tasks?  (note resubmissions can fuck this up, not full wallhours/double posting)
 					if(occurs[jname]) {
 					    occurs[jname][0]++; //log hours, occurances
-					    occurs[jname][1]+= Number(res[i].rawhours);
-					} else occurs[jname]=[1, Number(res[i].rawhours)];
-					if(occurs[jname][0] < 3) continue;
+					    occurs[jname][1]+= Number(res[i].rawhours.replace(",",""));
+					} else occurs[jname]=[1, Number(res[i].rawhours.replace(",",""))];
+					if (!(occurs[jname][0] == 3)) continue;
 			
 					//Passes, display this job!
 					
@@ -731,8 +733,8 @@ function getSelectedElems() {
 	i++;
 	//todo
 	//tofix
-	//why do i need this
-	if (i > 10) break;
+	//why did i need this
+	//if (i > 10) break;
     }
     return elems;
 }
@@ -745,8 +747,8 @@ function getSelectedModels() {
 	i++;
 	//todo
 	//tofix
-	//why do i need this
-	if (i > 10) break;
+	//why did i need this
+	//if (i > 10) break;
     }
     return selmodels;
 }
