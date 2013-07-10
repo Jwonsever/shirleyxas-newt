@@ -4,6 +4,11 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 05/2012 -> Present
 
+Justin Patel
+Lawrence Berkeley Laboratory
+Molecular Foundry
+06/2013 -> Present
+
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
  */
@@ -1465,6 +1470,23 @@ function dbJob(elem, XCHShift, path) {
 	    },});
 }
 
+// query the selected REST API.
+function restQuery() {
+  var dest = $('#searchResults');
+
+  dest.html('working...');
+  var root = $('#searchLocationChosen');
+  var url = TreeEval.nodeValue(root);
+
+  var result = '<a id="searchResultLink" ';
+  result += 'style="display:none" ';
+  result += 'target="_blank" href="';
+  result += url;
+  result += '">Open result in new tab</a><br>';
+  dest.html(result);
+  $('#searchResultLink').fadeIn();
+}
+
 //Div Wrapper functions.  For Organization. Checks Login Status.
 function previousJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
@@ -1551,4 +1573,54 @@ function switchToInfo() {
 function switchToSearchDB() {
     window.clearInterval(autoInterval);
     searchWrapper();
+}
+
+// Search area switching functions.
+function mutexShow(shownId, mutexClass) {
+    // if nothing to show, no errors will be thrown. Thanks jquery!
+    $('.' + mutexClass).hide();
+    $('#' + shownId).show();
+}
+
+function switchToSearchLocation(loc) {
+    mutexShow(loc, 'searchTermSet');
+}
+
+// organizes PubChem switching
+// TODO: make this less hideous
+PubChem = {
+    Compound: {},
+    Substance: {},
+    Assay: {},
+}
+PubChem.chooseDomain = function(dom) {
+  dom = 'PubChem_' + dom; 
+  mutexShow(dom, 'PubChem_domain');
+}
+PubChem._chooseNamespace = function(namespace, domain) {
+  // some namespaces don't have anything to show. This is okay.
+  namespace = 'PubChem_' + domain + '_' + namespace;
+  mutexShow(namespace, 'PubChem_' + domain + '_namespace');
+}
+PubChem._chooseOperation = function(op, domain) {
+  op = 'PubChem_' + domain + '_op_' + op;
+  mutexShow(op, 'PubChem_' + domain + '_op');
+}
+PubChem.Compound.chooseNamespace = function(namespace) {
+  PubChem._chooseNamespace(namespace, 'compound');
+}
+PubChem.Compound.chooseOperation = function(op) {
+  PubChem._chooseOperation(op, 'compound');
+}
+PubChem.Substance.chooseNamespace = function(namespace) {
+  PubChem._chooseNamespace(namespace, 'substance');
+}
+PubChem.Substance.chooseOperation = function(op) {
+  PubChem._chooseOperation(op, 'substance');
+}
+PubChem.Assay.chooseNamespace = function(namespace) {
+  PubChem._chooseNamespace(namespace, 'assay');
+}
+PubChem.Assay.chooseOperation = function(op) {
+  PubChem._chooseOperation(op, 'assay');
 }

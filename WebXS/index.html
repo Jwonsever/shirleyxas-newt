@@ -44,6 +44,7 @@
     <script src="ajaxfileupload.js"></script>
 
     <!-- Local JS-->
+    <script src="TreeEval.js"></script>
     <script src="ShirleyXAS.js"></script>
     <script src="jmolScripts.js"></script>
 
@@ -219,17 +220,279 @@
 
 	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
-	  	<h2 align="left">MFTheory Core Excitation Database</h2>
-                <p align="left">
-		  If you cannot find what you are looking for, try these:<br>
-		  <a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
-                  <a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a><br><br>
-		  --WebXS predicted Spectra<br>
-		  <input type="Text" id="searchTerms" value=""/>
-		  <button onclick="searchDB()">Search</button>
-                </p>
-		<div id="searchResults"></div>
-	      </div>
+          <h2 align="left">MFTheory Core Excitation Database</h2>
+
+          <p align="left">
+          If you cannot find what you are looking for, try these:<br>
+          <a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
+          <a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a>
+          </p>
+
+          <div align="left">
+            Select a search location<br>
+            <select id="searchLocationChosen" data-te-forward-through="true" onchange="switchToSearchLocation(this.value);">
+              <!-- make a data-te-forward-with-after-val attribute or something to append after value has been added -->
+              <option value="default_searchTerms" selected>Default</option>
+              <option value="PubChem_searchTerms">PubChem</option>
+              <option value="PDB_searchTerms">PDB</option>
+            </select>
+          </div>
+
+          <div id="searchTerms" align="left" style="padding:10px">
+            <div id="default_searchTerms" class="searchTermSet">
+              --WebXS predicted Spectra<br>
+              <input type="Text" id="default_searchTerms_input" value=""/>
+              <button onclick="searchDB()">Search</button>
+            </div>
+
+            <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true" style="display:none">
+              Domain<br>
+              <input type="text" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug" style="display:none" disabled/>
+
+              <select id="PubChem_domainChosen" data-te-forward-through="true" onchange="PubChem.chooseDomain(this.value);">
+                <option value="compound" selected>Compound</option>
+                <option value="substance">Substance</option>
+                <option value="assay">BioAssay</option>
+              </select>
+
+              <div data-te-skip="true">
+                <div id="PubChem_compound" class="PubChem_domain" data-te-list-slash="true" style="padding:10px">
+                  <input  id="PubChem_compound_domain" type="text" value="compound" style="display:none" disabled/>
+
+                  Namespace<br>
+                  <select id="PubChem_compound_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Compound.chooseNamespace(this.value);">
+                    <option value="cid" selected>cid</option>
+                    <option value="name">name</option>
+                    <option value="smiles">smiles</option>
+                    <option value="inchi">inchi</option>
+                    <option value="sdf">sdf</option>
+                    <option value="inchikey">inchikey</option>
+                    <option value="structure">structure</option>
+                    <option value="xref">xref</option>
+                    <option value="listkey">listkey</option>
+                  </select>
+
+                  <div style="padding:10px;" data-te-skip="true">
+                    <div id="PubChem_compound_structure" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
+                      <select id="PubChem_compound_structure_1">
+                        <option value="substructure" selected>substucture</input>
+                        <option value="superstructure">superstucture</input>
+                        <option value="similarity">similarity</input>
+                        <option value="identity">identity</input>
+                      </select>
+                      <br>
+                      <select id="PubChem_compound_structure_2">
+                        <option value="smiles" selected>smiles</input><br>
+                        <option value="inchi">inchi</input><br>
+                        <option value="sdf">sdf</input><br>
+                        <option value="cid">cid</input>
+                      </select>
+                    </div>
+
+                    <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_compound_xref_1" value="xref" style="display:none" disabled/>
+                      <select multiple id="PubChem_compound_xref_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
+                    </div>
+
+                    <label for="PubChem_compound_input">Identifier (comma-separated list of search terms)</label>
+                    <br>
+                    <input type="Text" id="PubChem_compound_input" value=""/>
+                  </div>
+
+                  <div id="PubChem_compound_input_ptr" data-te-forward-to="PubChem_compound_input"></div>
+
+                  Operation<br>
+                  <select id="PubChem_compound_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Compound.chooseOperation(this.value);">
+                    <option value="record" selected>record</option>
+                    <option value="property">property</option>
+                    <option value="synonyms">synonyms</option>
+                    <option value="sids">sids</option>
+                    <option value="cids">cids</option>
+                    <option value="aids">aids</option>
+                    <option value="assaysummary">assaysummary</option>
+                    <option value="classification">classification</option>
+                  </select>
+
+                  <div style="padding:10px" data-te-skip="true">
+                    <div id="PubChem_compound_op_property" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
+                      <input type="text" value="property" style="display:none" disabled/>
+                      <label for="PubChem_compound_op_property_2">(comma-separated list of property tags)</label>
+                      <br>
+                      <input type="Text" id="PubChem_compound_op_property_2" value=""/>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="PubChem_substance" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                  <input  id="PubChem_substance_domain" type="text" value="substance" style="display:none" disabled/>
+
+                  Namespace<br>
+                  <select id="PubChem_substance_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Substance.chooseNamespace(this.value);">
+                    <option value="sid" selected>sid</option>
+                    <option value="sourceid">sourceid</option>
+                    <option value="sourceall">sourceall</option>
+                    <option value="name">name</option>
+                    <option value="xref">xref</option>
+                    <option value="listkey">listkey</option>
+                  </select>
+
+                  <div style="padding:10px;">
+                    <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="text" value="sourceid" style="display:none" disabled/>
+                      <!-- TODO: do this in javascipt -->
+                      <label for="PubChem_substance_sourceid_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
+                      <br>
+                      <input type="text" id="PubChem_substance_sourceid_2" value=""/>
+                    </div>
+
+                    <div id="PubChem_substance_sourceall" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="text" value="sourceall" style="display:none" disabled/>
+                      <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label> <br>
+                      <input type="text" id="PubChem_substance_sourceall_2" value=""/>
+                    </div>
+
+                    <div id="PubChem_substance_xref" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_substance_xref_1" value="xref" style="display:none" disabled/>
+                      <select multiple id="PubChem_substance_xref_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
+                    </div>
+
+                    <label for="PubChem_substance_input">Identifier (comma-separated list of search terms)</label>
+                    <br>
+                    <input type="Text" id="PubChem_substance_input" value=""/>
+                  </div>
+
+                  <div id="Pubchem_substance_input_ptr" data-te-forward-to="PubChem_substance_input"></div>
+
+                  Operation<br>
+                  <select id="PubChem_substance_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Substance.chooseOperation(this.value);">
+                    <option value="record" selected>record</option>
+                    <option value="synonyms">synonyms</option>
+                    <option value="sids">sids</option>
+                    <option value="cids">cids</option>
+                    <option value="aids">aids</option>
+                    <option value="assaysummary">assaysummary</option>
+                    <option value="classification">classification</option>
+                  </select>
+
+                  <div style="padding:10px" data-te-skip="true">
+                    <!-- no operation params, but here just for consistency -->
+                  </div>
+                </div>
+
+                <div id="PubChem_assay" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                  <input  id="PubChem_assay_domain" type="text" value="assay" style="display:none" disabled/>
+
+                  Namespace<br>
+                  <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
+                    <option value="aid" selected>aid</option>
+                    <option value="listkey">listkey</option>
+                    <option value="type">type</option>
+                    <option value="sourceall">sourceall</option>
+                  </select>
+
+                  <div style="padding:10px;">
+                    <div id="PubChem_assay_type" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_assay_type_1" value="type" style="display:none" disabled/>
+                      <select id="PubChem_assay_type_2">
+                        <option value="all" selected>all</option>
+                        <option value="confirmatory">confirmatory</option>
+                        <option value="doseresponse">doseresponse</option>
+                        <option value="onhold">onhold</option>
+                        <option value="panel">panel</option>
+                        <option value="rnai">rnai</option>
+                        <option value="screening">screening</option>
+                        <option value="summary">summary</option>
+                      </select>
+                    </div>
+
+                    <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="text" value="sourceall" style="display:none" disabled/>
+                      <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
+                      <br>
+                      <input type="text" id="PubChem_assay_sourceall_2" value=""/>
+                    </div>
+                    <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
+                    <br>
+                    <input type="Text" id="PubChem_assay_input" value=""/>
+                  </div>
+
+                  <div id="Pubchem_assay_input_ptr" data-te-forward-to="PubChem_assay_input"></div>
+
+                  Operation<br>
+                  <select id="PubChem_assay_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Assay.chooseOperation(this.value);">
+                    <option value="record" selected>record</option>
+                    <option value="sids">sids</option>
+                    <option value="cids">cids</option>
+                    <option value="aids">aids</option>
+                    <option value="description">description</option>
+                    <option value="targets">targets</option>
+                    <option value="doseresponse">doseresponse</option>
+                    <option value="summary">summary</option>
+                    <option value="classification">classification</option>
+                  </select>
+
+                  <div style="padding:10px">
+                    <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_assay_op_targets_2" value="targets" style="display:none" disabled/>
+                      <select multiple id="PubChem_assay_op_targets_1">
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="ProteinName">ProteinName</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="GeneSymbol">GeneSymbol</input>
+                      </select>
+                    </div>
+
+                    <div id="PubChem_assay_op_doseresponse" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_assay_op_dosereseponse_1" value="doseresponse" style="display:none" disabled/>
+                      <input type="text" id="PubChem_assay_op_dosereseponse_2" value="sid" style="display:none" disabled/>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              Output format<br>
+              <select id="PubChem_output">
+                <option value="XML" selected>XML</option>
+                <option value="PNG">PNG</option>
+                <option value="JSON">JSON</option>
+                <option value="SDF">SDF</option>
+                <option value="ASNT">ASNT</option>
+                <option value="ASNB">ASNB</option>
+              </select>
+              <br>
+              <br>
+              <button onclick="restQuery()">Query</button>
+            </div>
+            <div id="PDB_searchTerms" class="searchTermSet" style="display:none">
+              <p>PDB terms</p>
+            </div>
+          </div>
+          <div id="searchResults"></div>
+        </div>
 	      <!-- End -->
 	      
  	      <!--What is ShirleyXAS and what does it do?-->
