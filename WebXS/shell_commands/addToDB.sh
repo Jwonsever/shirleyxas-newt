@@ -10,7 +10,7 @@ user=$6
 basedir=$7
 
 #Needs to be switched to MFTHEORY
-database="/project/projectdirs/als/www/jack-area/Shirley-data/spectraDB/${molName}${date}"
+database="/project/projectdirs/mftheory/www/james-xs/Shirley-data/spectraDB/${molName}${date}"
 
 mkdir $database
 cd $database

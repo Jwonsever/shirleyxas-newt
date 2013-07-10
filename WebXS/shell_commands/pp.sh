@@ -9,6 +9,8 @@ prefix=$2
 procsUsed=$3
 PPP=$4
 lband=$5
+#Hband is for if we attempt to do many at once over a band. of ev/states...
+#Not Implemented fully
 hband=$6
 
 #Should be a /pp directory
@@ -68,6 +70,9 @@ done
 echo -e ${ppPBS} > ./pp.qscript
 
 ## Submit pp
-pp_id=`/usr/common/nsg/bin/qsub pp.qscript `
+pp_id=`qsub pp.qscript `
 
-#somehow let app know the job is finished
+#put rest in another callback script
+nohup ppCallback.sh $pp_id $lband >& /dev/null
+
+exit

@@ -5,19 +5,27 @@ dir=$1
 molName=$2
 state=$3
 
-file="${dir}state.${state}.cube"
-tmpDir="/project/projectdirs/als/www/jack-area/Shirley-data/tmp/${molName}"
+file="${dir}state.${state}.cube.bz2"
+tmpDir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp/${molName}"
 
 rm -rf $tmpDir
 mkdir $tmpDir
 cp ${file} "${tmpDir}/"
 if [ $? -ne 0 ]; then
-echo "File does not exist"
+    bzip2 -k9 ${dir}state.${state}.cube
+    cp ${file} "${tmpDir}/"
+    if [ $? -ne 0 ]; then
+	echo "File does not exist"
+    else
+	cp ${file} "${tmpDir}/"
+    fi
 fi
 
 chmod 777 $tmpDir
 cd $tmpDir
 chmod 777 *
-wait
 
-#find some way to empty the directories
+#unzip
+bzip2 -d ./state.${state}.cube.bz2
+
+wait

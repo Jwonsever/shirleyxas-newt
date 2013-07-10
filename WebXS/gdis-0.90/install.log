@@ -1,0 +1,112 @@
+Must specify package names on the command line
+project.c: In function 'project_read':
+project.c:280: warning: 'grid[0]' may be used uninitialized in this function
+project.c:280: warning: 'grid[1]' may be used uninitialized in this function
+grid.c: In function 'grid_application_set':
+grid.c:61: warning: 'return' with a value, in function returning void
+grid.c: In function 'grid_application_remove':
+grid.c:83: warning: 'return' with a value, in function returning void
+molsurf.c: In function 'ms_cube':
+molsurf.c:2116: warning: unused variable 'jobEndTime'
+crystal_graph.c: In function 'run_gulp':
+crystal_graph.c:133: warning: implicit declaration of function 'system'
+crystal_graph.c: In function 'calculate_crystal_graph':
+crystal_graph.c:180: warning: implicit declaration of function 'type_dreiding_gasteiger'
+file.c: In function 'read_raw_frame':
+file.c:1163: warning: unused variable 'i'
+file_gulp.c: In function 'write_gulp':
+file_gulp.c:1047: warning: implicit declaration of function 'ff_gulp_write'
+file_gulp.c: In function 'exec_gulp':
+file_gulp.c:4210: warning: implicit declaration of function 'task_sync'
+file_fdf.c: In function 'write_fdf':
+file_fdf.c:392: warning: call to function 'print_file_energy_units' without a real prototype
+file_fdf.c:48: note: 'print_file_energy_units' was declared here
+file_fdf.c:438: warning: call to function 'print_file_energy_units' without a real prototype
+file_fdf.c:48: note: 'print_file_energy_units' was declared here
+file_fdf.c:446: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c:454: warning: call to function 'print_file_temperature_units' without a real prototype
+file_fdf.c:52: note: 'print_file_temperature_units' was declared here
+file_fdf.c:508: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c:515: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c:522: warning: call to function 'print_file_pressure_units' without a real prototype
+file_fdf.c:53: note: 'print_file_pressure_units' was declared here
+file_fdf.c:539: warning: call to function 'print_file_force_units' without a real prototype
+file_fdf.c:54: note: 'print_file_force_units' was declared here
+file_fdf.c:548: warning: call to function 'print_file_time_units' without a real prototype
+file_fdf.c:51: note: 'print_file_time_units' was declared here
+file_fdf.c:554: warning: call to function 'print_file_temperature_units' without a real prototype
+file_fdf.c:52: note: 'print_file_temperature_units' was declared here
+file_fdf.c:565: warning: call to function 'print_file_temperature_units' without a real prototype
+file_fdf.c:52: note: 'print_file_temperature_units' was declared here
+file_fdf.c:572: warning: call to function 'print_file_mominert_units' without a real prototype
+file_fdf.c:55: note: 'print_file_mominert_units' was declared here
+file_fdf.c:578: warning: call to function 'print_file_mominert_units' without a real prototype
+file_fdf.c:55: note: 'print_file_mominert_units' was declared here
+file_fdf.c:600: warning: call to function 'print_file_time_units' without a real prototype
+file_fdf.c:51: note: 'print_file_time_units' was declared here
+file_fdf.c:606: warning: call to function 'print_file_pressure_units' without a real prototype
+file_fdf.c:53: note: 'print_file_pressure_units' was declared here
+file_fdf.c:613: warning: call to function 'print_file_pressure_units' without a real prototype
+file_fdf.c:53: note: 'print_file_pressure_units' was declared here
+file_fdf.c:620: warning: call to function 'print_file_length_units' without a real prototype
+file_fdf.c:50: note: 'print_file_length_units' was declared here
+file_fdf.c: In function 'read_fdf_block':
+file_fdf.c:1386: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_fdf.c:1672: warning: call to function 'set_energy_units' without a real prototype
+file_fdf.c:40: note: 'set_energy_units' was declared here
+file_fdf.c:1725: warning: call to function 'set_energy_units' without a real prototype
+file_fdf.c:40: note: 'set_energy_units' was declared here
+file_fdf.c:1752: warning: call to function 'set_temperature_units' without a real prototype
+file_fdf.c:41: note: 'set_temperature_units' was declared here
+file_fdf.c:1869: warning: call to function 'set_true_false' without a real prototype
+file_fdf.c:39: note: 'set_true_false' was declared here
+file_fdf.c:1891: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_fdf.c:1904: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_fdf.c:1917: warning: call to function 'set_force_units' without a real prototype
+file_fdf.c:43: note: 'set_force_units' was declared here
+file_fdf.c:1930: warning: call to function 'set_pressure_units' without a real prototype
+file_fdf.c:44: note: 'set_pressure_units' was declared here
+file_fdf.c:1961: warning: call to function 'set_time_units' without a real prototype
+file_fdf.c:45: note: 'set_time_units' was declared here
+file_fdf.c:1968: warning: call to function 'set_time_units' without a real prototype
+file_fdf.c:45: note: 'set_time_units' was declared here
+file_fdf.c:1978: warning: call to function 'set_temperature_units' without a real prototype
+file_fdf.c:41: note: 'set_temperature_units' was declared here
+file_fdf.c:1991: warning: call to function 'set_temperature_units' without a real prototype
+file_fdf.c:41: note: 'set_temperature_units' was declared here
+file_fdf.c:2003: warning: call to function 'set_true_false' without a real prototype
+file_fdf.c:39: note: 'set_true_false' was declared here
+file_fdf.c:2015: warning: call to function 'set_pressure_units' without a real prototype
+file_fdf.c:44: note: 'set_pressure_units' was declared here
+file_fdf.c:2063: warning: call to function 'set_mominert_units' without a real prototype
+file_fdf.c:46: note: 'set_mominert_units' was declared here
+file_fdf.c:2075: warning: call to function 'set_mominert_units' without a real prototype
+file_fdf.c:46: note: 'set_mominert_units' was declared here
+file_fdf.c:2104: warning: call to function 'set_time_units' without a real prototype
+file_fdf.c:45: note: 'set_time_units' was declared here
+file_fdf.c:2116: warning: call to function 'set_pressure_units' without a real prototype
+file_fdf.c:44: note: 'set_pressure_units' was declared here
+file_fdf.c:2128: warning: call to function 'set_length_units' without a real prototype
+file_fdf.c:42: note: 'set_length_units' was declared here
+file_castep.c: In function 'read_castep_out':
+file_castep.c:366: warning: implicit declaration of function 'read_cell'
+file_bgf.c: In function 'read_bgf':
+file_bgf.c:144: warning: unused variable 'core_bond_to'
+file_bgf.c:143: warning: unused variable 'buff2'
+file_bgf.c:142: warning: unused variable 'i'
+file_bgf.c:142: warning: unused variable 'w'
+file_cgf.c: In function 'write_cgf':
+file_cgf.c:198: warning: unused variable 'buff'
+file_cgf.c:195: warning: unused variable 'core_to'
+file_cgf.c:191: warning: unused variable 'num_tokens'
+file_cgf.c: In function 'read_cgf':
+file_cgf.c:282: warning: unused variable 'bond_strengths'
+file_cgf.c:337: warning: 'spacename' may be used uninitialized in this function
+file_gromacs.c: In function 'write_gromacs_gro':
+file_gromacs.c:219: warning: unused variable 'shell'

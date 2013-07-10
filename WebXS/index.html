@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ALS Data and Simulation Portal</title>
+    <title>Web XS</title>
+
     <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -13,30 +14,54 @@
     <link href="../als_portal.css" rel="stylesheet" type="text/css" />
     <!-- <link rel="stylesheet" href="ShirleyXAS.css"> -->
 
+
+    <!-- Als Bootstrap, etc-->
     <script src="../jquery-latest.js"></script>    
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <script src="../mynewt.js"></script>
     <script src="../alsapi.js"></script>
     <script src="../als_portal.js"></script>
 
+    <!-- Major Function Values (incomplete)-->
     <script src="GlobalValues.js"></script>
-    <script src="javascript/jmol-13-0/Jmol.js"></script>
-    <script src="javascript/jmol-13-0/JmolCore.js"></script>
-    <script src="javascript/jmol-13-0/JmolApplet.js"></script>
-    <script src="javascript/jmol-13-0/JmolControls.js"></script>
-    <script src="javascript/jmol-13-0/JmolApi.js"></script>
-    <script src="javascript/jmol-13-0/JmolJME.js"></script>
+
+    <!--Scripts required for JME injection-->
+    <script src="javascript/jsmol-13.1.15/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
+    </script>
+
+    <!--jsMol-->
+    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/JSmol.min.nojq.js"></script>
+    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/js/JSmolJME.js"></script>
+
+    <!-- This is supposed to be for writes, but it breaks getstates && other things... idk -->
+    <!--script type="text/php" src="javascript/jsmol-13.1.15/jsmol/jsmol.php"></script-->
+
+    <!-- Flot plotting -->
     <script src="javascript/Flot/jquery.flot.js"></script>
     <script src="javascript/Flot/jquery.flot.navigate.js"></script>
+
+    <!-- Potential for improved browser support, uploads on older browsers -->
     <script src="ajaxfileupload.js"></script>
+
+    <!-- Local JS-->
     <script src="ShirleyXAS.js"></script>
     <script src="jmolScripts.js"></script>
 
     <!--Applet, Initialization, And Options-->
     <script>
+      var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
+	
+
       var mainApplet = "mainApplet";
+      var jmeApplet = "jmeApplet";
       var previewApplet = "previewApplet";
       var resultsApplet = "resultsApplet";
+
+      // logic is set by indicating order of USE -- default is HTML5 for this test page, though
+      var use = "HTML5"; // JAVA HTML5 WEBGL IMAGE  are all otions     
+      var s = document.location.search;
+      Jmol.debugCode = (s.indexOf("debugcode") >= 0);
+
 
       var JmolInfo = {
       width: 400,
@@ -44,19 +69,33 @@
       debug: false,
       color: "black",
       addSelectionOptions: false,
-      serverURL: "http://portal.nersc.gov/project/als/jack-area/WebXS",
-      jarPath: "javascript/jmol-13-0",
-      jarFile: "JmolAppletSigned.jar",
-      isSigned: true,
+      serverURL: "./javascript",
+
+      //for jsmol
+      use: "HTML5",
+      j2sPath: "javascript/jsmol-13.1.15/jsmol/j2s",
+
+      //These are for java version
+      //jarPath: "javascript/jmol-13-0",
+      //jarFile: "JmolAppletSigned.jar",
+      //isSigned: true,
+
+      //disableJ2SLoadMonitor: true,
+      //disableInitialConsole: true,
+      allowJavaScript: true,
+      console:"none",
       script: ""
       };
       
-      var mainJme = "mainJme";
       var JMEInfo = {
-      jarPath: "javascript/",
-      jarFile: "JME.jar"
+      use: "HTML5"
+
+      //for the java version
+      //jarPath: "javascript/",
+      //jarFile: "JME.jar"
       };
       
+
       Jmol.setGrabberOptions(
       [["$", "NCI(small molecules)"],
       [":", "PubChem(small molecules)"],
@@ -90,7 +129,8 @@
                   <li><a href="#">GISAXS Code 2</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
-                  <li class="active"><a href="#">Shirley XAS</a></li>
+                  <li class="active"><a href="#">WebXS</a></li>
+		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
                   <li><a href="#">FEFF</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">Photoemission</li>
@@ -115,7 +155,7 @@
           </div><!--/.nav-collapse -->
         </div>
       </div>
-	    </div>
+    </div>
 
     <div class="container">
       <!--
@@ -142,25 +182,42 @@
           </div>
         </div>
 
-        <!--
-        <div id='menu'>
-	  <br><br>
-	  <a href="javascript: switchToInfo();">What is this?</a><br><br>
-	  <a href="javascript: switchToSearchDB();">Search Database</a><br><br>
-	  <a href="javascript: switchToRunning();">Running Calculations</a><br><br>
-	  <a href="javascript: switchToPrevious(); ">Finished Calculations</a><br><br>
-	  <a href="javascript: switchToSubmitForm();">Submit Calculations</a><br><br>
-	  <a href="javascript: switchToDrawMolecule();">Draw Molecule</a><br><br>
-	</div>
-        -->
-
         <div class="span10" style='min-height:500px;background-color: #eeeeee; border-radius:5px;'>
           <div style='padding:20px'>
             <div class="tab-content">
 
 	      <div id='runningjobs' class="tab-pane"></div>
-	      <div id='previousjobs' class="tab-pane"></div>
+	      
+	      <div id='previousjobs' class="tab-pane">
+		<div id='previousjobslist' style="display: none;"></div>
+		<div id='previousjobsfiles' style="display: none;"></div>
+		<div id='previousjobresults' style="display: none;">
+		  <div id='jobHeader'></div>
+		  <table style="width:95%; table-layout:fixed;">
+		    <tr style="vertical-align: top;">
+		      <td width=55%>
+			<br>
+			<div id='jobresults'></div>
+		      </td><td>
+			<br>
+			<div id='jmolactivediv'> 
+			  <script>
+			    JmolInfo.width = 375;
+			    JmolInfo.height = 375;
+			    resultsApplet=Jmol.getApplet(resultsApplet, JmolInfo);
+			  </script>
+			</div>
+			<br>
+			<div id='jmolOptions'></div>
+			<br><br>
+			<div id='states'></div>
+		      </td>
+		    </tr>
+		  </table>
+		</div>
+	      </div>
 
+	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
 	  	<h2 align="left">MFTheory Core Excitation Database</h2>
                 <p align="left">
@@ -173,6 +230,7 @@
                 </p>
 		<div id="searchResults"></div>
 	      </div>
+	      <!-- End -->
 	      
  	      <!--What is ShirleyXAS and what does it do?-->
 	      <div id='shirleyinfo' class="tab-pane active">
@@ -186,11 +244,11 @@ electronic excited states.<br><br>This tool is not meant to work with IE.  Pleas
 Currently computing K-edge spectra for Li, B, C, N, O, F, Cd, S, and Ti.  More coming soon. <br><br> Please send questions and comments regarding the 
 website to jrdeslippe@lbl.gov.
   	  	    <!--Needs work-->
-		    <button valign="middle" onclick="window.open( 'http://portal.nersc.gov/project/als/jack-area/WebXS/faq.html');">FAQ and Tutorial</button></p>
+		    <button valign="middle" onclick="window.open( './faq.html');">FAQ and Tutorial</button></p>
 		    <p><center>
 		    <img src="images/MFLogo.png" width="300px" height="100px"/>
 		    <img src="images/NERSCLogo.png" width="200px" height="100px"/>
-		    <img src="images/jmolLogo.png" width="200px" height="100px"/>
+		    <img src="images/JSmol_logo13.png" width="250px" height="100px"/><br>
 		    </center><p>
 	      </div>
 	      <!-- End -->
@@ -199,13 +257,13 @@ website to jrdeslippe@lbl.gov.
 	      <div id='moleculeEditor' class="tab-pane">
 		    <h3>Jmol Molecular Viewer</h3><br>
 
-		    <a href="javascript:Jmol.showInfo(mainApplet, true)">2D</a>
-		    <a href="javascript:Jmol.showInfo(mainApplet, false)">3D</a>
+		    <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
+		    <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
 		    <script>
 		      JmolInfo.width = 600;
-		      mainApplet =Jmol.getApplet(mainApplet, JmolInfo);
-		      mainJme = Jmol.getJMEApplet(mainJme, JMEInfo, mainApplet);
-		      setTimeout("initMainApp();", 200);
+		      mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
+		      jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
+		      initMainApp();
 		    </script>
 		    <br> 
 		    <a href="#" onclick="window.open('http://chemapps.stolaf.edu/jmol/docs?ver=13.0');")>Command Line Instructions</a><br>
@@ -213,11 +271,19 @@ website to jrdeslippe@lbl.gov.
 		      Jmol.jmolCommandInput(mainApplet);
 		    </script>
 
+		    <!-- Seems to only search through the NCI database?? -->
+		    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
+		    <span style="display:none"><select id="jmol_select"><option value=":" selected="">PubChem</option></select></span>
+		    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
+
 		    <form id='loadfile'>
-		      <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/><br></form>	      
-		    <button onClick="minimizeStructure()">Minimize Structure</button>
-		    <button onClick="toggleModelkitMode()">Edit Structure</button>
+		      <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/>
+		      <br></form>	 
+     
+		    <button onClick="minimizeStructure()">Optimize Structure</button>
+		    <button onClick="toggleModelkitMode()" id="mkmode" value="Off">Toggle Model Kit Mode</button>
 		    <button onClick="portCoordinates()">Port Coordinates</button><br>
+		    <a href="../WebDynamics/index.html">WebDynamics</a>
 	      </div> 
 	      <!-- End -->
 
@@ -243,7 +309,7 @@ website to jrdeslippe@lbl.gov.
 		      <input type="Checkbox" onchange="makeCellSize()" id="CrystalFlag" value="True"/> Crystal?
 		      <br>
 		      <input type="Text" id="IBRAV" size="4" value="14"/> Bravais Lattice<br>
-		      <br>Cell Size Attributes:<br>
+		      <br>Cell Size Attributes: (In &#8491;ngstr&#246;ms)<br>
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellA" value="10"/> A
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellB" value="10"/> B
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellC" value="10"/> C
@@ -261,7 +327,7 @@ website to jrdeslippe@lbl.gov.
 		      <tr><td>Nodes Per Atom:</td><td>
 		      <input type="Text" id="NPERATOM" value="1"/></td></tr>
 		      <tr><td>BND_FAC:</td><td>
-		      <input type="Text" id="NBANDFAC" value="8"/></td></tr>
+		      <input type="Text" id="NBANDFAC" value="5"/></td></tr>
 		      <tr><td>Total Charge:</td><td>
 		      <input type="Text" id="TOTCHG" value="0"/></td></tr>
 
@@ -277,7 +343,8 @@ website to jrdeslippe@lbl.gov.
 		      &nbsp;&nbsp;<a href="#" onclick="window.open('http://www.nersc.gov/users/computational-systems/hopper/running-jobs/queues-and-policies/');")>About</a>
                       </td></tr>		  
 
-		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/>
+		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/></tr>
+		      <tr><td>Account:</td><td><input type="Text" id="acctHours" value="m1707"/>
 		      </td></tr>
                       </table>
 
@@ -293,7 +360,7 @@ website to jrdeslippe@lbl.gov.
 		      <input id="Submit" data-inline='true' type='button' value='Submit' onClick="validateInputs(this.form)"/>
 		      <div id="subStatus"></div>
 		    </form>
-		    </td><td width=40></td><td valign=top>
+		    </td><td width=400></td><td valign=top>
 		      <!--Molecule Preview -->
 		      Preview<br>
 		      <div style="background-color:black;color:#AA2222;">
@@ -302,11 +369,34 @@ website to jrdeslippe@lbl.gov.
 		          JmolInfo.width = 400;
 		          JmolInfo.height = 400;
 		          previewApplet = Jmol.getApplet(previewApplet, JmolInfo);
-		          setTimeout("initPreviewApp();", 400);
+			  initPreviewApp();
 		        </script>
 		      </div><br>
-		      <input type='button' value='Animate' onClick="animatePreview()">
-		      <input type='button' value='Supercell' onClick="supercellPreview()"/>
+		      <br>
+
+		      <span id="animatePreviewButton">
+			<input type='button' value='Animate' onClick="animatePreview();">
+		      </span><span id="animatePreviewStop" style="display:none">
+			<input type='button' value='Stop Animation' onClick="drawMolInPreview();">
+		      </span>
+		      <span>&nbsp&nbsp<b> Supercell:</b> X
+		      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px"/>
+		         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+	              </select> Y
+		      <select id='SupercellY' onChange="supercellPreview()" style="width: 50px"/>
+                         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+	              </select> Z
+		      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px"/>
+                         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+	              </select>
+                      </span>
+                      <span>
+			  <input type='button' value='Make Supercell the Unitcell' onClick="adjustToSupercell();">
+			  Note: Can get BIG.
+                      </span>
+		      <span><input type='button' value='OpenWebDynamicsFile' onClick="openTransferFile();">
+		      
+		      
 		      </td></tr></table>
 	       </div>
 	    </div>
@@ -317,7 +407,8 @@ website to jrdeslippe@lbl.gov.
       <hr>
 
       <footer>
-        <p>&copy; LBL LDRD 2013</p>
+	<p>JSmol: an open-source HTML5 viewer for chemical structures in 3D. http://www.jmol.org/<br>
+	  &copy; LBL LDRD 2013</p>
       </footer>
 
     </div> <!-- /container -->

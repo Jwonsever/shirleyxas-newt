@@ -1,0 +1,47 @@
+/* 
+Css Styling local to WebDynamics 
+James Wonsever - Mftheory
+*/
+
+
+#jmolApp {
+    float: right;
+    width: 500px;
+}
+
+#optionsWrapper {
+    position: relative;
+    margin-right:500px;
+    height:500px;
+}
+
+.optionsDivider {
+    width:0px;
+    height:10px;
+    border: 3px solid #222222;
+}
+
+.optionsDiv {
+    display:none;
+}
+
+.optionsNavBar {
+    width:100%;
+    list-style-type: none;
+    margin: auto;
+    padding: 0;
+
+}
+.optionsNavBar li {
+    display: inline-block;
+}
+.optionsNavBar a {
+    display: block;
+    height: 30px;
+    width: auto;
+}
+#optionsBottomBar {
+   position: absolute;
+   bottom: 0;
+   left: 0;
+}
