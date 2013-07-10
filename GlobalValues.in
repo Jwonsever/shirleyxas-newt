@@ -1,8 +1,8 @@
 #USAGE: Update both this file AND globalVaules.js, these two files MUST MATCH up to //END
 
 #Where this version of the code is
-CODE_BASE_DIR="TMP_HOME/"
-SERVER_URL="TMP_ADDR/WebXS"
+CODE_BASE_DIR="/project/projectdirs/als/www/james-xs/"
+SERVER_URL="http://portal.nersc.gov/project/als/james-xs/WebXS"
 
 #Relative locations
 CODE_LOC="WebXS"
@@ -11,7 +11,7 @@ TEMPORARY_FILES="Shirley-data/tmp"
 XCH_SHIFTS="xas_input/XCHShifts.csv"
 
 # Shirley and Psuedos (In WebXS/xas_input/INPUT_BLOCK.in!  BE CAREFUL, THEY MUST MATCH)
-SHIRLEY_ROOT=TMP_HOME/WebXS/xas_input/shirley_QE4.3-www
+SHIRLEY_ROOT=/project/projectdirs/als/www/james-xs/WebXS/xas_input/shirley_QE4.3-www
 PSEUDO_DIR=/project/projectdirs/mftheory/pseudos
 
 #Other locations

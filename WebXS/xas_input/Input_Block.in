@@ -1,5 +1,5 @@
 # Version of the code
-SHIRLEY_ROOT=TMP_HOME/WebXS/xas_input/shirley_QE4.3-www
+SHIRLEY_ROOT=/project/projectdirs/als/www/james-xs/WebXS/xas_input/shirley_QE4.3-www
 # pseudopotentials
 PSEUDO_DIR=/project/projectdirs/mftheory/pseudos
 

@@ -19,12 +19,12 @@ TODO:
 
 //GlobalValues.in
 //Where this version of the code is 
-var CODE_BASE_DIR="TMP_HOME/";
-var SERVER_URL = "TMP_ADDR/WebXS";
+var CODE_BASE_DIR="/project/projectdirs/als/www/james-xs/";
+var SERVER_URL = "http://portal.nersc.gov/project/als/james-xs/WebXS";
 
 
 //Shirley and Psuedos
-var SHIRLEY_ROOT="TMP_HOME/WebXS/xas_input/shirley_QE4.3-www";
+var SHIRLEY_ROOT="/project/projectdirs/als/www/james-xs/WebXS/xas_input/shirley_QE4.3-www";
 var PSEUDO_DIR="/project/projectdirs/mftheory/pseudos";//IDK IF THIS HAS TO CHANGE OR NOT
 
 //Relative locations
