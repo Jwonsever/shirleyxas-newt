@@ -23,5 +23,5 @@ sed -in $sedCmd GlobalValues.js
 sed -in $sedCmd WebXS/xas_input/Input_Block.in
 
 
-Chmod -R 755 *
-Chmod 777 Shirley-data/tmp 
+chmod -R 755 *
+chmod 777 Shirley-data/tmp 
