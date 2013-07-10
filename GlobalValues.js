@@ -19,13 +19,13 @@ TODO:
 
 //GlobalValues.in
 //Where this version of the code is 
-var CODE_BASE_DIR="/project/projectdirs/mftheory/www/james-xs/";
-var SERVER_URL = "http://portal.nersc.gov/project/mftheory/james-xs/WebXS";
+var CODE_BASE_DIR="TMP_HOME/";
+var SERVER_URL = "TMP_ADDR/WebXS";
 
 
 //Shirley and Psuedos
-var SHIRLEY_ROOT="/project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/shirley_QE4.3-www";
-var PSEUDO_DIR="/project/projectdirs/mftheory/pseudos";
+var SHIRLEY_ROOT="TMP_HOME/WebXS/xas_input/shirley_QE4.3-www";
+var PSEUDO_DIR="/project/projectdirs/mftheory/pseudos";//IDK IF THIS HAS TO CHANGE OR NOT
 
 //Relative locations
 var CODE_LOC="WebXS";
@@ -46,11 +46,11 @@ var DEFAULT_INPUT_BLOCK="xas_input/InputBlock.in";
 
 /* Constants */
 var FILES_PER_PAGE = 20; //for reading results/jobs (OLD)
-var SHELL_CMD_DIR = "/project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/"; //Where related bash scritps are.
+var SHELL_CMD_DIR = CODE_BASE_DIR + "/WebXS/shell_commands/"; //Where related bash scritps are.
 var DATABASE_DIR = CODE_BASE_DIR + DATA_LOC; //Where spectra-database is.  Also home to temp state files.
 var GLOBAL_SCRATCH_DIR = "/global/scratch/sd/"; //postpend USER, global output Directory
 var LOCAL_SCRATCH_DIR = "${SCRATCH}"; //Dont postpend USER, local output dir
-var SHIFTS_DATABASE_CSV = "/project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/XCHShifts.csv";//EV Shifts
+var SHIFTS_DATABASE_CSV = CODE_BASE_DIR + "/WebXS/xas_input/XCHShifts.csv";//EV Shifts
 
 /* App Flags */
 var appletReady = false;

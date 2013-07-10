@@ -2,6 +2,10 @@
 #Creates Input_Block.in and prepends PBS headers to scripts. Then submits job.
 #Version 11/1
 
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
 #Redo this with optional argumnts
 MOLNAME="$2"
 inputs=$3
@@ -20,15 +24,17 @@ xstateflag=1
 dir="${1}/${MOLNAME}"
 cd $dir
 
-cp /project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/Input_Block.in .
-#mv Input_Block2.in Input_Block.in 
+cp $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/Input_Block.in .
 echo -e ${inputs} >> ./Input_Block.in
+
 
 xasPBS="#!/bin/bash\n"
 xasPBS+="#PBS -q ${queue}\n"
 ppPBS+="#PBS -l walltime=${walltime}\n"
 xasPBS+="#PBS -V\n"
-xasPBS+="#PBS -A ${account}\n"
+
+#Use Account, not default?
+#xasPBS+="#PBS -A ${account}\n"
 
 refPBS="$xasPBS"
 analPBS="$xasPBS"
@@ -79,8 +85,8 @@ refPBS+="export NO_STOP_MESSAGE=1\n\n"
 echo -e ${xasPBS} > ./xas.qscript
 echo -e ${refPBS} > ./ref.qscript
 
-cat /project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/XAS-xyz.sh >> ./xas.qscript
-cat /project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/XAS-xyz-ref.sh >> ./ref.qscript
+cat $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/XAS-xyz.sh >> ./xas.qscript
+cat $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/XAS-xyz-ref.sh >> ./ref.qscript
 
 ## Submit xas and xas-ref
 ref_id=`qsub ref.qscript `
@@ -97,7 +103,7 @@ echo -e ${analPBS} > ./anal.qscript
 
 qstat -f $ref_id | grep $account >> stats.txt
 
-cat /project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/XASAnalyse-xyz.sh >> ./anal.qscript
+cat $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/XASAnalyse-xyz.sh >> ./anal.qscript
 
 ## Submit xas-analyse, dependent on successful completion of xas.sh
 #/usr/common/nsg/bin/qsub anal.qscript (Previous version)
@@ -108,7 +114,7 @@ if [ $xstateflag == 1 ]; then
     statePBS+="export NO_STOP_MESSAGE=1\n\n"
 
     echo -e ${statePBS} > ./state.qscript
-    cat /project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/runExcitedStates.sh >> ./state.qscript
+    cat $CODE_BASE_DIR/$CODE_LOC/$SERVER_SCRIPTS/runExcitedStates.sh >> ./state.qscript
     state_id=`qsub -W depend=afterok:${anal_id}@hopper11 state.qscript`
 fi
 

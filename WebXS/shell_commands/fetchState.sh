@@ -1,12 +1,17 @@
 #!/bin/bash -l
 #moves .cube file to server from hopper
 
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
+
 dir=$1
 molName=$2
 state=$3
 
 file="${dir}state.${state}.cube.bz2"
-tmpDir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp/${molName}"
+tmpDir="${CODE_BASE_DIR}/${TEMPORARY_FILES}/${molName}"
 
 rm -rf $tmpDir
 mkdir $tmpDir
