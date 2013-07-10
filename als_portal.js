@@ -129,3 +129,63 @@ var logoutALS = function(){
     }});
 }
 
+function listusers() {
+    if (myUsername === "invalid") {
+      $("#userlist").html("&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Please Login.<br><br>");
+    } else {
+      $("#userlist").html('<center><img src=\"blue-ajax-loader.gif\"></center>');
+      //alert("in list users")
+      $.alsapi_ajax({type: "GET",
+        url: "/usermanagement/seemap",
+        success: function(res){
+          var tmpText="<table class=table><tr><th>NERSC Username</th><th>ALS Username</th><th></th></tr>";
+          $.each(res, function(i,item){
+            tmpText+="<tr><td>"+item.nerscname+"</td><td>"+item.alsname+"</td>"
+            tmpText+="<td><button class=\"btn btn-danger\" onclick=\"deletemap(\'"+item.nerscname+"\');\">Delete</button></td></tr>"
+          });
+          tmpText+="</table>";
+          $("#userlist").html(tmpText);
+        },
+        error: function(res){
+            $("#userlist").html("Failed<br><br>");
+            console.log(res.error)
+        }
+      })
+    }
+}
+
+function createmap() {
+  $("#userlist").html('<center><img src=\"blue-ajax-loader.gif\"></center>');
+  var nerscname = $("#nerscname").val()
+  var alsname = $("#alsname").val()
+  //alert("createmap "+nerscname+" "+alsname)
+    $.alsapi_ajax({type: "GET",
+        url: "/usermanagement/createmap?nerscname="+nerscname+"&alsname="+alsname,
+        success: function(res){
+            listusers()
+        },
+        error: function(res){
+            console.log(res.error)
+            listusers()
+        }
+    })
+}
+
+function deletemap(nerscname) {
+  $("#userlist").html('<center><img src=\"blue-ajax-loader.gif\"></center>');
+  //alert("createmap "+nerscname+" "+alsname)
+    $.alsapi_ajax({type: "GET",
+        url: "/usermanagement/deletemap?nerscname="+nerscname,
+        success: function(res){
+            listusers()
+        },
+        error: function(res){
+            console.log(res.error)
+        }
+    })
+}
+
+function nWC(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
+
