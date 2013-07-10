@@ -29,7 +29,21 @@
               <li><img src="alslogo.png" width=56 padding=0 border=0></li>
               <li><a href="index.html">Home</a></li>
               <li><a href="about.html">About</a></li>
-              <li><a href="status.html">Status</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Status <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="status.html">Data Status</a></li>
+                  <li><a href="jobs.html">Job Status</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Portal Tools <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="users.html">User Management</a></li>
+                  <li><a href="downloads.html">Downloads</a></li>
+                </ul>
+              </li>
+
               <li class="active"><a href="#">Data Browser</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
@@ -106,7 +120,7 @@
         <h3 id="imageModalLabel">Modal header</h3>
       </div>
       <div class="modal-body" id="imageModalBody">
-        <p>The body…</p>
+        <p>The body</p>
       </div>
       <div class="modal-footer">
         <button class="btn" data-dismiss="modal" aria-hidden="true">Close</button>
