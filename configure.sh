@@ -6,9 +6,9 @@ WHERE_AM_I=`pwd`
 
 WHERE_AM_I=${WHERE_AM_I//\//\\\/}
 sedCmd='s/TMP_HOME/'${WHERE_AM_I}'/g'
-sed -in $sedCmd GlobalValues.in
-sed -in $sedCmd GlobalValues.js
-sed -in $sedCmd WebXS/xas_input/Input_Block.in
+sed -i -n $sedCmd GlobalValues.in
+sed -i -n $sedCmd GlobalValues.js
+sed -i -n $sedCmd WebXS/xas_input/Input_Block.in
 
 
 WHERE_AM_I=`pwd`
@@ -18,9 +18,9 @@ WEB_ADDR=$WEB_ADDR$WEB_ADDR_PATH
 
 WEB_ADDR=${WEB_ADDR//\//\\\/}
 sedCmd='s/TMP_ADDR/'${WEB_ADDR}'/g'
-sed -in $sedCmd GlobalValues.in
-sed -in $sedCmd GlobalValues.js
-sed -in $sedCmd WebXS/xas_input/Input_Block.in
+sed -i -n $sedCmd GlobalValues.in
+sed -i -n $sedCmd GlobalValues.js
+sed -i -n $sedCmd WebXS/xas_input/Input_Block.in
 
 
 chmod -R 755 *
