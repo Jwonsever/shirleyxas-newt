@@ -574,6 +574,9 @@ function drawState(atomNo, activeMo, state) {
     var jobName = $('#jobName').text();
     var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+atomNo+"/";
     var command = SHELL_CMD_DIR + "fetchState.sh " + activeDir + " " + jobName + " " + state;
+    var scr = "zap;set echo top left;font echo 16;echo \"loading...\";refresh;";
+    Jmol.script(resultsApplet, scr);
+
     $.newt_ajax({type: "POST",
 		    url: "/command/hopper",
 		    data: {"executable": command},
@@ -582,7 +585,7 @@ function drawState(atomNo, activeMo, state) {
 		     if (res.output=="File does not exist\n") {
 			 alert("This state has not been calculated yet, please run this calculation first. It will take a few minutes to complete, so please be paitent.");return;}
 		     var stateFile = "../Shirley-data/tmp/"+jobName+"/state."+state+".cube";
-		     var scr = "zap;set echo top left;font echo 16;echo \"loading...\";refresh;";
+		     scr = "set echo top left;font echo 16;echo \"Reading...\";refresh;";
 		     scr += "load "+stateFile+";";
 		     scr += "isosurface pos .001 '"+stateFile+"';color isosurface translucent;";
 		     scr += "isosurface neg -.001 '"+stateFile+"';color isosurface translucent;";
@@ -594,7 +597,9 @@ function drawState(atomNo, activeMo, state) {
 		     //should remove the tmpfile here...
 	            },
 	 	    error: function(request,testStatus,errorThrown) {
-		     console.log("Failed!");
+		     scr = "set echo top left;font echo 16;echo \"Load Failed!  State does not exist.\";refresh;";
+		     Jmol.script(resultsApplet, scr);
+		     console.log("Failed to get state!");
 	    },});
     
 }
@@ -1223,6 +1228,11 @@ function pushFile(form, machine, molName) {
     }
 }
 
+function toRad(Value) {
+    /** Converts numeric degrees to radians */
+    return Value * Math.PI / 180;
+}
+
 //Execute the submit script
 function executeJob(form, materialName) {
     var dir =  $('#outputDir').val();
@@ -1243,9 +1253,9 @@ function executeJob(form, materialName) {
     inputs+="A="+form.CellA.value+"\\n";
     inputs+="B="+form.CellB.value+"\\n";
     inputs+="C="+form.CellC.value+"\\n";
-    inputs+="cosBC="+form.CellAlpha.value+"\\n";
-    inputs+="cosAC="+form.CellBeta.value+"\\n";
-    inputs+="cosAB="+form.CellGamma.value+"\\n";
+    inputs+="COSBC="+Math.cos(toRad(form.CellAlpha.value))+"\\n";
+    inputs+="COSAC="+Math.cos(toRad(form.CellBeta.value))+"\\n";
+    inputs+="COSAB="+Math.cos(toRad(form.CellGamma.value))+"\\n";
     inputs+="NJOB="+form.NNODES.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";

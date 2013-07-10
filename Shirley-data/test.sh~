@@ -1,5 +1,0 @@
-#write pp.x scripts, and aprun all
-cat XCHShifts.csv|while IFS=, read col1 col2
-do
-    echo "I got:$col1|$col2"
-done
