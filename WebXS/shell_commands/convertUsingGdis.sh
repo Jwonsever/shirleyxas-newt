@@ -1,9 +1,13 @@
 #!/bin/bash
 
-homedir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp";
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
+homedir=$CODE_BASE_DIR/$TEMPORARY_FILES;
 
 cd $homedir;
-
+echo `pwd`
 infile=${1}
 outfile=${2}
 

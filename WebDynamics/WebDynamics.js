@@ -166,13 +166,13 @@ function drawMol(suffix) {
 }
 
 function sendToWebXS() {
-    writeFileToFilesystem("project/projectdirs/als/www/james-xs/Shirley-data/tmp/transferFile.xyz");
-    window.open("https://portal.nersc.gov/project/als/james-xs/WebXS/index.html");
+    writeFileToFilesystem(DATABASE_DIR + "/tmp/transferFile.xyz");
+    window.open("../WebXS/index.html");
 }
 
 function saveFile() {
     //todo	
-    var fname = prompt("Save file as?","/global/scratch/sd/" + myUsername + "/WebDynamics.xyz");
+    var fname = prompt("Save file as?", GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics.xyz");
 
     //put on Hopper
     writeFileToFilesystem(fname);

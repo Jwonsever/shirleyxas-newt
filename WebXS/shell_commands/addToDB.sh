@@ -9,8 +9,12 @@ XCH=$5
 user=$6
 basedir=$7
 
-#Needs to be switched to MFTHEORY
-database="/project/projectdirs/mftheory/www/james-xs/Shirley-data/spectraDB/${molName}${date}"
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
+#Note, this is tool location dependant, not universal!  todo.
+database=$CODE_BASE_DIR/$DATA_LOC/spectraDB/${molName}${date}"
 
 mkdir $database
 cd $database

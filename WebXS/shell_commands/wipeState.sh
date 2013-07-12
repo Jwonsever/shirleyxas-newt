@@ -3,7 +3,11 @@
 
 molName=$1
 
-tmpDir="/project/projectdirs/mftheory/www/james-xs/Shirley-data/tmp/${molName}"
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
+tmpDir="${CODE_BASE_DIR}/${TEMPORARY_FILES}/${molName}"
 
 rm -rf $tmpDir
 
