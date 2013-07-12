@@ -27,7 +27,20 @@
               <li><img src="alslogo.png" width=56 padding=0 border=0></li>
               <li><a href="index.html">Home</a></li>
               <li class="active"><a href="about.html">About</a></li>
-              <li><a href="status.html">Status</a></li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Status <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="status.html">Data Status</a></li>
+                  <li><a href="jobs.html">Job Status</a></li>
+                </ul>
+              </li>
+              <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Portal Tools <b class="caret"></b></a>
+                <ul class="dropdown-menu">
+                  <li><a href="users.html">User Management</a></li>
+                  <li><a href="downloads.html">Downloads</a></li>
+                </ul>
+              </li>
               <li><a href="data.html">Data Browser</a></li>
               <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
@@ -71,6 +84,9 @@
         <p>This site is a very large work in progress. Log in with your NERSC account at the top right to gain access to NERSC compute resources 	
            (required for simulation and analysis tools). An additional, clunky, login is required to browse ALS data files.</p>
         <p>It will eventually hold lots of great apps.</p>
+        <br>
+        <h2>Stats:</h2>
+        <div id="stats"><center><img src=blue-ajax-loader.gif></center></div>
       </div>
 
       <hr>
@@ -86,10 +102,15 @@
     <script src="mynewt.js"></script>
     <script src="alsapi.js"></script>
     <script src="als_portal.js"></script>
+    <script src="stats.js"></script>
 
     <script>
       myCheckAuth();
+      function checkAuthCallback() {
+        getStats();
+      }
     </script>
+
 
   </body>
 </html>

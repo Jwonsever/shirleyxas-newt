@@ -1,6 +1,10 @@
 #!/bin/bash -l
 #Makes PP.in then runs PP and PPlot.  Runs jobs on hopper debug queue.
-#Version .717
+#Version 7-10-13
+
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
 
 dir=$1
 #ls to find this???
@@ -32,7 +36,7 @@ ppPBS+="#PBS -l mppwidth=${procsUsed}\n\n"
 ppPBS+="cd ${dir}\n"
 ppPBS+="export NO_STOP_MESSAGE=1\n\n"
 
-ppExe="/project/projectdirs/mftheory/hopper/shirley_QE4.3-intel/bin/pp.x"
+ppExe="${SHIRLEY_ROOT}/bin/pp.x"
 
 #prepending?
 #mv myfile tmp

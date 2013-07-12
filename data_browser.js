@@ -128,10 +128,13 @@ function otherDatasetFiles(dataset) {
               if (item.stage != "raw") {
                 var uniqueDate = item.stage_date.replace(':','')
                 var myText = '<table width=100%><tr width=100%><td><h3>'+item.stage+' images: ('+item.stage_date.replace('Z','').replace('T',' ')+')</h3></td>'
-                myText += '<td align=right><div id="downloading-'+item.stage+uniqueDate+'"><button id="download-'+item.stage+uniqueDate+'" class="btn" onClick=downloadZip("'+item.path+'","/","#downloading-'+item.stage+uniqueDate+'","'+item.stage+uniqueDate+'") style="width: 200px">Download Zip File</button></div>'
+                myText += '<td align=right>'
+                myText += '<br><button class="btn" onClick=downloadURL("'+alsapi_base_url+'/hdf/download'+item.path+'") style="width: 200px">Download H5 File</button><br>'
+
+                myText += '<div id="downloading-'+item.stage+uniqueDate+'"><button id="download-'+item.stage+uniqueDate+'" class="btn" onClick=downloadZip("'+item.path+'","/","#downloading-'+item.stage+uniqueDate+'","'+item.stage+uniqueDate+'") style="width: 200px">Download Zip File</button></div>'
                 myText += '<div id="progresscon-'+item.stage+uniqueDate+'" class="progress progress-striped active" style="width:200px;display:none;">'
                 myText += '<div id="progressbar-'+item.stage+uniqueDate+'" class="bar" style="width: 1%;"></div>'
-                myText += '</div></td></tr></table>'
+                myText += '</div><br></td></tr></table>'
                 myText += '<div id="images-'+item.stage+uniqueDate+'"><center><img src=blue-ajax-loader.gif width=35></center><br><br></div>'
                 $("#images").append(myText)
                 showImages(item.path,"/",item.stage+uniqueDate)
@@ -275,24 +278,39 @@ function showImages(filePath, group, imgtype) {
         } else if (res.status.state == 'Complete'){
             //var myText = "Gallery complete "+res.img_url
             var myText = '<ul class="bxslider" id=\"slider-'+imgtype+'\">';
-            for (j = 1 ; j < 11 ; j++) {
-              var myimage = res.img_url+"/img"+j+"_thumb.png";
-              //myText += '<li><a href=\'javascript:void(0)\'><img src="'+myimage+'" onClick=\'openModal(\"'+j+'\",\"'+res.img_url+'/img'+j+'.png'+'\")\'/></a></li>';
-              myText += '<li><a href=\'javascript:void(0)\'><img src="'+myimage+'" onClick=\'openWindow(\"'+j+'\",\"'+res.img_url+'/img'+j+'.png'+'\")\'/></a></li>';
+            var myimage = res.img_url+"/animated.gif";
+            //alert(myimage)
+            nitems = res.nitems;
+            if (nitems > 10) {
+              nitems=10
+              myText += '<li><img src="'+myimage+'" /></li>';
+            }
+            for (j = 1 ; j <= nitems ; j++) {
+              myimage = res.img_url+"/img"+j+"_thumb.png";
+              myText += '<li><a href=\'javascript:void(0)\'><img src="'+myimage+'" onClick=\'downloadURL(\"'+res.img_url+'/img'+j+'.tif'+'\")\'/></a></li>';
             }
             myText += '</ul>';
 
             $("#images-"+imgtype).html(myText)
-            //$('.bxslider').bxSlider({
-            $('#slider-'+imgtype).bxSlider({
-              mode: 'vertical',
-              slideMargin: 5
-            });
 
-            //try {
-            //    $("#imagesprogresscon-"+imgtype).hide();
-            //} catch (err) {
-            //}
+            var slider;
+
+            if (imgtype == "raw" || imgtype.indexOf("norm") != -1) {
+              slider=$('#slider-'+imgtype).bxSlider({
+                infiniteLoop: false,
+                mode: 'horizontal',
+                slideMargin: 5
+              });
+            } else {
+              slider=$('#slider-'+imgtype).bxSlider({
+                infiniteLoop: false,
+                mode: 'vertical',
+                slideMargin: 5
+              });
+            }
+
+            slider.goToSlide(0);
+
         } else if (res.status.state == 'Staging') {
             var myText = "Staging File From Tape <center><img src=blue-ajax-loader.gif width=35></center><br><br>";
             $("#images-"+imgtype).html(myText)

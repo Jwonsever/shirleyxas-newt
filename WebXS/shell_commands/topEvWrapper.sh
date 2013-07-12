@@ -1,2 +1,4 @@
 #!/bin/bash
-python /project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/topEvContributors.py $1 $2 $3
+
+scriptDir=`dirname $0`
+python $scriptDir/topEvContributors.py $1 $2 $3

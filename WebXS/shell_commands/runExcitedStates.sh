@@ -4,7 +4,11 @@
 #BZIP2 STATE FILES, Remove Other Files
 #James Wonsever
 
-SHELL_ROOT_SCRIPTS="/project/projectdirs/mftheory/www/james-xs/WebXS/shell_commands/"
+# Load Global Variables
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
+SHELL_ROOT_SCRIPTS=$CODE_BASE_DIR/$CODE_LOC/$SERVER_SCRIPTS/
 
 WHERE_AM_I=`pwd`
 JOB_NAME=`basename ${WHERE_AM_I}`
@@ -13,7 +17,7 @@ JOB_NAME=`basename ${WHERE_AM_I}`
 /usr/bin/python ${SHELL_ROOT_SCRIPTS}findNotableStates.py $WHERE_AM_I $JOB_NAME > states.csv
 
 #write pp.x scripts, and aprun all  
-ppExe="/project/projectdirs/mftheory/hopper/shirley_QE4.3-intel/bin/pp.x"
+ppExe="${SHIRLEY_ROOT}/bin/pp.x"
 function plot {
 
 cat > PPin/$1.in <<EOF
