@@ -121,7 +121,7 @@
               <li><a href="../about.html">About</a></li>
               <li><a href="../status.html">Status</a></li>
               <li><a href="../data.html">Data Browser</a></li>
-              <li class="dropdown">
+              <li class="dropdown active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
                 <ul class="dropdown-menu">
                   <li class="nav-header">X-Ray Scattering</li>
@@ -306,8 +306,9 @@ website to jrdeslippe@lbl.gov.
 		      <div id="advancedOptions" style="display:none;"><br>
 		        <b>Advanced Options</b><br><br>
 		      <!--Advanced Options-->
+                      <label class="checkbox">
 		      <input type="Checkbox" onchange="makeCellSize()" id="CrystalFlag" value="True"/> Crystal?
-		      <br>
+                      </label>
 		      <input type="Text" id="IBRAV" size="4" value="14"/> Bravais Lattice<br>
 		      <br>Cell Size Attributes: (In &#8491;ngstr&#246;ms)<br>
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellA" value="10"/> A
@@ -353,6 +354,7 @@ website to jrdeslippe@lbl.gov.
 		      <input type="hidden" id="PPP" value="24"/> 
 
 		      <input id="lessAdvanced" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
+                      <br><br>
 		      <!-- End Advanced Options -->
 		      </div>
 		      <input id="AdvancedButton" data-inline='true' type='button' value='Advanced Options' onClick="showAdvancedOptions()"/>

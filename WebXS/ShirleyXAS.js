@@ -1283,6 +1283,8 @@ function executeJob(form, materialName) {
 		data: webdata,
 		success: function(res) {;},});
 
+    console.log("Command "+command)
+
     //Post job.
     $.newt_ajax({type: "POST",
 		url: "/command/" + machine,
