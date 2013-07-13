@@ -291,7 +291,7 @@
 
                     <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" id="PubChem_compound_xref_1" value="xref" style="display:none" disabled/>
-                      <select multiple id="PubChem_compound_xref_2">
+                      <select id="PubChem_compound_xref_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
                         <option value="PubMedID">PubMedID</input>
@@ -323,6 +323,7 @@
                     <option value="aids">aids</option>
                     <option value="assaysummary">assaysummary</option>
                     <option value="classification">classification</option>
+                    <option value="xrefs">xrefs</option>
                   </select>
 
                   <div style="padding:10px" data-te-skip="true">
@@ -331,6 +332,23 @@
                       <label for="PubChem_compound_op_property_2">(comma-separated list of property tags)</label>
                       <br>
                       <input type="Text" id="PubChem_compound_op_property_2" value=""/>
+                    </div>
+
+                    <div id="PubChem_compound_op_xrefs" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_compound_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <select multiple id="PubChem_compound_op_xrefs_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
                     </div>
                   </div>
                 </div>
@@ -365,7 +383,7 @@
 
                     <div id="PubChem_substance_xref" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" id="PubChem_substance_xref_1" value="xref" style="display:none" disabled/>
-                      <select multiple id="PubChem_substance_xref_2">
+                      <select id="PubChem_substance_xref_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
                         <option value="PubMedID">PubMedID</input>
@@ -396,10 +414,26 @@
                     <option value="aids">aids</option>
                     <option value="assaysummary">assaysummary</option>
                     <option value="classification">classification</option>
+                    <option value="xrefs">xrefs</option>
                   </select>
 
                   <div style="padding:10px" data-te-skip="true">
-                    <!-- no operation params, but here just for consistency -->
+                    <div id="PubChem_substance_op_xrefs" class="PubChem_substance_op" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_substance_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <select multiple id="PubChem_substance_op_xrefs_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
+                    </div>
                   </div>
                 </div>
 
@@ -453,6 +487,7 @@
                     <option value="doseresponse">doseresponse</option>
                     <option value="summary">summary</option>
                     <option value="classification">classification</option>
+                    <option value="xrefs">xrefs</option>
                   </select>
 
                   <div style="padding:10px">
@@ -469,6 +504,23 @@
                     <div id="PubChem_assay_op_doseresponse" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
                       <input type="text" id="PubChem_assay_op_dosereseponse_1" value="doseresponse" style="display:none" disabled/>
                       <input type="text" id="PubChem_assay_op_dosereseponse_2" value="sid" style="display:none" disabled/>
+                    </div>
+
+                    <div id="PubChem_assay_op_xrefs" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
+                      <input type="text" id="PubChem_assay_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <select multiple id="PubChem_assay_op_xrefs_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
                     </div>
                   </div>
                 </div>
