@@ -1,0 +1,5 @@
+*.swp
+*.vim
+*.tmp
+*.pyc
+xray/cif/*

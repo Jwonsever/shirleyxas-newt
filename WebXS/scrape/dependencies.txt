@@ -1,0 +1,8 @@
+Dependency list of project.
+
+- Python 2.6
+- argparse (only in <=2.6)
+- Ghost.py
+  - currently, it is included statically
+- PySide
+  - TODO: INSTALL THIS SOMEHOW
