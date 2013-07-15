@@ -1522,7 +1522,7 @@ function restQuery() {
 // display the result of the last search result in JSmol.
 function displaySearchResult() {
   var script = "try{Load INLINE '" + lastSearchResult + "'}catch(e){;}";
-  Jmol.script(resultsApplet, script);
+  Jmol.script(previewApplet, script);
 }
 
 //Div Wrapper functions.  For Organization. Checks Login Status.
