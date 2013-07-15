@@ -1483,6 +1483,7 @@ function dbJob(elem, XCHShift, path) {
 }
 
 // query the selected REST API.
+var lastSearchResult = '';
 function restQuery() {
   var dest = $('#searchResults');
 
@@ -1490,13 +1491,38 @@ function restQuery() {
   var root = $('#searchLocationChosen');
   var url = TreeEval.nodeValue(root);
 
-  var result = '<a id="searchResultLink" ';
-  result += 'style="display:none" ';
-  result += 'target="_blank" href="';
-  result += url;
-  result += '">Open result in new tab</a><br>';
-  dest.html(result);
-  $('#searchResultLink').fadeIn();
+  var end = url.substring(url.lastIndexOf('/') + 1,
+                          url.length);
+
+  // don't send PNGs to JSmol.
+  var result = '';
+  switch(end) {
+    case 'PNG':
+      result = '<a id="searchResult" ';
+      result += 'style="display:none" ';
+      result += 'target="_blank" href="';
+      result += url;
+      result += '">View Image</a><br>';
+      dest.html(result);
+      $('#searchResult').fadeIn();
+      break;
+    default:
+      $.get(url, function(data, status) {
+          lastSearchResult = data;
+          result = '<p id="searchResult" ';
+          result += ' style="display:none">';
+          result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
+          dest.html(result);
+          $('#searchResult').fadeIn();
+      });
+      break;
+  }
+}
+
+// display the result of the last search result in JSmol.
+function displaySearchResult() {
+  var script = "try{Load INLINE '" + lastSearchResult + "'}catch(e){;}";
+  Jmol.script(resultsApplet, script);
 }
 
 //Div Wrapper functions.  For Organization. Checks Login Status.
