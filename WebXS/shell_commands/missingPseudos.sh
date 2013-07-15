@@ -11,8 +11,5 @@ pseudos=`grep -e "Pseudopotential for " "${pathname}/XAS/${jobname}_0/Input_Bloc
 
 echo $pseudos
 
-if [ -n "${pseudos}" ]; then
-    echo "1"
-else
-    echo "0"
-fi
+#if [ -n "${pseudos}" ]; then
+

@@ -33,8 +33,8 @@ xasPBS+="#PBS -q ${queue}\n"
 ppPBS+="#PBS -l walltime=${walltime}\n"
 xasPBS+="#PBS -V\n"
 
-#Use Account, not default?
-#xasPBS+="#PBS -A ${account}\n"
+#Use Account,if not default.
+xasPBS+="#PBS -A ${account}\n"
 
 refPBS="$xasPBS"
 analPBS="$xasPBS"
@@ -114,6 +114,10 @@ if [ $xstateflag == 1 ]; then
     statePBS+="export NO_STOP_MESSAGE=1\n\n"
 
     echo -e ${statePBS} > ./state.qscript
+    
+    #So it can find other scripts
+    echo -e "scriptDir=${scriptDir}" >> ./state.qscript
+
     cat $CODE_BASE_DIR/$CODE_LOC/$SERVER_SCRIPTS/runExcitedStates.sh >> ./state.qscript
     state_id=`qsub -W depend=afterok:${anal_id}@hopper11 state.qscript`
 fi

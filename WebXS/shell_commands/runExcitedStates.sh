@@ -5,7 +5,6 @@
 #James Wonsever
 
 # Load Global Variables
-scriptDir=`dirname $0`
 . $scriptDir/../../GlobalValues.in
 
 SHELL_ROOT_SCRIPTS=$CODE_BASE_DIR/$CODE_LOC/$SERVER_SCRIPTS/
@@ -63,7 +62,7 @@ find ./ -type f -name "*.cube" -exec bzip2 -k9 {} \;
 #Archive Everything
 #todo
 
-#Remove all excess Data
-${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
+#Remove all excess Data  (todo, needs to be AFTER all the other jobs complete.
+#${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
 
 exit
