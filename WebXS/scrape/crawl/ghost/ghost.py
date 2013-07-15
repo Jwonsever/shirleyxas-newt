@@ -10,38 +10,37 @@ from functools import wraps
 from cookielib import Cookie, LWPCookieJar
 PYSIDE = False
 try:
-    import sip
-    sip.setapi('QVariant', 2)
-    from PyQt4 import QtWebKit
-    from PyQt4.QtNetwork import QNetworkRequest, QNetworkAccessManager,\
-                                QNetworkCookieJar, QNetworkDiskCache, \
-                                QNetworkProxy, QNetworkCookie
-    from PyQt4 import QtCore
-    from PyQt4.QtCore import QSize, QByteArray, QUrl, QDateTime,\
-                             QtCriticalMsg, QtDebugMsg, QtFatalMsg, QtWarningMsg,\
-                             qInstallMsgHandler
-    from PyQt4.QtGui import QApplication, QImage, QPainter, QPrinter
+    from PySide import QtWebKit
+    from PySide.QtNetwork import QNetworkRequest, QNetworkAccessManager, \
+                                 QNetworkCookieJar, QNetworkDiskCache, \
+                                 QNetworkProxy, QNetworkCookie
+    from PySide import QtCore
+    from PySide.QtCore import QSize, QByteArray, QUrl, QDateTime, \
+                              QtCriticalMsg, QtDebugMsg, QtFatalMsg, \
+                              QtWarningMsg, qInstallMsgHandler
+    from PySide.QtGui import QApplication, QImage, QPainter, QPrinter
+    PYSIDE = True
 except ImportError:
     try:
-        from PySide import QtWebKit
-        from PySide.QtNetwork import QNetworkRequest, QNetworkAccessManager,\
-                                     QNetworkCookieJar, QNetworkDiskCache, \
-                                     QNetworkProxy, QNetworkCookie
-        from PySide import QtCore
-        from PySide.QtCore import QSize, QByteArray, QUrl, QDateTime,\
-                                  QtCriticalMsg, QtDebugMsg, QtFatalMsg,\
-                                  QtWarningMsg, qInstallMsgHandler
-        from PySide.QtGui import QApplication, QImage, QPainter, QPrinter
-        PYSIDE = True
+        import sip
+        sip.setapi('QVariant', 2)
+        from PyQt4 import QtWebKit
+        from PyQt4.QtNetwork import QNetworkRequest, QNetworkAccessManager, \
+                                    QNetworkCookieJar, QNetworkDiskCache,  \
+                                    QNetworkProxy, QNetworkCookie
+        from PyQt4 import QtCore
+        from PyQt4.QtCore import QSize, QByteArray, QUrl, QDateTime, \
+                                 QtCriticalMsg, QtDebugMsg, QtFatalMsg, \
+                                 QtWarningMsg, qInstallMsgHandler
+        from PyQt4.QtGui import QApplication, QImage, QPainter, QPrinter
     except ImportError:
-        raise Exception("Ghost.py requires PySide or PyQt")
+        raise Exception("Ghost.py requires PySide or PyQt4")
 
 
 default_user_agent = "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/535.2 " +\
     "(KHTML, like Gecko) Chrome/15.0.874.121 Safari/535.2"
 
 
-logging.basicConfig()
 logger = logging.getLogger('ghost')
 
 
@@ -62,6 +61,7 @@ class Logger(logging.Logger):
             raise Error('invalid log level')
         getattr(logger, level)("%s: %s", sender, message)
 
+
 class QTMessageProxy(object):
     def __init__(self, debug=False):
         self.debug = debug
@@ -77,6 +77,7 @@ class QTMessageProxy(object):
             Logger.log(msg, sender='QT', level='fatal')
         elif self.debug:
             Logger.log(msg, sender='QT', level='info')
+
 
 class GhostWebPage(QtWebKit.QWebPage):
     """Overrides QtWebKit.QWebPage in order to intercept some graphical
@@ -207,7 +208,8 @@ class Ghost(object):
     :param cache_dir: A directory path where to store cache datas.
     :param plugins_enabled: Enable plugins (like Flash).
     :param java_enabled: Enable Java JRE.
-    :param plugin_path: Array with paths to plugin directories (default ['/usr/lib/mozilla/plugins'])
+    :param plugin_path: Array with paths to plugin directories
+        (default ['/usr/lib/mozilla/plugins'])
     :param download_images: Indicate if the browser should download images
     """
     _alert = None
@@ -221,8 +223,9 @@ class Ghost(object):
             viewport_size=(800, 600), ignore_ssl_errors=True,
             cache_dir=os.path.join(tempfile.gettempdir(), "ghost.py"),
             plugins_enabled=False, java_enabled=False,
-            plugin_path=['/usr/lib/mozilla/plugins',],
-            download_images=True, qt_debug=False):
+            plugin_path=['/usr/lib/mozilla/plugins', ],
+            download_images=True, qt_debug=False,
+            show_scroolbars=True):
         self.http_resources = []
 
         self.user_agent = user_agent
@@ -253,12 +256,22 @@ class Ghost(object):
         self.page = GhostWebPage(Ghost._app, self)
         QtWebKit.QWebSettings.setMaximumPagesInCache(0)
         QtWebKit.QWebSettings.setObjectCacheCapacities(0, 0, 0)
-        QtWebKit.QWebSettings.globalSettings().setAttribute(QtWebKit.QWebSettings.LocalStorageEnabled, True)
+        QtWebKit.QWebSettings.globalSettings().setAttribute(
+            QtWebKit.QWebSettings.LocalStorageEnabled, True)
 
         self.page.setForwardUnsupportedContent(True)
-        self.page.settings().setAttribute(QtWebKit.QWebSettings.AutoLoadImages, download_images)
-        self.page.settings().setAttribute(QtWebKit.QWebSettings.PluginsEnabled, plugins_enabled)
-        self.page.settings().setAttribute(QtWebKit.QWebSettings.JavaEnabled, java_enabled)
+        self.page.settings().setAttribute(
+            QtWebKit.QWebSettings.AutoLoadImages, download_images)
+        self.page.settings().setAttribute(
+            QtWebKit.QWebSettings.PluginsEnabled, plugins_enabled)
+        self.page.settings().setAttribute(QtWebKit.QWebSettings.JavaEnabled,
+            java_enabled)
+
+        if not show_scroolbars:
+            self.page.mainFrame().setScrollBarPolicy(QtCore.Qt.Vertical,
+                QtCore.Qt.ScrollBarAlwaysOff)
+            self.page.mainFrame().setScrollBarPolicy(QtCore.Qt.Horizontal,
+                QtCore.Qt.ScrollBarAlwaysOff)
 
         self.set_viewport_size(*viewport_size)
 
@@ -295,9 +308,11 @@ class Ghost(object):
                     return QSize(*viewport_size)
             self.webview = MyQWebView()
             if plugins_enabled:
-                self.webview.settings().setAttribute(QtWebKit.QWebSettings.PluginsEnabled, True)
+                self.webview.settings().setAttribute(
+                    QtWebKit.QWebSettings.PluginsEnabled, True)
             if java_enabled:
-                self.webview.settings().setAttribute(QtWebKit.QWebSettings.JavaEnabled, True)
+                self.webview.settings().setAttribute(
+                    QtWebKit.QWebSettings.JavaEnabled, True)
             self.webview.setPage(self.page)
             self.webview.show()
         else:
@@ -326,8 +341,10 @@ class Ghost(object):
             painter.end()
             image = image.copy(x1, y1, w, h)
         else:
-            self.main_frame.setScrollBarPolicy(QtCore.Qt.Vertical, QtCore.Qt.ScrollBarAlwaysOff)
-            self.main_frame.setScrollBarPolicy(QtCore.Qt.Horizontal, QtCore.Qt.ScrollBarAlwaysOff)
+            self.main_frame.setScrollBarPolicy(QtCore.Qt.Vertical,
+                QtCore.Qt.ScrollBarAlwaysOff)
+            self.main_frame.setScrollBarPolicy(QtCore.Qt.Horizontal,
+                QtCore.Qt.ScrollBarAlwaysOff)
             self.page.setViewportSize(self.main_frame.contentsSize())
             image = QImage(self.page.viewportSize(), format)
             painter = QPainter(image)
@@ -348,13 +365,9 @@ class Ghost(object):
         self.capture(region=region, format=format,
                      selector=selector).save(path)
 
-    def print_to_pdf(self,
-                     path,
-                     paper_size    = (8.5, 11.0),
-                     paper_margins = (0, 0, 0, 0),
-                     paper_units   = QPrinter.Inch,
-                     zoom_factor   = 1.0,
-                     ):
+    def print_to_pdf(self, path, paper_size=(8.5, 11.0),
+            paper_margins=(0, 0, 0, 0), paper_units=QPrinter.Inch,
+            zoom_factor=1.0):
         """Saves page as a pdf file.
 
         See qt4 QPrinter documentation for more detailed explanations
@@ -368,15 +381,15 @@ class Ghost(object):
         """
         assert len(paper_size) == 2
         assert len(paper_margins) == 4
-        printer = QPrinter(mode = QPrinter.ScreenResolution)
+        printer = QPrinter(mode=QPrinter.ScreenResolution)
         printer.setOutputFormat(QPrinter.PdfFormat)
         printer.setPaperSize(QtCore.QSizeF(*paper_size), paper_units)
         printer.setPageMargins(*(paper_margins + (paper_units,)))
         printer.setFullPage(True)
         printer.setOutputFileName(path)
         if self.webview is None:
-          self.webview = QtWebKit.QWebView()
-          self.webview.setPage(self.page)
+            self.webview = QtWebKit.QWebView()
+            self.webview.setPage(self.page)
         self.webview.setZoomFactor(zoom_factor)
         self.webview.print_(printer)
 
@@ -514,13 +527,14 @@ class Ghost(object):
         except:
             raise Error("no webview to close")
 
-    def load_cookies( self, cookie_storage, keep_old=False ):
+    def load_cookies(self, cookie_storage, keep_old=False):
         """load from cookielib's CookieJar or Set-Cookie3 format text file.
 
-        :param cookie_storage: file location string on disk or CookieJar instance.
+        :param cookie_storage: file location string on disk or CookieJar
+            instance.
         :param keep_old: Don't reset, keep cookies not overridden.
         """
-        def toQtCookieJar( PyCookieJar, QtCookieJar ):
+        def toQtCookieJar(PyCookieJar, QtCookieJar):
             allCookies = QtCookieJar.cookies if keep_old else []
             for pc in PyCookieJar:
                 qc = toQtCookie(pc)
@@ -528,11 +542,11 @@ class Ghost(object):
             QtCookieJar.setAllCookies(allCookies)
 
         def toQtCookie(PyCookie):
-            qc = QNetworkCookie( PyCookie.name, PyCookie.value )
+            qc = QNetworkCookie(PyCookie.name, PyCookie.value)
             qc.setSecure(PyCookie.secure)
             if PyCookie.path_specified:
                 qc.setPath(PyCookie.path)
-            if PyCookie.domain != "" :
+            if PyCookie.domain != "":
                 qc.setDomain(PyCookie.domain)
             if PyCookie.expires != 0:
                 t = QDateTime()
@@ -546,10 +560,10 @@ class Ghost(object):
             cj = LWPCookieJar(cookie_storage)
             cj.load()
             toQtCookieJar(cj, self.cookie_jar)
-        elif cookie_storage.__class__.__name__.endswith('CookieJar') :
+        elif cookie_storage.__class__.__name__.endswith('CookieJar'):
             toQtCookieJar(cookie_storage, self.cookie_jar)
         else:
-            raise ValueError, 'unsupported cookie_storage type.'
+            raise ValueError('unsupported cookie_storage type.')
 
     def open(self, address, method='get', headers={}, auth=None, body=None,
              default_popup_response=None):
@@ -625,35 +639,38 @@ class Ghost(object):
                 PyCookieJar.set_cookie(toPyCookie(c))
 
         def toPyCookie(QtCookie):
-            port=None
-            port_specified=False
-            secure=QtCookie.isSecure()
-            name=str(QtCookie.name())
-            value=str(QtCookie.value())
+            port = None
+            port_specified = False
+            secure = QtCookie.isSecure()
+            name = str(QtCookie.name())
+            value = str(QtCookie.value())
             v = str(QtCookie.path())
-            path_specified = bool( v != "" )
+            path_specified = bool(v != "")
             path = v if path_specified else None
             v = str(QtCookie.domain())
-            domain_specified = bool( v != "" )
+            domain_specified = bool(v != "")
             domain = v
-            domain_initial_dot = v.startswith('.') if domain_specified else None
+            if domain_specified:
+                domain_initial_dot = v.startswith('.')
+            else:
+                domain_initial_dot = None
             v = long(QtCookie.expirationDate().toTime_t())
             # Long type boundary on 32bit platfroms; avoid ValueError
             expires = 2147483647 if v > 2147483647 else v
             rest = {}
             discard = False
-            return Cookie(0, name, value, port, port_specified, domain
-                    , domain_specified, domain_initial_dot, path, path_specified
-                    , secure, expires, discard, None, None, rest)
+            return Cookie(0, name, value, port, port_specified, domain,
+                    domain_specified, domain_initial_dot, path, path_specified,
+                    secure, expires, discard, None, None, rest)
 
         if cookie_storage.__class__.__name__ == 'str':
             cj = LWPCookieJar(cookie_storage)
-            toPyCookieJar(self.cookie_jar,cj)
+            toPyCookieJar(self.cookie_jar, cj)
             cj.save()
-        elif cookie_storage.__class__.__name__.endswith('CookieJar') :
-            toPyCookieJar(self.cookie_jar,cookie_storage)
+        elif cookie_storage.__class__.__name__.endswith('CookieJar'):
+            toPyCookieJar(self.cookie_jar, cookie_storage)
         else:
-            raise ValueError, 'unsupported cookie_storage type.'
+            raise ValueError('unsupported cookie_storage type.')
 
     @can_load_page
     def set_field_value(self, selector, value, blur=True):
@@ -729,32 +746,36 @@ class Ghost(object):
             self.fire_on(selector, 'blur')
         return res, ressources
 
-    def set_proxy(self, type, host='localhost', port=8888, user='', password=''):
+    def set_proxy(self, type_, host='localhost', port=8888, user='',
+            password=''):
         """Set up proxy for FURTHER connections.
 
-        :param type: proxy type to use: \
+        :param type_: proxy type to use: \
             none/default/socks5/https/http.
         :param host: proxy server ip or host name.
         :param port: proxy port.
         """
-        _types = {'default': QNetworkProxy.DefaultProxy,
+        _types = {
+            'default': QNetworkProxy.DefaultProxy,
             'none': QNetworkProxy.NoProxy,
             'socks5': QNetworkProxy.Socks5Proxy,
             'https': QNetworkProxy.HttpProxy,
-            'http': QNetworkProxy.HttpCachingProxy }
+            'http': QNetworkProxy.HttpCachingProxy
+        }
 
-        if type is None: type='none'
-        type = type.lower()
-        if type in ['none','default'] :
-            self.manager.setProxy(QNetworkProxy(_types[type]))
+        if type_ is None:
+            type_ = 'none'
+        type_ = type_.lower()
+        if type_ in ['none', 'default']:
+            self.manager.setProxy(QNetworkProxy(_types[type_]))
             return
-        elif type in _types:
-            proxy = QNetworkProxy(_types[type], hostName=host, port=port
-                                  , user=user, password=password )
+        elif type_ in _types:
+            proxy = QNetworkProxy(_types[type_], hostName=host, port=port,
+                user=user, password=password)
             self.manager.setProxy(proxy)
         else:
-            raise ValueError, 'Unsupported proxy type:' + type \
-            + '\nsupported types are: none/socks5/http/https/default'
+            raise ValueError('Unsupported proxy type:' + type_ \
+            + '\nsupported types are: none/socks5/http/https/default')
 
     def set_viewport_size(self, width, height):
         """Sets the page viewport size.
@@ -832,6 +853,15 @@ class Ghost(object):
             'Can\'t find element matching "%s"' % selector)
         return True, self._release_last_resources()
 
+    def wait_while_selector(self, selector):
+        """Waits until the selector no longer matches an element on the frame.
+
+        :param selector: The selector to wait for.
+        """
+        self.wait_for(lambda: not self.exists(selector),
+            'Element matching "%s" is still available' % selector)
+        return True, self._release_last_resources()
+
     def wait_for_text(self, text):
         """Waits until given text appear on main frame.
 
@@ -880,16 +910,18 @@ class Ghost(object):
         """
 
         if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute):
-            Logger.log("[%s] bytesAvailable()= %s" %(str(reply.url()), reply.bytesAvailable()), level="debug")
+            Logger.log("[%s] bytesAvailable()= %s" % (str(reply.url()),
+                reply.bytesAvailable()), level="debug")
 
-            # Some web pages return cache headers that mandates not to cache the
-            # reply, which means we won't find this QNetworkReply in the cache
-            # object. In this case bytesAvailable will return > 0.
+            # Some web pages return cache headers that mandates not to cache
+            # the reply, which means we won't find this QNetworkReply in
+            # the cache object. In this case bytesAvailable will return > 0.
             # Such pages are www.etsy.com
             # This is a bit of a hack and due to the async nature of QT, might
-            # not work at times. We should move to using some proxied implementation
-            # of QNetworkManager and QNetworkReply in order to get the contents
-            # of the requests properly rather than relying on the cache.
+            # not work at times. We should move to using some proxied
+            # implementation of QNetworkManager and QNetworkReply in order to
+            # get the contents of the requests properly rather than relying
+            # on the cache.
             if reply.bytesAvailable() > 0:
                 content = reply.peek(reply.bytesAvailable())
             else:
@@ -906,7 +938,7 @@ class Ghost(object):
         self.wait_for(lambda: reply.isFinished(), 'Download timeout.')
         if reply.attribute(QNetworkRequest.HttpStatusCodeAttribute):
             self.http_resources.append(HttpResource(reply, self.cache,
-                reply.readAll()))
+                                                    reply.readAll()))
 
     def _on_manager_ssl_errors(self, reply, errors):
         url = unicode(reply.url().toString())
