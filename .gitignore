@@ -16,3 +16,6 @@ WebXS/xas_input/Unconfigured*
 
 # editor session
 session*
+
+# bytecode files
+*.pyc
