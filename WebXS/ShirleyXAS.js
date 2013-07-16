@@ -1499,6 +1499,54 @@ function restQuery() {
   $('#searchResultLink').fadeIn();
 }
 
+// organizes ICSD operations
+ICSD = {}
+ICSD.scraperPath = '<something>';
+ICSD.validateInputs = function(form) {
+  var selector = '#' + form.id + ' input';
+  var inputs = $(selector);
+
+  var valid = true;
+  var message = '';
+
+  // must provide at least one search term
+  var termGiven = false;
+  for (var i = 0; i < inputs.length; i++) {
+    if (inputs[i].value.length > 0) {
+      termGiven = true;
+    }
+  }
+  if (!termGiven) {
+    message = 'Please enter at least one search term.';
+    valid = false;
+  }
+
+  if (valid) {
+    ICSD.scrape(form);
+  } else {
+    alert(message);
+  }
+}
+ICSD.scrape = function(form) {
+  $.post(ICSD.scraperPath,
+        {
+          composition: form.ICSD_composition.value,
+          num_elements: form.ICSD_num_elements.value,
+          struct_fmla: form.ICSD_struct_fmla.value,
+          chem_name: form.ICSD_chem_name.value,
+          mineral_name: form.ICSD_mineral_name.value,
+          mineral_grp: form.ICSD_mineral_grp.value,
+          anx_fmla: form.ICSD_anx_fmla.value,
+          ab_fmla: form.ICSD_ab_fmla.value,
+          num_fmla_units: form.ICSD_num_fmla_units.value
+        },
+        ICSD.handleResult);
+  $('#searchResults').html('working... (could take up to 30 seconds)');
+}
+ICSD.handleResult = function(data, status) {
+  $('#searchResults').html('<pre>' + data + '</pre>');
+}
+
 //Div Wrapper functions.  For Organization. Checks Login Status.
 function previousJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {

@@ -235,6 +235,7 @@
               <option value="default_searchTerms" selected>Default</option>
               <option value="PubChem_searchTerms">PubChem</option>
               <option value="PDB_searchTerms">PDB</option>
+              <option value="ICSD_searchTerms">ICSD</option>
             </select>
           </div>
 
@@ -542,6 +543,49 @@
             <div id="PDB_searchTerms" class="searchTermSet" style="display:none">
               <p>PDB terms</p>
             </div>
+            <form id="ICSD_searchTerms" class="searchTermSet" style="display:none">
+              <table>
+                <tr>
+                  <td> <label for="ICSD_composition">Composition (e.g. Na Cl)</label> </td>
+                  <td> <input type="text" id="ICSD_composition"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_num_elements">Number of Elements</label> </td>
+                  <td> <input type="text" id="ICSD_num_elements"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_struct_fmla">Structural Formula (e.g. Pb (W 04))</label> </td>
+                  <td> <input type="text" id="ICSD_struct_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_chem_name">Chemical Name</label> </td>
+                  <td> <input type="text" id="ICSD_chem_name"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_mineral_name">Mineral Name (e.g. Adamite)</label> </td>
+                  <td> <input type="text" id="ICSD_mineral_name"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_mineral_grp">Mineral Group (e.g. Pyroxene)</label> </td>
+                  <td> <input type="text" id="ICSD_mineral_grp"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_anx_fmla">ANX Formula Crystal Composition</label> </td>
+                  <td> <input type="text" id="ICSD_anx_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_ab_fmla">AB Formula Crystal Composition</label> </td>
+                  <td> <input type="text" id="ICSD_ab_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td> <label for="ICSD_num_fmla_units">Number of Formula Units</label> </td>
+                  <td> <input type="text" id="ICSD_num_fmla_units"/> </td>
+                </tr>
+                <tr>
+                  <td> <input type="button" id="ICSD_submit" value="Submit" onclick="ICSD.validateInputs(this.form)"/> </td>
+                </tr>
+              </table>
+            </form>
           </div>
           <div id="searchResults"></div>
         </div>
