@@ -90,19 +90,34 @@ SYMBOL[79]=Au
 SYMBOL[80]=Hg
 SYMBOL[81]=Tl
 SYMBOL[82]=Pb
+SYMBOL[83]=Bi
+SYMBOL[84]=Po
+SYMBOL[85]=At
+SYMBOL[86]=Rn
+SYMBOL[87]=Fr
+SYMBOL[88]=Ra
+SYMBOL[89]=Ac
+SYMBOL[90]=Th
+SYMBOL[91]=Pa
+SYMBOL[92]=U
+
+
 
 MASS[1]=1.0079
 MASS[3]=6.941
+MASS[4]=9.0122
 MASS[5]=10.811
 MASS[6]=12.00
 MASS[7]=14.007
 MASS[8]=15.999
 MASS[9]=18.998
 MASS[11]=22.990
+MASS[12]=24.305
 MASS[14]=28.086
 MASS[15]=30.974
 MASS[16]=32.065
 MASS[17]=35.453
+MASS[20]=40.078
 MASS[22]=47.867
 MASS[26]=55.847
 MASS[27]=58.933
@@ -114,33 +129,38 @@ MASS[35]=79.904
 MASS[44]=101.07
 MASS[48]=112.41
 MASS[82]=207.20
+MASS[92]=238.02891
 
 if [[ -z $1 || $1 = 'pbe' ]]
 then
 
 PSEUDO[1]=H.pbe-van_bm.UPF
 PSEUDO[3]=Li.pbe-van-dgp.UPF
+PSEUDO[4]=Be.pbe-van-dgp.UPF
 PSEUDO[5]=B.pbe-van-dgp.UPF
 PSEUDO[6]=C.pbe-van_bm.UPF
 PSEUDO[7]=N.pbe-van_bm.UPF
 PSEUDO[8]=O.pbe-van_bm.UPF
 PSEUDO[9]=F.pbe-n-van.UPF
 PSEUDO[11]=Na.pbe-sp-van_ak.UPF
+PSEUDO[12]=Mg.pbe-van-dgp.UPF
 PSEUDO[14]=Si.pbe-n-van.UPF
 PSEUDO[15]=P.pbe-n-van.UPF
 PSEUDO[16]=S.pbe-van_bm.UPF
 PSEUDO[17]=Cl.pbe-n-van.UPF
+PSEUDO[20]=Ca.pbe-nsp-van.UPF
 PSEUDO[22]=Ti.pbe-sp-van_ak.UPF
 PSEUDO[26]=Fe.pbe-sp-van.UPF
 PSEUDO[27]=Co.pbe-nd-rrkjus.UPF
 PSEUDO[28]=Ni.pbe-nd-rrkjus.UPF
 PSEUDO[29]=Cu.pbe-d-rrkjus.UPF
 PSEUDO[30]=Zn.pbe-van.UPF
-PSEUDO[34]=Se.pbe-van-dgp.UPF
+PSEUDO[34]=Se.pbe-van.UPF
 PSEUDO[35]=Br.pbe-van_mit.UPF
 PSEUDO[44]=Ru.pbe-n-van.UPF
 PSEUDO[48]=Cd.pbe-n-van.UPF
 PSEUDO[82]=Pb.pbe-d-van.UPF
+PSEUDO[92]=U.pbe-van_bm.UPF
 
 else
 

@@ -11,6 +11,8 @@ These scripts generally are used to send and retrieve data from NERSC computers.
 function checkAuthCallback() {
     //where to output files to for run jobs
     $('#outputDir').val(GLOBAL_SCRATCH_DIR + myUsername);
+    $('#customInputBlock').val(GLOBAL_SCRATCH_DIR + myUsername + "/CustomBlock.in");
+	
     //See if there is a transfer file
     openTransferFile();
     getUserInfo();
@@ -438,7 +440,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
 		console.log(res);
 		//Has a crash file in ground state.
 		if (res.output.replace(/\n/g,'') != "") {
-		    $('#postprocessing').append("<h3>This job crashed!!</h3><br>Crash Files Here:<br>"+res.output);
+		    $('#postprocessing').append("<h3>This job crashed!</h3>Crash Files Here:<br>"+res.output);
 		} else {
 		//no crash file in ground state, give postprocessing options
 		}
@@ -455,7 +457,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
 		success: function(res){
 		console.log(res);
 		if (res.output.replace(/\n/g,'') != "") {
-		    $('#postprocessing').append("<h3>Missing Pseudo!!</h3><br>"+res.output);
+		    $('#postprocessing').append("<h3>Missing Pseudo!</h3>"+res.output);
 		}
 	    },
 		error: function(request,testStatus,errorThrown) {
@@ -470,7 +472,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
 		success: function(res){
 		console.log(res);
 		if (res.output.replace(/\n/g,'') != "") {
-		    $('#postprocessing').append("<h3>MPI Errors!</h3><br>"+res.output);
+		    $('#postprocessing').append("<h3>MPI Errors!</h3>"+res.output);
 		}
 	    },
 		error: function(request,testStatus,errorThrown) {
@@ -1292,6 +1294,9 @@ function executeJob(form, materialName) {
     var machine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
+    var useCustomBlock = $('#useCustom').prop('checked');
+
+    //TODO Make this custom block absolute or something.  too many different things merging together here.
 
     //This is so hacked together, watch for escaped characters.
     //Pass inputs and pbs headers as files?
@@ -1308,21 +1313,29 @@ function executeJob(form, materialName) {
     inputs+="NJOB="+form.NNODES.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";
-    inputs+='PW_POSTFIX=\\"-ntg $PPP\\"\\n';
-    inputs+='K_POINTS=\\\"K_POINTS automatic '+form.KPOINTS.value+' 0 0 0\\\"\\n\"'
+    inputs+='PW_POSTFIX=\\"-ntg 24\\"\\n';
+    inputs+='K_POINTS=\\\"K_POINTS automatic \\n'+form.KPOINTS.value+' 0 0 0\\\"\\n\"';
+
     console.log(inputs);
+    
 
     var command = SHELL_CMD_DIR+"submit.sh ";
     command += dir + " ";
     command += materialName + " ";
     command += inputs + " ";
     command += nodes + " ";
-    command += PPP + " ";
+    command += 24 + " ";
     command += machine + " ";
     command += form.Queue.value + " ";
     command += form.wallTime.value + " ";
     command += form.acctHours.value + " ";
-    //console.log(command);
+
+    console.log(useCustomBlock);
+    if (useCustomBlock) {
+	command += $('#customInputBlock').val() + " ";
+    }
+
+    console.log(command);
  
     var webdata = materialName + "\n"; //[0] Name
     var ahora = new Date();

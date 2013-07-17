@@ -6,7 +6,10 @@
 scriptDir=`dirname $0`
 . $scriptDir/../../GlobalValues.in
 
+echo "Total number of arg passed: $#"
+
 #Redo this with optional argumnts
+dir="${1}/${2}"
 MOLNAME="$2"
 inputs=$3
 numberNodes=$4
@@ -18,13 +21,18 @@ walltime=$8
 #Added option to use own account hours.
 account=$9
 
+shift
+inputLocation=$CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/Input_Block.in 
+if [ $# > 8 ]; then
+    inputLocation=$9
+fi
+
 #Run selection of ExcitedStates?
 xstateflag=1
 
-dir="${1}/${MOLNAME}"
+echo $inputLocation
 cd $dir
-
-cp $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/Input_Block.in .
+cp $inputLocation ./Input_Block.in
 echo -e ${inputs} >> ./Input_Block.in
 
 
