@@ -1161,12 +1161,12 @@ function validateInputs(form) {
     if (form.material.value.length <= 0) {
 	message += "Need material name to create output directory.\n";
 	invalid = true; }
-    //Set NNODES See if passes;
+    //Set NEXCITED See if passes;
     var XAS = form.XASELEMENTS.value;
     //references number of excited from the first model, no checking others
     var coordinates = sterilize(models[0]).split("\n");
-    form.NNODES.value = getExcitedElementsTotal(coordinates, XAS.split(" "));
-    if (form.NNODES.value <= 0) {
+    form.NEXCITED.value = getExcitedElementsTotal(coordinates, XAS.split(" "));
+    if (form.NEXCITED.value <= 0) {
 	message += "Must excite at least one atom in coordinates. \"Xx\" matches all of element Xx, \"Xx2\" matches the Xx atom in the second row of your corrdinates. Different atoms must be separated by whitespace.\n";
 	invalid = true; }
     //Check that all models have the same number of equivalent atoms
@@ -1290,7 +1290,8 @@ function executeJob(form, materialName) {
     var inputs = "";
     var XAS = form.XASELEMENTS.value;
     var PPP = form.PPP.value;
-    var nodes = form.NNODES.value * form.NPERATOM.value;
+    var PPN = form.PPN.value;
+    var nodes = form.NEXCITED.value * form.NPERATOM.value;
     var machine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
@@ -1310,10 +1311,10 @@ function executeJob(form, materialName) {
     inputs+="COSBC="+Math.cos(toRad(form.CellAlpha.value))+"\\n";
     inputs+="COSAC="+Math.cos(toRad(form.CellBeta.value))+"\\n";
     inputs+="COSAB="+Math.cos(toRad(form.CellGamma.value))+"\\n";
-    inputs+="NJOB="+form.NNODES.value+"\\n";
+    inputs+="NJOB="+form.NEXCITED.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";
-    inputs+='PW_POSTFIX=\\"-ntg 24\\"\\n';
+    inputs+='PW_POSTFIX=\\"-ntg '+PPN+'\\"\\n';
     inputs+='K_POINTS=\\\"K_POINTS automatic \\n'+form.KPOINTS.value+' 0 0 0\\\"\\n\"';
 
     console.log(inputs);
@@ -1324,7 +1325,7 @@ function executeJob(form, materialName) {
     command += materialName + " ";
     command += inputs + " ";
     command += nodes + " ";
-    command += 24 + " ";
+    command += PPN + " ";
     command += machine + " ";
     command += form.Queue.value + " ";
     command += form.wallTime.value + " ";

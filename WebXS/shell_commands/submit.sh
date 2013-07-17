@@ -1,6 +1,5 @@
 #!/bin/bash -l
 #Creates Input_Block.in and prepends PBS headers to scripts. Then submits job.
-#Version 11/1
 
 # Load Global Variables
 scriptDir=`dirname $0`
@@ -22,17 +21,26 @@ walltime=$8
 account=$9
 
 shift
-inputLocation=$CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/Input_Block.in 
-if [ $# > 8 ]; then
-    inputLocation=$9
+inputLocation="${CODE_BASE_DIR}/${CODE_LOC}/${XAS_INPUTS}/Input_Block.in"
+customInputLocation=0
+
+if (( $(echo "$# > 8" | bc -l) )); then
+    customInputLocation=$9
 fi
 
 #Run selection of ExcitedStates?
 xstateflag=1
 
-echo $inputLocation
 cd $dir
 cp $inputLocation ./Input_Block.in
+
+#ATM it writes all three.  tofix. todo.
+
+if [ $customInputLocation ] ; then
+    echo "grabbing $customInputLocation"	
+    cat $customInputLocation >> ./Input_Block.in
+fi
+
 echo -e ${inputs} >> ./Input_Block.in
 
 

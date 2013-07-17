@@ -320,7 +320,7 @@ website to jrdeslippe@lbl.gov.
                       <table cellpadding=8><tr><td>
 		      Output Directory:</td><td> <input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
                       </td></tr><tr><td>Cluster:</td><td>
-		      <select name="Select Cluster" id="machine" onchange="form.PPP.value=4; updateStatus(this.value);" value="hopper">
+		      <select name="Select Cluster" id="machine" onchange="form.PPN.value=24; updateStatus(this.value);" value="hopper">
 		        <option value="hopper">Hopper</option>
                       </select> <br><span id='clusterStatus' style='display:none;'></span></td></tr>
 		  
@@ -350,10 +350,11 @@ website to jrdeslippe@lbl.gov.
 		      </td></tr>
                       </table>
 
+		      PPP <input type="text" id="PPP" value="4"/><br> 
 		      <!-- Hidden From User todo-->
-		      NNODES<input type="text" id="NNODES" value="1"/><br>
-		      PPP<input type="text" id="PPP" value="24"/><br> 
-		      
+		      <input type="hidden" id="NEXCITED" value="1"/>
+		      <input type="hidden" id="PPN" value="24"/>
+
 		      <input id="Full API" type='button' value='Full API' onClick="window.open('./API.php')"/>
 		      <br>
 		    
