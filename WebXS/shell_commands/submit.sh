@@ -22,7 +22,7 @@ account=$9
 
 shift
 inputLocation="${CODE_BASE_DIR}/${CODE_LOC}/${XAS_INPUTS}/Input_Block.in"
-customInputLocation=0
+customInputLocation=$inputLocation
 
 if (( $(echo "$# > 8" | bc -l) )); then
     customInputLocation=$9
@@ -32,14 +32,14 @@ fi
 xstateflag=1
 
 cd $dir
-cp $inputLocation ./Input_Block.in
+#cp $inputLocation ./Input_Block.in
 
 #ATM it writes all three.  tofix. todo.
 
-if [ $customInputLocation ] ; then
-    echo "grabbing $customInputLocation"	
-    cat $customInputLocation >> ./Input_Block.in
-fi
+#if [ $customInputLocation ] ; then
+#    echo "grabbing $customInputLocation"	
+    cat $customInputLocation > ./Input_Block.in
+#fi
 
 echo -e ${inputs} >> ./Input_Block.in
 

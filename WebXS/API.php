@@ -100,6 +100,7 @@
      
      $pattern="/^TMP.*$/";
      $inputLines=preg_grep($pattern, $fLines);
+     
  
      foreach ($inputLines as &$value) {
         $value=substr( $value, 4, strpos($value, "=")-3);

@@ -161,7 +161,7 @@ function previousJobs() {
 
 		    //Potentially rework this from a LS and text triggers on completed jobs??
 		    //Would allow for directory searching of all jobs
-
+		    
 		    $.newt_ajax({type: "GET",
 				url: "/queue/completedjobs/"+myUsername+"&limit=1500",
 				success: function(res){
@@ -1187,7 +1187,13 @@ function validateInputs(form) {
     if (form.NBANDFAC.value.match(/^\d+$/) == null) {
 	message += "NBANDFAC must be an integer. \n";
 	invalid = true; }
-     if (form.KPOINTS.value.match(/^\d+ \d+ \d+$/) == null) {
+    if (form.PPP.value.match(/^\d+$/) == null) {
+	message += "PPP must be an integer. \n";
+	invalid = true; }
+    if (form.NTG.value.match(/^\d+$/) == null) {
+	message += "NTG must be an integer. \n";
+	invalid = true; }
+    if (form.KPOINTS.value.match(/^\d+ \d+ \d+$/) == null) {
 	message += "KPoints must be of the form 'x y z'. \n";
 	invalid = true; }
 	
@@ -1290,6 +1296,7 @@ function executeJob(form, materialName) {
     var inputs = "";
     var XAS = form.XASELEMENTS.value;
     var PPP = form.PPP.value;
+    var NTG = form.NTG.value;
     var PPN = form.PPN.value;
     var nodes = form.NEXCITED.value * form.NPERATOM.value;
     var machine = form.machine.value;
@@ -1314,7 +1321,7 @@ function executeJob(form, materialName) {
     inputs+="NJOB="+form.NEXCITED.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";
-    inputs+='PW_POSTFIX=\\"-ntg '+PPN+'\\"\\n';
+    inputs+='PW_POSTFIX=\\"-ntg '+ NTG +'\\"\\n';
     inputs+='K_POINTS=\\\"K_POINTS automatic \\n'+form.KPOINTS.value+' 0 0 0\\\"\\n\"';
 
     console.log(inputs);
