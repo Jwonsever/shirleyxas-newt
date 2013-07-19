@@ -14,3 +14,7 @@ WebXS/xas_input/Unconfigured*
 *~
 [#]*[#]
 [.][#]*
+*.swp
+
+# editor session
+session*

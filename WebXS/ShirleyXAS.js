@@ -4,6 +4,11 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 05/2012 -> Present
 
+Justin Patel
+Lawrence Berkeley Laboratory
+Molecular Foundry
+06/2013 -> Present
+
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
  */
@@ -1364,6 +1369,8 @@ function executeJob(form, materialName) {
 		data: webdata,
 		success: function(res) {;},});
 
+    console.log("Command "+command)
+
     //Post job.
     $.newt_ajax({type: "POST",
 		url: "/command/" + machine,
@@ -1546,6 +1553,49 @@ function dbJob(elem, XCHShift, path) {
 	    },});
 }
 
+// query the selected REST API.
+var lastSearchResult = '';
+function restQuery() {
+  var dest = $('#searchResults');
+
+  dest.html('working...');
+  var root = $('#searchLocationChosen');
+  var url = TreeEval.nodeValue(root);
+
+  var end = url.substring(url.lastIndexOf('/') + 1,
+                          url.length);
+
+  // don't send PNGs to JSmol.
+  var result = '';
+  switch(end) {
+    case 'PNG':
+      result = '<a id="searchResult" ';
+      result += 'style="display:none" ';
+      result += 'target="_blank" href="';
+      result += url;
+      result += '">View Image</a><br>';
+      dest.html(result);
+      $('#searchResult').fadeIn();
+      break;
+    default:
+      $.get(url, function(data, status) {
+          lastSearchResult = data;
+          result = '<p id="searchResult" ';
+          result += ' style="display:none">';
+          result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
+          dest.html(result);
+          $('#searchResult').fadeIn();
+      });
+      break;
+  }
+}
+
+// display the result of the last search result in JSmol.
+function displaySearchResult() {
+  var script = "try{Load INLINE '" + lastSearchResult + "'}catch(e){;}";
+  Jmol.script(previewApplet, script);
+}
+
 //Div Wrapper functions.  For Organization. Checks Login Status.
 function previousJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
@@ -1632,4 +1682,54 @@ function switchToInfo() {
 function switchToSearchDB() {
     window.clearInterval(autoInterval);
     searchWrapper();
+}
+
+// Search area switching functions.
+function mutexShow(shownId, mutexClass) {
+    // if nothing to show, no errors will be thrown. Thanks jquery!
+    $('.' + mutexClass).hide();
+    $('#' + shownId).show();
+}
+
+function switchToSearchLocation(loc) {
+    mutexShow(loc, 'searchTermSet');
+}
+
+// organizes PubChem switching
+// TODO: make this less hideous
+PubChem = {
+    Compound: {},
+    Substance: {},
+    Assay: {},
+}
+PubChem.chooseDomain = function(dom) {
+  dom = 'PubChem_' + dom; 
+  mutexShow(dom, 'PubChem_domain');
+}
+PubChem._chooseNamespace = function(namespace, domain) {
+  // some namespaces don't have anything to show. This is okay.
+  namespace = 'PubChem_' + domain + '_' + namespace;
+  mutexShow(namespace, 'PubChem_' + domain + '_namespace');
+}
+PubChem._chooseOperation = function(op, domain) {
+  op = 'PubChem_' + domain + '_op_' + op;
+  mutexShow(op, 'PubChem_' + domain + '_op');
+}
+PubChem.Compound.chooseNamespace = function(namespace) {
+  PubChem._chooseNamespace(namespace, 'compound');
+}
+PubChem.Compound.chooseOperation = function(op) {
+  PubChem._chooseOperation(op, 'compound');
+}
+PubChem.Substance.chooseNamespace = function(namespace) {
+  PubChem._chooseNamespace(namespace, 'substance');
+}
+PubChem.Substance.chooseOperation = function(op) {
+  PubChem._chooseOperation(op, 'substance');
+}
+PubChem.Assay.chooseNamespace = function(namespace) {
+  PubChem._chooseNamespace(namespace, 'assay');
+}
+PubChem.Assay.chooseOperation = function(op) {
+  PubChem._chooseOperation(op, 'assay');
 }
