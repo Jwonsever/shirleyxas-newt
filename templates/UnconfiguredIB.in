@@ -1,5 +1,5 @@
 # Version of the code
-SHIRLEY_ROOT=/project/projectdirs/mftheory/www/james-xs/WebXS/xas_input/shirley_QE4.3-www
+SHIRLEY_ROOT=TMP_HOME/WebXS/xas_input/shirley_QE4.3-www
 # pseudopotentials
 PSEUDO_DIR=/project/projectdirs/mftheory/pseudos
 
@@ -33,7 +33,8 @@ ELEC_CONV_THR='1.0d-8'
 ELEC_MIXING_BETA='0.3'
 
 # SCF k-points for molecules
-K_POINTS="K_POINTS automatic 1 1 1 0 0 0"
+K_POINTS="K_POINTS automatic
+ 1 1 1 0 0 0"
 
 XYZFILES="*.xyz"
 XYZUNIT="angstrom"
