@@ -4,10 +4,9 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 05/2012 -> Present
 
-Justin Patel
+James Wonsever & Justin Patel
 Lawrence Berkeley Laboratory
 Molecular Foundry
-06/2013 -> Present
 
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
@@ -153,7 +152,12 @@ function properName(name) {
 
 //This command loads the "Finished Calculations" screen.
 function previousJobs() {
-    $('#previousjobslist').html("<h3>Finished Calculations</h3><center><img src=\"ajax-loader-2.gif\" width=40></center>");
+    $('#previousjobslist').html("<div id='previousUnfinishedJobs'>"
+				+ "<h3>Unfinished Calcualtions Available for Resubmission</h3><center>"
+				+ "<img src=\"ajax-loader-2.gif\" width=40></center></div>"
+				+ "<div id='previousFinishedJobs'><h3>Finished Calculations</h3>"
+				+ "<center><img src=\"ajax-loader-2.gif\" width=40></center></div>");
+
     $.newt_ajax({type: "GET",
 		url: "/file/hopper"+GLOBAL_SCRATCH_DIR+myUsername,
 		success: function(res){
@@ -166,7 +170,50 @@ function previousJobs() {
 
 		    //Potentially rework this from a LS and text triggers on completed jobs??
 		    //Would allow for directory searching of all jobs
-		    
+		    //Would also be a strange result list OR many ajax calls, neither is kosher
+
+		    var shortDir = GLOBAL_SCRATCH_DIR + myUsername;
+		    var command = SHELL_CMD_DIR+"/exceededWalltimeWrapper.sh " + shortDir;
+		    $.newt_ajax({type: "POST",
+				url: "/command/hopper",
+				data: {"executable": command},
+				success: function(res){
+			 	 unfText = "<h3>Unfinished Calcualtions Available for Resubmission</h3>"; 
+				 unfText += "<button onclick='previousJobs()'>Update</button><br>"
+				 unfText += "<table width=100\%><tr><th width=62\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
+				 unfText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
+				 unfcount = 0;
+				 var text = res.output.split("\n");
+				 for (var i = 0; i < text.length; i++) {
+				     var jname = text[i];
+
+				     //Was it run using this tool?
+				     if (!properName(jname)) continue;
+
+				     unfcount = unfcount + 1;
+				     if (unfcount%2 == 0) {	
+					 unfText += "<tr class='warningodd'>";
+				     } else {
+					 unfText += "<tr class='warning'>";
+				     }
+				     unfText += "<td width=62\%>" + jname
+					 + "</td><td class=\"statusnone\" width=15\% align=center>"
+					 + "Unfinished</td><td><button onClick=\"resubmit(\'" 
+					 + jname + "\', \'" + "hopper"
+					 + "\')\" type=\"button\">Resubmit</button></td><td>"
+					 + "<button onClick=\"viewJobFiles(\'" 
+					 + jname + "\', \'" + "hopper"
+					 + "\')\" type=\"button\">View Files</button></td><tr>";
+				 }
+				 unfText += "</table><br>";
+				 $('#previousUnfinishedJobs').html(unfText);
+
+			    },
+				error: function(request,testStatus,errorThrown) {
+				console.log("Failed to grab incomplete jobs.");
+			    },});
+
+
 		    $.newt_ajax({type: "GET",
 				url: "/queue/completedjobs/"+myUsername+"&limit=1500",
 				success: function(res){
@@ -199,29 +246,8 @@ function previousJobs() {
 					for (var j = 0; j < files.length; j++) {
 					    if (files[j].name == jname) {suc = true;break;}
 					} if (!suc) continue;
-					
-					//Does it exist AND did it exceed Walltime AND is not repeated?
-					if (res[i].wallclock > 1) {
-					    console.log("exceeded" + res[i].jobname);
 
-					    //ADD it! for resubmission!
-					    mycount = mycount + 1;
-					    if (mycount%2 == 0) {	
-						myText += "<tr class='warningodd'>";
-					    } else {
-						myText += "<tr class='warning'>";
-					    }
-					    myText += "<td width=62\%>" + jname
-						+ "</td><td class=\"statusnone\" width=15\% align=center>"
-						+ "Unfinished</td><td><button onClick=\"resubmit(\'" 
-						+ jname + "\', \'" + res[i].hostname
-						+ "\')\" type=\"button\">Resubmit</button></td><td>"
-						+ "<button onClick=\"viewJobFiles(\'" 
-						+ jname + "\', \'" + res[i].hostname
-						+ "\')\" type=\"button\">View Files</button></td><tr>"
-					}
-
-					//does it finish all 3 tasks?  (note resubmissions can fuck this up, not full wallhours/double posting)
+					//does it finish all 3 tasks?  (note resubmissions can screw this up, not full wallhours/double posting)
 					if(occurs[jname]) {
 					    occurs[jname][0]++; //log hours, occurances
 					    occurs[jname][1]+= Number(res[i].rawhours.replace(",",""));
@@ -248,12 +274,12 @@ function previousJobs() {
 					    + "\')\" type=\"button\">View Files</button></td>";
 					myText += "</tr>";
 				    }
-				    myText += "</table:><br>";
-				    $('#previousjobslist').html(myText);
-				    $('#previousjobslist').trigger('create');
+				    myText += "</table><br>";
+				    $('#previousFinishedJobs').html(myText);
+				    $('#previousFinishedJobs').trigger('create');
 				    
 				} else {
-				    $('#previousjobslist').html("<table width=100\%><th align=left>"
+				    $('#previousFinishedJobs').html("<table width=100\%><th align=left>"
 							    + "Finished Calculations</th>"
 							    + "</table><center><br>You don't"
 							    + " have any finished calculations");
@@ -261,17 +287,17 @@ function previousJobs() {
 			    },
 				error: function(request,testStatus,errorThrown) {
 				var myText = "Error: "+testStatus+" \n"+errorThrown;
-				$('#previousjobslist').html(myText);
-				$('#previousjobslist').trigger('create');},});
+				$('#previousFinishedJobs').html(myText);
+				$('#previousFinishedJobs').trigger('create');},});
 		} else {
-		    $('#previousjobslist').html("<table width=100\%><th align=left>Finished Calculations</th>"
+		    $('#previousFinishedJobs').html("<table width=100\%><th align=left>Finished Calculations</th>"
 					    + "</table><center><br>You don't have any finished calculations");
 		}
 	    },
 		error: function(request,testStatus,errorThrown) {
 		var myText = "Error: "+testStatus+" \n"+errorThrown;
-		$('#previousjobslist').html(myText);
-		$('#previousjobslist').trigger('create');
+		$('#previousFinishedJobs').html(myText);
+		$('#previousFinishedJobs').trigger('create');
 	    },
 		});
 }
@@ -285,10 +311,10 @@ function resubmit(jobName, machine) {
 		url: "/command/hopper",
 		data: {"executable": command},
 		success: function(res){
-		console.log("successfully restarted.");
+		alert("successfully restarted.");
 	    },
 		error: function(request,testStatus,errorThrown) {
-		console.log("restart failed.");
+		alert("restart failed.");
 	    },});
 }
 
