@@ -5,6 +5,9 @@ from cif import CifList
 
 import argparse
 import HTMLParser
+import logging
+
+logging.basicConfig()
 
 class IcsdCrawlerGhost:
     start_url = 'http://icsd.fiz-karlsruhe.de/'

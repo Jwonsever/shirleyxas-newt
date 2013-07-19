@@ -1501,10 +1501,13 @@ function restQuery() {
 
 // organizes ICSD operations
 ICSD = {}
-ICSD.scraperPath = '<something>';
+ICSD.scraperPath = 'scrape/scrape.cgi';
+ICSD.getInputs = function(form) {
+  var selector = '#' + form.id + ' table input';
+  return $(selector);
+}
 ICSD.validateInputs = function(form) {
-  var selector = '#' + form.id + ' input';
-  var inputs = $(selector);
+  var inputs = ICSD.getInputs(form);
 
   var valid = true;
   var message = '';
@@ -1528,18 +1531,24 @@ ICSD.validateInputs = function(form) {
   }
 }
 ICSD.scrape = function(form) {
-  $.post(ICSD.scraperPath,
-        {
-          composition: form.ICSD_composition.value,
-          num_elements: form.ICSD_num_elements.value,
-          struct_fmla: form.ICSD_struct_fmla.value,
-          chem_name: form.ICSD_chem_name.value,
-          mineral_name: form.ICSD_mineral_name.value,
-          mineral_grp: form.ICSD_mineral_grp.value,
-          anx_fmla: form.ICSD_anx_fmla.value,
-          ab_fmla: form.ICSD_ab_fmla.value,
-          num_fmla_units: form.ICSD_num_fmla_units.value
-        },
+  var url = ICSD.scraperPath + '?';
+  var inputs = ICSD.getInputs(form);
+
+  var input = null;
+  var isFirst = true;
+  for (var i = 0; i < inputs.length; i++) {
+    input = inputs[i];
+    if (input.value.length > 0) {
+      if (isFirst) {
+        isFirst = false;
+      } else {
+        url += '&';
+      }
+      url += input.name + '=' + input.value;
+    }
+  }
+
+  $.get(url,
         ICSD.handleResult);
   $('#searchResults').html('working... (could take up to 30 seconds)');
 }
