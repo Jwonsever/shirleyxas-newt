@@ -63,16 +63,11 @@ sub untaint_field
   return $field;
 }
 
-# TODO: also scrub the field. We already have a list of acceptable ones,
-# so won't be too much trouble.
-# Can consruct an alternation (|) from the list of expectedi inputs.
-# It has to match one, and then capture it.
-# This will make Taint happy.
 my @cmd = ("./scrape.sh");
 my $scrubbed = "";
 my $scrubbed_field = "";
 my $input = "";
-# assemble scrubbedeters
+# assemble parameters
 foreach my $field ($query->param) {
   $input = $query->param($field);
 
