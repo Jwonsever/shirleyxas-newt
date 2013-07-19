@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash -l
 #
 # Simple wrapper for the python web crawler.
 # See the python file for usage.
@@ -13,7 +13,7 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/common/usg/python/2.7.3/lib/python2
 
 echo "modules loaded"
 echo $PATH
-#echo `which python2.7 2>> stderr.log`
+echo `which python2.7 2>&1`
 
 # run scraper
-echo `python2.7 crawl/icsdCrawler.py "$@" 2>> stderr.log` 2>> stderr.log
+echo `python2.7 crawl/icsdCrawler.py "$@" 2>&1`

@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/perl -wT
 # CGI wrapper for bash wrapper for scraper.
 # hooray for bootstrapping!
 
@@ -92,12 +92,11 @@ foreach my $field ($query->param) {
   }
 }
 
-#$ENV{PATH} = "/bin:/usr/bin";
+$ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{qw(IFS CDPATH ENV BASH_ENV)};   # Make %ENV safer
 print "Content-type: application/json\n\n";
 foreach my $c (@cmd) {
   print "$c\n";
 }
 system(@cmd);
-print "\n";
 print "[]\n";
