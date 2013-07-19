@@ -1501,7 +1501,8 @@ function restQuery() {
 
 // organizes ICSD operations
 ICSD = {}
-ICSD.scraperPath = 'scrape/scrape.cgi';
+//ICSD.scraperPath = 'scrape/scrape.cgi';
+ICSD.scraperPath = 'scrape/test.cgi';
 ICSD.getInputs = function(form) {
   var selector = '#' + form.id + ' table input';
   return $(selector);

@@ -1,4 +1,4 @@
-#!/usr/bin/perl -T
+#!/usr/bin/perl
 # CGI wrapper for bash wrapper for scraper.
 # hooray for bootstrapping!
 
@@ -35,14 +35,10 @@ sub untaint
   my($field, $input) = ($_[0], $_[1]);
   my $re = $param_types{$field};
   if ($input =~ $re) {
-    print "matches\n";
-    print "dollar one is now: $1\n";
     $input = $1;
   } else {
-    print "doesn't match\n";
     $input = "";
   }
-  print "input is now: $input\n";
   return $input;
 }
 
@@ -54,22 +50,16 @@ foreach my $expected_param (keys %param_types) {
 # remove trailing extra |
 $builder = substr($builder, 0, length($builder) - 1);
 $builder .= ")";
-print "$builder\n";
 my $expected_params = qr/$builder/;
 
 sub untaint_field
 {
   my $field = $_[0];
-  print "untainting field: $field\n";
   if ($field =~ $expected_params) {
-    print "matches\n";
-    print "dollar one is now: $1\n";
     $field = $1;
   } else {
-    print "doesn't match\n";
     $field = "";
   }
-  print "field is now: $field\n";
   return $field;
 }
 
@@ -85,7 +75,6 @@ my $input = "";
 # assemble scrubbedeters
 foreach my $field ($query->param) {
   $input = $query->param($field);
-  print "$field\n";
 
   # scrub field
   $scrubbed_field = &untaint_field($field);
@@ -103,8 +92,12 @@ foreach my $field ($query->param) {
   }
 }
 
-print "Content-type: application/json\n\n";
-$ENV{PATH} = "";
+#$ENV{PATH} = "/bin:/usr/bin";
 delete @ENV{qw(IFS CDPATH ENV BASH_ENV)};   # Make %ENV safer
-print "@cmd\n";
-exec(@cmd);
+print "Content-type: application/json\n\n";
+foreach my $c (@cmd) {
+  print "$c\n";
+}
+system(@cmd);
+print "\n";
+print "[]\n";
