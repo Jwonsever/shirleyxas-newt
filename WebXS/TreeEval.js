@@ -313,8 +313,14 @@ TreeEval._sepAssemble = function(values, separator) {
 // Determine how nodes are evaluated.
 // Library can be extended by creating new contexts.
 TreeEval.Contexts = {}
+
+// Global context.
+// Defines base functionality.
+// Can be inherited in order to override certain aspects.
 TreeEval.Contexts['global'] = new Object();
 
+// Determines the type of a node,
+// which will determine how it is evaluated.
 TreeEval.Contexts['global'].nodetype = function(jq_elem) {
   // base nodetype on tag name
   var nodetype = jq_elem.prop('tagName').toLowerCase();
@@ -339,10 +345,15 @@ TreeEval.Contexts['global']._NodetypeMods['select'] = function(jq_elem, key) {
   return key;
 }
 
+// Determine if a node should be evaluated.
 TreeEval.Contexts['global'].filter = function(nodetype) {
   // TODO
 }
 
+// Determine if a node is a leaf node or an internal node.
+// Leaf nodes will be evaluated immediately (literally),
+// whereas internal nodes will be evaluated recursively.
+// Some nodes make sense only as one type.
 TreeEval.Contexts['global'].isLeafNode = function(nodetype) {
   // default value for nodetype
   var result = this._LeafNodeDefaults[nodetype];
@@ -374,10 +385,12 @@ TreeEval.Context['global']._LeafNodeOverrides['select'] = function(jq_elem) {
   return next_node.length === 0;
 }
 
+// Evaluate a node as a leaf node.
 TreeEval.Contexts['global'].evaluateLeaf = function(jq_elem) {
   // TODO
 }
 
+// Evaluate a node as an internal node.
 TreeEval.Contexts['global'].evaluateInternal = function(jq_elem) {
   // TODO
 }
