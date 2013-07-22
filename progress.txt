@@ -1,4 +1,16 @@
+================================================================================
+
 REFACTORING TODO
 
 - perform all filtering in node evaluation, not in list evaluation.
     - return null for filtered-out node.
+
+================================================================================
+
+REFACTORING PERHAPS
+
+- separate contexts into 2 layers:
+  - very base, which contains strictly defaults.
+  - extends base, containing any additional rules not fit for global defaults.
+
+================================================================================

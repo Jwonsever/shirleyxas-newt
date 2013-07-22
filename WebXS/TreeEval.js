@@ -49,7 +49,7 @@ TreeEval.nodeValue = function(jq_elem, context_name) {
       break;
   }
   */
-  return context.evaluate(jq_elem);
+  return context.evaluateInternal(jq_elem);
 }
 
 TreeEval._isLeafNode = function(jq_elem) {
@@ -305,4 +305,23 @@ TreeEval._sepAssemble = function(values, separator) {
     ret += values[i];
   }
   return ret;
+}
+
+// contexts
+TreeEval.Contexts = {}
+TreeEval.Contexts['global'] = new Object();
+TreeEval.Contexts['global'].nodetype = function(jq_elem) {
+  // TODO
+}
+TreeEval.Contexts['global'].filter = function(nodetype) {
+  // TODO
+}
+TreeEval.Contexts['global'].isLeafNode = function(nodetype) {
+  // TODO
+}
+TreeEval.Contexts['global'].evaluateLeaf = function(jq_elem) {
+  // TODO
+}
+TreeEval.Contexts['global'].evaluateInternal = function(jq_elem) {
+  // TODO
 }
