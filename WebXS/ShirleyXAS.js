@@ -1591,19 +1591,10 @@ function restQuery() {
   var end = url.substring(url.lastIndexOf('/') + 1,
                           url.length);
 
-  // don't send PNGs to JSmol.
+  // only send SDFs to JSmol.
   var result = '';
   switch(end) {
-    case 'PNG':
-      result = '<a id="searchResult" ';
-      result += 'style="display:none" ';
-      result += 'target="_blank" href="';
-      result += url;
-      result += '">View Image</a><br>';
-      dest.html(result);
-      $('#searchResult').fadeIn();
-      break;
-    default:
+    case 'SDF':
       $.get(url, function(data, status) {
           lastSearchResult = data;
           result = '<p id="searchResult" ';
@@ -1612,6 +1603,19 @@ function restQuery() {
           dest.html(result);
           $('#searchResult').fadeIn();
       });
+      break;
+    default:
+      result = '<a id="searchResult" ';
+      result += 'style="display:none" ';
+      result += 'target="_blank" href="';
+      result += url;
+      if (end == 'PNG') {
+        result += '">View Image</a><br>';
+      } else {
+        result += '">Open Result</a><br>';
+      }
+      dest.html(result);
+      $('#searchResult').fadeIn();
       break;
   }
 }
