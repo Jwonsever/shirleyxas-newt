@@ -37,68 +37,8 @@ TreeEval.nodeValue = function(jq_elem, context_name) {
   }
 
   // recursion
-  /*
-  var type = jq_elem.prop('tagName').toLowerCase();
-  switch(type) {
-    case 'div':
-      return TreeEval._divValue(jq_elem);
-    case 'select':
-      return TreeEval._selectValue(jq_elem);
-    default:
-      alert("error: don't know how to recursively evaluate: " + type + '.');
-      break;
-  }
-  */
   return context.evaluateInternal(jq_elem);
 }
-
-/*
-TreeEval._isLeafNode = function(jq_elem) {
-  var key = jq_elem.prop('tagName').toLowerCase();
-  // modify key based on element attributes, if necessary
-  if (TreeEval._LeafNodeKeyMods.hasOwnProperty(key)) {
-    key = TreeEval._LeafNodeKeyMods[key](jq_elem, key);
-  }
-  
-  // default value for key
-  var result = TreeEval._LeafNodeDefaults[key];
-
-  // statically override, if one is present
-  if (jq_elem.attr('data-te-is-leaf')) {
-    result = jq_elem.data('teIsLeaf');
-  }
-  
-  // dynamically override, if applicable
-  if (TreeEval._LeafNodeOverrides.hasOwnProperty(key)) {
-    result = TreeEval._LeafNodeOverrides[key](jq_elem);
-  }
-
-  return result;
-}
-// attribute-based key modifiers for future lookup
-// keys are based on tag, and modified by these based on attributes
-TreeEval._LeafNodeKeyMods = {}
-TreeEval._LeafNodeKeyMods['select'] = function(jq_elem, key) {
-  if (jq_elem.prop('multiple')) {
-    key += '_multiple';
-  }
-  return key;
-}
-// default values for keys
-TreeEval._LeafNodeDefaults = {
-  select: false, // requires dynamic override anyway. TODO: figure out what to do about that.
-  select_multiple: true,
-  input: true,
-  div: false
-}
-// dynamic overrides
-TreeEval._LeafNodeOverrides = {}
-TreeEval._LeafNodeOverrides['select'] = function(jq_elem) {
-  var next_node = TreeEval.nextNode(jq_elem);
-  // whether or not a matching child node is found. If not, this is a leaf.
-  return next_node.length === 0;
-}
-*/
 
 TreeEval.nextNode = function(jq_elem) {
   // for internal (non-leaf) nodes,
