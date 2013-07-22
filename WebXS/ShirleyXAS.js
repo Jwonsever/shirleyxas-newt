@@ -1213,16 +1213,16 @@ function validateInputs(form) {
     //PPP Passes (AutoSet)
     //check nperatom
     if (form.NPERATOM.value.match(/^\d+$/) == null) {
-	message += "Nodes per atom must be an integer. \n";
+	message += "Nodes per atom must be a positive integer. \n";
 	invalid = true; }
     if (form.NBANDFAC.value.match(/^\d+$/) == null) {
-	message += "NBANDFAC must be an integer. \n";
+	message += "NBANDFAC must be a positive integer. \n";
 	invalid = true; }
     if (form.PPP.value.match(/^\d+$/) == null) {
-	message += "PPP must be an integer. \n";
+	message += "PPP must be a positive integer. \n";
 	invalid = true; }
     if (form.NTG.value.match(/^\d+$/) == null) {
-	message += "NTG must be an integer. \n";
+	message += "NTG must be a positive integer. \n";
 	invalid = true; }
     if (form.KPOINTS.value.match(/^\d+ \d+ \d+$/) == null) {
 	message += "KPoints must be of the form 'x y z'. \n";
@@ -1234,7 +1234,7 @@ function validateInputs(form) {
 	invalid = true; }
     //Check totalCharge
     var tchg = form.TOTCHG.value;
-    if (tchg.match(/^\d$/) == null) {
+    if (tchg.match(/^\-?\d$/) == null) {
 	message += "Total charge must be an integer value. \n";
 	invalid = true; }  
   
