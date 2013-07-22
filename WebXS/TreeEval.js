@@ -52,6 +52,7 @@ TreeEval.nodeValue = function(jq_elem, context_name) {
   return context.evaluateInternal(jq_elem);
 }
 
+/*
 TreeEval._isLeafNode = function(jq_elem) {
   var key = jq_elem.prop('tagName').toLowerCase();
   // modify key based on element attributes, if necessary
@@ -97,6 +98,7 @@ TreeEval._LeafNodeOverrides['select'] = function(jq_elem) {
   // whether or not a matching child node is found. If not, this is a leaf.
   return next_node.length === 0;
 }
+*/
 
 TreeEval.nextNode = function(jq_elem) {
   // for internal (non-leaf) nodes,
@@ -307,21 +309,75 @@ TreeEval._sepAssemble = function(values, separator) {
   return ret;
 }
 
-// contexts
+// Evaluation contexts.
+// Determine how nodes are evaluated.
+// Library can be extended by creating new contexts.
 TreeEval.Contexts = {}
 TreeEval.Contexts['global'] = new Object();
+
 TreeEval.Contexts['global'].nodetype = function(jq_elem) {
-  // TODO
+  // base nodetype on tag name
+  var nodetype = jq_elem.prop('tagName').toLowerCase();
+
+  // modify nodetype based on element attributes, if necessary
+  if (this._NodetypeMods.hasOwnProperty(nodetype)) {
+    nodetype = this._NodetypeMods[nodetype](jq_elem, nodetype);
+  }
+
+  // statically override, if one is present
+  if (jq_elem.attr('data-te-nodetype')) {
+    result = jq_elem.data('teNodetype');
+  }
 }
+// attribute-based key modifiers for future lookup
+// keys are based on tag, and modified by these based on attributes
+TreeEval.Contexts['global']._NodetypeMods = {}
+TreeEval.Contexts['global']._NodetypeMods['select'] = function(jq_elem, key) {
+  if (jq_elem.prop('multiple')) {
+    key += '_multiple';
+  }
+  return key;
+}
+
 TreeEval.Contexts['global'].filter = function(nodetype) {
   // TODO
 }
+
 TreeEval.Contexts['global'].isLeafNode = function(nodetype) {
-  // TODO
+  // default value for nodetype
+  var result = this._LeafNodeDefaults[nodetype];
+  
+  // dynamically override, if applicable
+  if (this._LeafNodeOverrides.hasOwnProperty(nodetype)) {
+    result = this._LeafNodeOverrides[nodetype](jq_elem);
+  }
+
+  // statically override, if one is present
+  if (jq_elem.attr('data-te-is-leaf')) {
+    result = jq_elem.data('teIsLeaf');
+  }
+
+  return result;
 }
+// default values for keys
+TreeEval.Context['global']._LeafNodeDefaults = {
+  select: false, // requires dynamic override anyway. TODO: figure out what to do about that.
+  select_multiple: true,
+  input: true,
+  div: false
+}
+// dynamic overrides
+TreeEval.Context['global']._LeafNodeOverrides = {}
+TreeEval.Context['global']._LeafNodeOverrides['select'] = function(jq_elem) {
+  var next_node = TreeEval.nextNode(jq_elem);
+  // whether or not a matching child node is found. If not, this is a leaf.
+  return next_node.length === 0;
+}
+
 TreeEval.Contexts['global'].evaluateLeaf = function(jq_elem) {
   // TODO
 }
+
 TreeEval.Contexts['global'].evaluateInternal = function(jq_elem) {
   // TODO
 }

@@ -3,7 +3,10 @@
 REFACTORING TODO
 
 - perform all filtering in node evaluation, not in list evaluation.
-    - return null for filtered-out node.
+  - return null for filtered-out node.
+- also add function for determining next context, and use it and pass
+  its value in parameter (to add).
+- Is nextnode going to change? Is is context-specific?
 
 ================================================================================
 
