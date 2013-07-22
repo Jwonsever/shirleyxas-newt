@@ -17,14 +17,27 @@ TreeEval._meaningfulElems = 'input,select,div';
 /*
  * Tree traversal.
  */
-TreeEval.nodeValue = function(jq_elem) {
+TreeEval.nodeValue = function(jq_elem, context_name) {
+  // use global context if none specified
+  if (typeof context_name === 'undefined') {
+    context_name = 'global';
+  }
+  var context =  TreeEval.Contexts[context_name];
+
   // let node know it has been visited, so any callbacks can fire
   jq_elem.trigger('visit.TreeEval');
-  // base case
-  if (TreeEval._isLeafNode(jq_elem)) {
-    return TreeEval._leafNodeVal(jq_elem);
+
+  // base cases
+  var nodetype = context.nodetype(jq_elem);
+  if (context.filter(nodetype) === false) {
+    return null;
   }
+  if (context.isLeafNode(nodetype)) {
+    return context.evaluateLeaf(jq_elem);
+  }
+
   // recursion
+  /*
   var type = jq_elem.prop('tagName').toLowerCase();
   switch(type) {
     case 'div':
@@ -35,6 +48,8 @@ TreeEval.nodeValue = function(jq_elem) {
       alert("error: don't know how to recursively evaluate: " + type + '.');
       break;
   }
+  */
+  return context.evaluate(jq_elem);
 }
 
 TreeEval._isLeafNode = function(jq_elem) {
@@ -170,7 +185,7 @@ TreeEval.childNodes = function(jq_elem) {
   var children = jq_elem.children(TreeEval._meaningfulElems);
   return children.filter(function() {
       return TreeEval.passesFilters($(this));
-      });
+  });
 }
 
 /*
