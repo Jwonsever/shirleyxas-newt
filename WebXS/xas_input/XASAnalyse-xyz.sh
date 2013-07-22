@@ -196,6 +196,6 @@ $MyDir/XAS/Spectrum-$t"
 done
 
 #added 8/22 Grab size stats
-du -c . | tail -n 1 >> stats.txt
+~/getStats.py `basename $MyDir` >> stats.txt
 
 exit

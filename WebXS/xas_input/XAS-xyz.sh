@@ -83,6 +83,11 @@ ${BibDir}/Chop.sh $PBS_NODEFILE $PPN        #decompose parent node file
 
 #XAS start
 
+#Is this a rerun? Save the preveious xas.out. 
+if [[ -f $MyDir/xas.out ]]; then
+    echo | cat $MyDir/xas.out >> xas.out.old
+fi
+
 if [[ ! -d $MyDir/XAS ]]; then
 mkdir $MyDir/XAS
 fi

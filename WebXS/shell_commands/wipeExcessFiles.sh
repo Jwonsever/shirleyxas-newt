@@ -11,7 +11,7 @@ find . -name "*.hamloc" -exec rm -rf {} \;
 
 find . -name "*.dat" -exec rm -rf {} \;
 find . -name "*.xmat" -exec rm -rf {} \;
-find . -name "*.stick*" ! -name "* 0" -exec rm -rf {} \;
+find . -name "*.stick*" -not -name "* 0" -exec rm -rf {} \;
 find . -name "*.wcf*" -exec rm -rf {} \;
 find . -name "*fort*" -exec rm -rf {} \;
 find . -name "*.sdb*" -exec rm -rf {} \;
