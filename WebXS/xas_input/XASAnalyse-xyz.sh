@@ -195,7 +195,7 @@ $MyDir/XAS/Spectrum-$t"
   echo   $SpecDir/Spectrum-Ave-$t
 done
 
-#added 8/22 Grab size stats
-~/getStats.py `basename $MyDir` >> stats.txt
+#Grab stats
+#~/getStats.py $MyDir >> stats.txt
 
 exit
