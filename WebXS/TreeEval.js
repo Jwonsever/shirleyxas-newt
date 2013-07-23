@@ -29,7 +29,7 @@ TreeEval.nodeValue = function(jq_elem, recursor_name) {
 
   // base cases
   var nodetype = recursor.nodetype(jq_elem);
-  if (recursor.filter(nodetype) === false) {
+  if (recursor.filter(jq_elem) === false) {
     return null;
   }
   if (recursor.isLeafNode(nodetype)) {
@@ -133,20 +133,6 @@ TreeEval._Forwarders['teForwardTo'] = function (elem_id, jq_elem) {
 /*
  * Node filtering
  */
-TreeEval.passesFilters = function(jq_elem) {
-  // iterate over all filters and apply each one
-  var curr_filter = null;
-  for (var filter_key in TreeEval._Filters) {
-    if (TreeEval._Filters.hasOwnProperty(filter_key)) {
-      curr_filter = TreeEval._Filters[filter_key];
-      if (!(curr_filter(jq_elem))) {
-        return false;
-      }
-    }
-  }
-  return true;
-}
-
 // Node filterers (true => pass):
 TreeEval._Filters = {};
 TreeEval._Filters['notUnchecked'] = function(jq_elem) {
@@ -162,42 +148,23 @@ TreeEval._Filters['notSkipped'] = function(jq_elem) {
 }
 
 /*
- * List assembly
+ * Lists
  */
-TreeEval.getAssembler = function(jq_elem) {
-  // iterate over type->assembler combinations
-  for (var listType in TreeEval._Assemblers) {
-    if (TreeEval._Assemblers.hasOwnProperty(listType)) {
-      if (jq_elem.data(listType)) {
-        return TreeEval._Assemblers[listType];
-      }
+TreeEval._getListType = function(jq_elem) {
+  // return first matching list type
+  var length = TreeEval._ListTypes.length;
+  var listType = null;
+  for (var i = 0; i < length; i++) {
+    listType = TreeEval._ListTypes[i];
+    if (jq_elem.data(listType)) {
+      return listType;
     }
   }
   return null;
 }
-
-// List assemblers:
-TreeEval._Assemblers = {}
-TreeEval._Assemblers['teListSlash'] = function(values) {
-  return TreeEval._sepAssemble(values, '/');
-}
-TreeEval._Assemblers['teListComma'] = function(values) {
-  return TreeEval._sepAssemble(values, ',');
-}
-TreeEval._Assemblers['teListConcat'] = function(values) {
-  return TreeEval._sepAssemble(values, '');
-}
-TreeEval._sepAssemble = function(values, separator) {
-  var ret = '';
-  var length = values.length;
-  for (var i = 0; i < length; i++) {
-    if (i != 0) {
-      ret += separator;
-    }
-    ret += values[i];
-  }
-  return ret;
-}
+TreeEval._ListTypes = ['teListSlash',
+                       'teListComma',
+                       'teListConcat'];
 
 // Evaluation recursors.
 // Determine the flow of recursion and how nodes are evaluated.
@@ -236,8 +203,21 @@ TreeEval.Recursors['base']._NodetypeMods['select'] = function(jq_elem, key) {
 }
 
 // Determine if a node should be evaluated.
-TreeEval.Recursors['base'].filter = function(nodetype) {
-  // TODO
+TreeEval.Recursors['base'].filter = function(jq_elem) {
+  return this._passesContextFilters()
+}
+TreeEval.Recursors['base']._passesContextFilters = function(jq_elem) {
+  // iterate over all filters and apply each one
+  var curr_filter = null;
+  for (var filter_key in TreeEval._Filters) {
+    if (TreeEval._Filters.hasOwnProperty(filter_key)) {
+      curr_filter = TreeEval._Filters[filter_key];
+      if (!(curr_filter(jq_elem))) {
+        return false;
+      }
+    }
+  }
+  return true;
 }
 
 // Determine if a node is a leaf node or an internal node.
@@ -312,7 +292,7 @@ TreeEval.Recursors['base'].evaluateInternal = function(jq_elem) {
     var msg = "TreeEval: Error: don't know how to recursively evaluate nodetype: ";
     msg += nodetype;
     msg += '.';
-    alert(msg);
+    console.log(msg);
   }
 }
 TreeEval.Recursors['base']._InternalEvaluators = {}
@@ -333,4 +313,41 @@ TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem) {
     var next_node = TreeEval.nextNode(jq_elem);
     return TreeEval.nodeValue(next_node);
   }
+}
+TreeEval.Recursors['base'].getAssembler = function(jq_elem) {
+  var listType = TreeEval._getListType(jq_elem);
+  if (listType !== null) {
+      if (TreeEval._Assemblers.hasOwnProperty(listType)) {
+        return TreeEval._Assemblers[listType];
+      } else {
+        var msg = "TreeEval: Error: don't know how to evaluate listType: ";
+        msg += listType;
+        msg += '.';
+        console.log(msg);
+      }
+  } else {
+    return null;
+  }
+}
+// List assemblers:
+TreeEval.Recursors['base']._Assemblers = {}
+TreeEval.Recursors['base']._Assemblers['teListSlash'] = function(values) {
+  return TreeEval._sepAssemble(values, '/');
+}
+TreeEval.Recursors['base']._Assemblers['teListComma'] = function(values) {
+  return TreeEval._sepAssemble(values, ',');
+}
+TreeEval.Recursors['base']._Assemblers['teListConcat'] = function(values) {
+  return TreeEval._sepAssemble(values, '');
+}
+TreeEval.Recursors['base']._sepAssemble = function(values, separator) {
+  var ret = '';
+  var length = values.length;
+  for (var i = 0; i < length; i++) {
+    if (i != 0) {
+      ret += separator;
+    }
+    ret += values[i];
+  }
+  return ret;
 }
