@@ -54,37 +54,6 @@ TreeEval.nextNode = function(jq_elem) {
   return $(next_id);
 }
 
-/*
- * Non-recursive node evaluation.
- */
-TreeEval._leafNodeVal = function(jq_elem) {
-  // perhaps pass this as a param to save second calculation?
-  var type = jq_elem.prop('tagName').toLowerCase();
-  if (!(TreeEval.passesFilters(jq_elem))) {
-    // filtered-out leaf nodes evaluate empty
-    return '';
-  } else if (type === 'select' &&
-      jq_elem.prop('multiple')) {
-    // if it's a select multiple, make it into a comma-separated list string
-    return TreeEval._selectMultipleVal(jq_elem);
-  } else {
-    return jq_elem.val();
-  }
-}
-
-TreeEval._selectMultipleVal = function(jq_elem) {
-  // leaf node
-  var result = '';
-  var selected = jq_elem.val();
-  var length = selected.length;
-  for (var i = 0; i < length; i++) {
-    if (i !== 0) {
-      result += ',';
-    }
-    result += selected[i];
-  }
-  return result;
-}
 
 /*
  * Recursive node evaluation.
@@ -327,7 +296,28 @@ TreeEval.Context['global']._LeafNodeOverrides['select'] = function(jq_elem) {
 
 // Evaluate a node as a leaf node.
 TreeEval.Contexts['global'].evaluateLeaf = function(jq_elem) {
-  // TODO
+  // TODO: perhaps pass this as a param to save second calculation?
+  // perhaps add an optional parameter.
+  var nodetype = this.nodetype(jq_elem);
+  if (this._LeafEvaluators.hasOwnProperty(nodetype)) {
+    return this._LeafEvaluators[nodetype](jq_elem);
+  } else {
+    return jq_elem.val();
+  }
+}
+TreeEval.Contexts['global']._LeafEvaluators = {}
+TreeEval.Contexts['global']._LeafEvaluators['select_multiple'] = function(jq_elem) {
+  // TODO: why not just use sepAssemble()?
+  var result = '';
+  var selected = jq_elem.val();
+  var length = selected.length;
+  for (var i = 0; i < length; i++) {
+    if (i !== 0) {
+      result += ',';
+    }
+    result += selected[i];
+  }
+  return result;
 }
 
 // Evaluate a node as an internal node.
