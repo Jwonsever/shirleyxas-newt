@@ -8,11 +8,7 @@ Library for string-building via evaluation of symbolic document elements.
 Essentially a text-replacement engine in an HTML context.
  */
 
-/* 
- * Generic stuff.
- */
 TreeEval = {};
-TreeEval._meaningfulElems = 'input,select,div';
 
 /*
  * Tree traversal.
@@ -40,10 +36,26 @@ TreeEval.nodeValue = function(jq_elem, recursor_name) {
   return recursor.evaluateInternal(jq_elem);
 }
 
-TreeEval.nextNode = function(jq_elem) {
+
+
+// Evaluation Contexts.
+// Specify a context for recursion to happen.
+// Determine what is being evaluated.
+TreeEval.Contexts = {}
+
+// HTML Context.
+// Used for evaluating HTML elements.
+TreeEval.Contexts['html'] = new Object();
+
+TreeEval.Contexts['html']._meaningfulElems = 'input,select,div';
+
+/*
+ * Node progression.
+ */
+TreeEval.Contexts['html'].nextNode = function(jq_elem) {
   // for internal (non-leaf) nodes,
   // i.e. divs and selects (but not select multiples).
-  var next_id = TreeEval.forward(jq_elem);
+  var next_id = this.forward(jq_elem);
   // TODO: generalize this to skip all lists.
   if (jq_elem.prop('tagName').toLowerCase() != 'div') {
     if (next_id.length > 1) {
@@ -54,41 +66,12 @@ TreeEval.nextNode = function(jq_elem) {
   return $(next_id);
 }
 
-
-/*
- * Recursive node evaluation.
- */
-TreeEval.childValues = function(jq_elem) {
-  var childNodes = TreeEval.childNodes(jq_elem);
-
-  // mutual recursion: call nodeValue() on each child to get all child parameters
-  // essentially: values = map(TreeEval.nodeValue, childNodes)
-  var length = childNodes.length;
-  var values = new Array(length);
-  for (var i = 0; i < length; i++) {
-    values[i] = TreeEval.nodeValue($(childNodes[i]));
-  }
-
-  return values;
-}
-TreeEval.childNodes = function(jq_elem) {
-  // list all the (meaningful) 1-deep child nodes of elem.
-  var children = jq_elem.children(TreeEval._meaningfulElems);
-  return children.filter(function() {
-      return TreeEval.passesFilters($(this));
-  });
-}
-
-
-/*
- * Node forwarding
- */
-TreeEval.forward = function(jq_elem) {
+TreeEval.Contexts['html'].forward = function(jq_elem) {
   var next_id = '#' + jq_elem.prop('id');
   // alter forwarding as requested by elem
-  for (var forwarder in TreeEval._Forwarders) {
-    if (TreeEval._Forwarders.hasOwnProperty(forwarder)) {
-      next_id = TreeEval._Forwarders[forwarder](next_id, jq_elem);
+  for (var forwarder in this._Forwarders) {
+    if (this._Forwarders.hasOwnProperty(forwarder)) {
+      next_id = this._Forwarders[forwarder](next_id, jq_elem);
     }
   }
   return next_id;
@@ -97,8 +80,8 @@ TreeEval.forward = function(jq_elem) {
 // Node forwarders:
 // IMPORTANT: the order of evaluation of these forwarders is intentional.
 // These are not positioned arbitrarily.
-TreeEval._Forwarders = {};
-TreeEval._Forwarders['teForwardThrough'] = function (elem_id, jq_elem) {
+TreeEval.Contexts['html']._Forwarders = {};
+TreeEval.Contexts['html']._Forwarders['teForwardThrough'] = function (elem_id, jq_elem) {
   if (jq_elem.data('teForwardThrough')) {
     // forward through this element:
     // drop the last part of the id
@@ -111,7 +94,7 @@ TreeEval._Forwarders['teForwardThrough'] = function (elem_id, jq_elem) {
   }
   return elem_id;
 } 
-TreeEval._Forwarders['teForwardWith'] = function (elem_id, jq_elem) {
+TreeEval.Contexts['html']._Forwarders['teForwardWith'] = function (elem_id, jq_elem) {
   var forward_with = jq_elem.data('teForwardWith');
   if (forward_with) {
     // forward with an addition:
@@ -120,7 +103,7 @@ TreeEval._Forwarders['teForwardWith'] = function (elem_id, jq_elem) {
   }
   return elem_id;
 }
-TreeEval._Forwarders['teForwardTo'] = function (elem_id, jq_elem) {
+TreeEval.Contexts['html']._Forwarders['teForwardTo'] = function (elem_id, jq_elem) {
   var forward_to = jq_elem.data('teForwardTo');
   if (forward_to) {
     // forward to an element:
@@ -130,10 +113,51 @@ TreeEval._Forwarders['teForwardTo'] = function (elem_id, jq_elem) {
   return elem_id;
 }
 
+
 /*
- * Node filtering
+ * List evaluation.
  */
-// Node filterers (true => pass):
+TreeEval.Contexts['html'].childValues = function(jq_elem) {
+  var childNodes = this.childNodes(jq_elem);
+
+  // mutual recursion: call nodeValue() on each child to get all child parameters
+  // essentially: values = map(this.nodeValue, childNodes)
+  var length = childNodes.length;
+  var values = new Array(length);
+  for (var i = 0; i < length; i++) {
+    values[i] = TreeEval.nodeValue($(childNodes[i]));
+  }
+
+  return values;
+}
+TreeEval.Contexts['html'].childNodes = function(jq_elem) {
+  // list all the (meaningful) 1-deep child nodes of elem.
+  // Do not filter them here;
+  // they will be filtered upon evaluation, by the context.
+  var children = jq_elem.children(this._meaningfulElems);
+  return children;
+}
+
+TreeEval.Contexts['html']._getListType = function(jq_elem) {
+  // return first matching list type
+  var length = this._ListTypes.length;
+  var listType = null;
+  for (var i = 0; i < length; i++) {
+    listType = this._ListTypes[i];
+    if (jq_elem.data(listType)) {
+      return listType;
+    }
+  }
+  return null;
+}
+TreeEval.Contexts['html']._ListTypes = ['teListSlash',
+                       'teListComma',
+                       'teListConcat'];
+
+
+/*
+ * Node filters (true => pass)
+ */
 TreeEval._Filters = {};
 TreeEval._Filters['notUnchecked'] = function(jq_elem) {
   if (jq_elem.prop('tagName').toLowerCase() === 'input' &&
@@ -147,24 +171,7 @@ TreeEval._Filters['notSkipped'] = function(jq_elem) {
   return !(jq_elem.data('teSkip'));
 }
 
-/*
- * Lists
- */
-TreeEval._getListType = function(jq_elem) {
-  // return first matching list type
-  var length = TreeEval._ListTypes.length;
-  var listType = null;
-  for (var i = 0; i < length; i++) {
-    listType = TreeEval._ListTypes[i];
-    if (jq_elem.data(listType)) {
-      return listType;
-    }
-  }
-  return null;
-}
-TreeEval._ListTypes = ['teListSlash',
-                       'teListComma',
-                       'teListConcat'];
+
 
 // Evaluation recursors.
 // Determine the flow of recursion and how nodes are evaluated.
