@@ -1596,12 +1596,19 @@ function restQuery() {
   switch(end) {
     case 'SDF':
       $.get(url, function(data, status) {
-          lastSearchResult = data;
-          result = '<p id="searchResult" ';
-          result += ' style="display:none">';
-          result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
-          dest.html(result);
-          $('#searchResult').fadeIn();
+        lastSearchResult = data;
+        result = '<p id="searchResult" ';
+        result += ' style="display:none">';
+        result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
+        dest.html(result);
+        $('#searchResult').fadeIn();
+      }).fail(function(xhr, textStatus, errorThrown) {
+        result = 'An error occurred with the request:<br><pre>';
+        result += errorThrown;
+        result += '<br><br>';
+        result += xhr.responseText;
+        result += '</pre>';
+        dest.html(result);
       });
       break;
     default:
