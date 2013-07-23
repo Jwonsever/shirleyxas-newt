@@ -58,26 +58,6 @@ TreeEval.nextNode = function(jq_elem) {
 /*
  * Recursive node evaluation.
  */
-TreeEval._selectValue = function(jq_elem) {
-  // we already tested that this is not a leaf node.
-  var next_node = TreeEval.nextNode(jq_elem);
-  return TreeEval.nodeValue(next_node);
-}
-
-TreeEval._divValue = function(jq_elem) {
-  var assemble = TreeEval.getAssembler(jq_elem);
-  if (assemble) {
-    var children = TreeEval.childValues(jq_elem);
-    return assemble(children);
-  } else {
-    // Not a list. try to forward it.
-    // NOTE: this can cause an infinite loop if document is improperly formatted.
-    // TODO: check that it has forwarding info.
-    // If not, throw an error to avoid infinite loop.
-    var next_node = TreeEval.nextNode(jq_elem);
-    return TreeEval.nodeValue(next_node);
-  }
-}
 TreeEval.childValues = function(jq_elem) {
   var childNodes = TreeEval.childNodes(jq_elem);
 
@@ -98,6 +78,7 @@ TreeEval.childNodes = function(jq_elem) {
       return TreeEval.passesFilters($(this));
   });
 }
+
 
 /*
  * Node forwarding
@@ -322,5 +303,34 @@ TreeEval.Contexts['global']._LeafEvaluators['select_multiple'] = function(jq_ele
 
 // Evaluate a node as an internal node.
 TreeEval.Contexts['global'].evaluateInternal = function(jq_elem) {
-  // TODO
+  // TODO: perhaps pass this as a param to save second calculation?
+  // perhaps add an optional parameter.
+  var nodetype = this.nodetype(jq_elem);
+  if (this._InternalEvaluators.hasOwnProperty(nodetype)) {
+    return this._InternalEvaluators[nodetype](jq_elem);
+  } else {
+    var msg = "TreeEval: Error: don't know how to recursively evaluate nodetype: ";
+    msg += nodetype;
+    msg += '.';
+    alert(msg);
+  }
+}
+TreeEval.Contexts['global']._InternalEvaluators = {}
+TreeEval.Contexts['global']._InternalEvaluators['select'] = function(jq_elem) {
+  var next_node = TreeEval.nextNode(jq_elem);
+  return TreeEval.nodeValue(next_node);
+}
+TreeEval.Contexts['global']._InternalEvaluators['div'] = function(jq_elem) {
+  var assemble = TreeEval.getAssembler(jq_elem);
+  if (assemble) {
+    var children = TreeEval.childValues(jq_elem);
+    return assemble(children);
+  } else {
+    // Not a list. try to forward it.
+    // NOTE: this can cause an infinite loop if document is improperly formatted.
+    // TODO: check that it has forwarding info.
+    // If not, throw an error to avoid infinite loop.
+    var next_node = TreeEval.nextNode(jq_elem);
+    return TreeEval.nodeValue(next_node);
+  }
 }

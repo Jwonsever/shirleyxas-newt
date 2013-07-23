@@ -7,6 +7,9 @@ REFACTORING TODO
 - also add function for determining next context, and use it and pass
   its value in parameter (to add).
 - Is nextnode going to change? Is is context-specific?
+- if HTML context is entirely encapsulated in global context,
+  try to abstract it fully from traversal framework.
+    - rename jq_elem to node.
 
 ================================================================================
 
