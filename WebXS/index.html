@@ -335,7 +335,7 @@
                   </div>
                 </div>
 
-                <div id="PubChem_substance" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                <div id="PubChem_substance" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
                   <input  id="PubChem_substance_domain" type="text" value="substance" style="display:none" disabled/>
 
                   Namespace<br>
@@ -347,7 +347,7 @@
                     <option value="xref">xref</option>
                   </select>
 
-                  <div style="padding:10px;">
+                  <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" value="sourceid" style="display:none" disabled/>
                       <!-- TODO: do this in javascipt -->
@@ -418,7 +418,7 @@
                   </div>
                 </div>
 
-                <div id="PubChem_assay" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                <div id="PubChem_assay" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
                   <input  id="PubChem_assay_domain" type="text" value="assay" style="display:none" disabled/>
 
                   Namespace<br>
@@ -428,7 +428,7 @@
                     <option value="sourceall">sourceall</option>
                   </select>
 
-                  <div style="padding:10px;">
+                  <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_assay_type" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" id="PubChem_assay_type_1" value="type" style="display:none" disabled/>
                       <select id="PubChem_assay_type_2">
@@ -449,6 +449,7 @@
                       <br>
                       <input type="text" id="PubChem_assay_sourceall_2" value=""/>
                     </div>
+
                     <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
                     <br>
                     <input type="Text" id="PubChem_assay_input" value=""/>
@@ -470,10 +471,10 @@
                     <option value="xrefs">xrefs</option>
                   </select>
 
-                  <div style="padding:10px">
+                  <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_targets_2" value="targets" style="display:none" disabled/>
-                      <select multiple id="PubChem_assay_op_targets_1">
+                      <input type="text" id="PubChem_assay_op_targets_1" value="targets" style="display:none" disabled/>
+                      <select multiple id="PubChem_assay_op_targets_2">
                         <option value="ProteinGI">ProteinGI</input>
                         <option value="ProteinName">ProteinName</input>
                         <option value="GeneID">GeneID</input>
