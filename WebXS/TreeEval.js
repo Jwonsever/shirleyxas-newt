@@ -22,7 +22,7 @@ TreeEval.nodeValue = function(node, recursor, context) {
   }
   // use HTML context if none specified
   if (typeof context === 'undefined') {
-    context =  this.Recursors['html'];
+    context =  this.Contexts['html'];
   }
 
   // let node know it has been visited, so any callbacks can fire
@@ -32,7 +32,7 @@ TreeEval.nodeValue = function(node, recursor, context) {
   if (recursor.filter(node, context) === false) {
     return null;
   }
-  if (recursor.isLeafNode(nodetype, context)) {
+  if (recursor.isLeafNode(node, context)) {
     return recursor.evaluateLeaf(node, context);
   }
 
@@ -75,19 +75,21 @@ TreeEval.Contexts['html'].nodetype = function(jq_elem) {
 
   // statically override, if one is present
   if (jq_elem.attr('data-te-nodetype')) {
-    result = jq_elem.data('teNodetype');
+    nodetype = jq_elem.data('teNodetype');
   }
+
+  return nodetype;
 }
 
-// attribute-based key modifiers for future lookup
-// keys are based on tag, and modified by these based on attributes
+// attribute-based nodetype modifiers.
+// nodetypes are based on tag, and modified by these based on attributes
 TreeEval.Contexts['html']._NodetypeMods = {}
 
-TreeEval.Contexts['html']._NodetypeMods['select'] = function(jq_elem, key) {
+TreeEval.Contexts['html']._NodetypeMods['select'] = function(jq_elem, nodetype) {
   if (jq_elem.prop('multiple')) {
-    key += '_multiple';
+    nodetype += '_multiple';
   }
-  return key;
+  return nodetype;
 }
 
 
@@ -212,9 +214,9 @@ TreeEval.Contexts['html']._ListTypes = ['teListSlash',
 /*
  * Node filtering (true => pass)
  */
-TreeEval.Filters = {};
+TreeEval.Contexts['html'].Filters = {};
 
-TreeEval.Filters['notUnchecked'] = function(jq_elem) {
+TreeEval.Contexts['html'].Filters['notUnchecked'] = function(jq_elem) {
   if (jq_elem.prop('tagName').toLowerCase() === 'input' &&
       jq_elem.prop('type') === 'checkbox') {
     return jq_elem.prop('checked');
@@ -223,7 +225,7 @@ TreeEval.Filters['notUnchecked'] = function(jq_elem) {
   }
 }
 
-TreeEval.Filters['notSkipped'] = function(jq_elem) {
+TreeEval.Contexts['html'].Filters['notSkipped'] = function(jq_elem) {
   return !(jq_elem.data('teSkip'));
 }
 
@@ -254,9 +256,9 @@ TreeEval.Recursors['base'].filter = function(jq_elem, context) {
 TreeEval.Recursors['base']._passesContextFilters = function(jq_elem, context) {
   // iterate over all filters and apply each one
   var curr_filter = null;
-  for (var filter_key in context._Filters) {
-    if (context._Filters.hasOwnProperty(filter_key)) {
-      curr_filter = context._Filters[filter_key];
+  for (var filter_key in context.Filters) {
+    if (context.Filters.hasOwnProperty(filter_key)) {
+      curr_filter = context.Filters[filter_key];
       if (!(curr_filter(jq_elem))) {
         return false;
       }
@@ -279,9 +281,11 @@ TreeEval.Recursors['base'].isLeafNode = function(jq_elem, context) {
   
   // dynamically override, if applicable
   if (this._LeafNodeOverrides.hasOwnProperty(nodetype)) {
-    result = this._LeafNodeOverrides[nodetype](jq_elem);
+    result = this._LeafNodeOverrides[nodetype](jq_elem, context);
   }
 
+  // TODO: move the html into the HTML Context.
+  // Create a function that returns the override, or null if there is none.
   // statically override, if one is present
   if (jq_elem.attr('data-te-is-leaf')) {
     result = jq_elem.data('teIsLeaf');
@@ -301,8 +305,8 @@ TreeEval.Recursors['base']._LeafNodeDefaults = {
 // dynamic overrides
 TreeEval.Recursors['base']._LeafNodeOverrides = {}
 
-TreeEval.Recursors['base']._LeafNodeOverrides['select'] = function(jq_elem) {
-  var next_node = TreeEval.nextNode(jq_elem);
+TreeEval.Recursors['base']._LeafNodeOverrides['select'] = function(jq_elem, context) {
+  var next_node = context.nextNode(jq_elem);
   // whether or not a matching child node is found. If not, this is a leaf.
   return next_node.length === 0;
 }
@@ -314,8 +318,9 @@ TreeEval.Recursors['base']._LeafNodeOverrides['select'] = function(jq_elem) {
 TreeEval.Recursors['base'].evaluateLeaf = function(jq_elem, context) {
   var nodetype = context.nodetype(jq_elem);
   if (this._LeafEvaluators.hasOwnProperty(nodetype)) {
-    return this._LeafEvaluators[nodetype](jq_elem);
+    return this._LeafEvaluators[nodetype](jq_elem, context);
   } else {
+    // move node.val() into <Context>.valueHere(node), or something.
     return jq_elem.val();
   }
 }
@@ -323,9 +328,10 @@ TreeEval.Recursors['base'].evaluateLeaf = function(jq_elem, context) {
 // leaf node evaluators
 TreeEval.Recursors['base']._LeafEvaluators = {}
 
-TreeEval.Recursors['base']._LeafEvaluators['select_multiple'] = function(jq_elem) {
+TreeEval.Recursors['base']._LeafEvaluators['select_multiple'] = function(jq_elem, context) {
+  var this_recursor = TreeEval.Recursors['base'];
   var selected = jq_elem.val();
-  return this._sepAssemble(selected, ',');
+  return this_recursor._sepAssemble(selected, ',');
 }
 
 
@@ -348,14 +354,16 @@ TreeEval.Recursors['base'].evaluateInternal = function(jq_elem, context) {
 TreeEval.Recursors['base']._InternalEvaluators = {}
 
 TreeEval.Recursors['base']._InternalEvaluators['select'] = function(jq_elem, context) {
+  var this_recursor = TreeEval.Recursors['base'];
   var next_node = context.nextNode(jq_elem);
-  return TreeEval.nodeValue(next_node, this, context);
+  return TreeEval.nodeValue(next_node, this_recursor, context);
 }
 
 TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem, context) {
-  var assemble = this._getAssembler(jq_elem, context);
+  var this_recursor = TreeEval.Recursors['base'];
+  var assemble = this_recursor._getAssembler(jq_elem, context);
   if (assemble !== null) {
-    var children = context.childValues(jq_elem, this);
+    var children = context.childValues(jq_elem, this_recursor);
     return assemble(children);
   } else {
     // Not a list. try to forward it.
@@ -363,7 +371,7 @@ TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem, contex
     // TODO: check that it has forwarding info.
     // If not, throw an error to avoid infinite loop.
     var next_node = context.nextNode(jq_elem);
-    return TreeEval.nodeValue(next_node, this, context);
+    return TreeEval.nodeValue(next_node, this_recursor, context);
   }
 }
 
@@ -391,25 +399,30 @@ TreeEval.Recursors['base']._getAssembler = function(jq_elem, context) {
 TreeEval.Recursors['base']._Assemblers = {}
 
 TreeEval.Recursors['base']._Assemblers['teListSlash'] = function(values) {
-  return this._sepAssemble(values, '/');
+  return TreeEval.Recursors['base']._sepAssemble(values, '/');
 }
 
 TreeEval.Recursors['base']._Assemblers['teListComma'] = function(values) {
-  return this._sepAssemble(values, ',');
+  return TreeEval.Recursors['base']._sepAssemble(values, ',');
 }
 
 TreeEval.Recursors['base']._Assemblers['teListConcat'] = function(values) {
-  return this._sepAssemble(values, '');
+  return TreeEval.Recursors['base']._sepAssemble(values, '');
 }
 
 TreeEval.Recursors['base']._sepAssemble = function(values, separator) {
   var ret = '';
   var length = values.length;
+  var value = null;
   for (var i = 0; i < length; i++) {
-    if (i != 0) {
+    value = values[i];
+    if (value === null) {
+      continue;
+    }
+    if (ret !== '') {
       ret += separator;
     }
-    ret += values[i];
+    ret += value;
   }
   return ret;
 }
