@@ -4,7 +4,9 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 06/2013 -> Present
 
-Library for string-building via evaluation of symbolic document elements.
+API/Library for performing contextual tree evaluation.
+
+Implemented for string-building via evaluation of symbolic document elements.
 Essentially a text-replacement engine in an HTML context.
  */
 
@@ -322,17 +324,8 @@ TreeEval.Recursors['base'].evaluateLeaf = function(jq_elem, context) {
 TreeEval.Recursors['base']._LeafEvaluators = {}
 
 TreeEval.Recursors['base']._LeafEvaluators['select_multiple'] = function(jq_elem) {
-  // TODO: why not just use sepAssemble()?
-  var result = '';
   var selected = jq_elem.val();
-  var length = selected.length;
-  for (var i = 0; i < length; i++) {
-    if (i !== 0) {
-      result += ',';
-    }
-    result += selected[i];
-  }
-  return result;
+  return this._sepAssemble(selected, ',');
 }
 
 
@@ -381,8 +374,8 @@ TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem, contex
 TreeEval.Recursors['base']._getAssembler = function(jq_elem, context) {
   var listType = context._getListType(jq_elem);
   if (listType !== null) {
-      if (TreeEval._Assemblers.hasOwnProperty(listType)) {
-        return TreeEval._Assemblers[listType];
+      if (this._Assemblers.hasOwnProperty(listType)) {
+        return this._Assemblers[listType];
       } else {
         var msg = "TreeEval: Error: don't know how to evaluate listType: ";
         msg += listType;
@@ -398,15 +391,15 @@ TreeEval.Recursors['base']._getAssembler = function(jq_elem, context) {
 TreeEval.Recursors['base']._Assemblers = {}
 
 TreeEval.Recursors['base']._Assemblers['teListSlash'] = function(values) {
-  return TreeEval._sepAssemble(values, '/');
+  return this._sepAssemble(values, '/');
 }
 
 TreeEval.Recursors['base']._Assemblers['teListComma'] = function(values) {
-  return TreeEval._sepAssemble(values, ',');
+  return this._sepAssemble(values, ',');
 }
 
 TreeEval.Recursors['base']._Assemblers['teListConcat'] = function(values) {
-  return TreeEval._sepAssemble(values, '');
+  return this._sepAssemble(values, '');
 }
 
 TreeEval.Recursors['base']._sepAssemble = function(values, separator) {
