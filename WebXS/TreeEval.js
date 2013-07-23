@@ -17,27 +17,27 @@ TreeEval._meaningfulElems = 'input,select,div';
 /*
  * Tree traversal.
  */
-TreeEval.nodeValue = function(jq_elem, context_name) {
-  // use global context if none specified
-  if (typeof context_name === 'undefined') {
-    context_name = 'global';
+TreeEval.nodeValue = function(jq_elem, recursor_name) {
+  // use base recursor if none specified
+  if (typeof recursor_name === 'undefined') {
+    recursor_name = 'base';
   }
-  var context =  TreeEval.Contexts[context_name];
+  var recursor =  TreeEval.Recursors[recursor_name];
 
   // let node know it has been visited, so any callbacks can fire
   jq_elem.trigger('visit.TreeEval');
 
   // base cases
-  var nodetype = context.nodetype(jq_elem);
-  if (context.filter(nodetype) === false) {
+  var nodetype = recursor.nodetype(jq_elem);
+  if (recursor.filter(nodetype) === false) {
     return null;
   }
-  if (context.isLeafNode(nodetype)) {
-    return context.evaluateLeaf(jq_elem);
+  if (recursor.isLeafNode(nodetype)) {
+    return recursor.evaluateLeaf(jq_elem);
   }
 
   // recursion
-  return context.evaluateInternal(jq_elem);
+  return recursor.evaluateInternal(jq_elem);
 }
 
 TreeEval.nextNode = function(jq_elem) {
@@ -199,19 +199,19 @@ TreeEval._sepAssemble = function(values, separator) {
   return ret;
 }
 
-// Evaluation contexts.
-// Determine how nodes are evaluated.
-// Library can be extended by creating new contexts.
-TreeEval.Contexts = {}
+// Evaluation recursors.
+// Determine the flow of recursion and how nodes are evaluated.
+// Library can be extended by creating new recursors.
+TreeEval.Recursors = {}
 
-// Global context.
+// Base recursor.
 // Defines base functionality.
 // Can be inherited in order to override certain aspects.
-TreeEval.Contexts['global'] = new Object();
+TreeEval.Recursors['base'] = new Object();
 
 // Determines the type of a node,
 // which will determine how it is evaluated.
-TreeEval.Contexts['global'].nodetype = function(jq_elem) {
+TreeEval.Recursors['base'].nodetype = function(jq_elem) {
   // base nodetype on tag name
   var nodetype = jq_elem.prop('tagName').toLowerCase();
 
@@ -227,8 +227,8 @@ TreeEval.Contexts['global'].nodetype = function(jq_elem) {
 }
 // attribute-based key modifiers for future lookup
 // keys are based on tag, and modified by these based on attributes
-TreeEval.Contexts['global']._NodetypeMods = {}
-TreeEval.Contexts['global']._NodetypeMods['select'] = function(jq_elem, key) {
+TreeEval.Recursors['base']._NodetypeMods = {}
+TreeEval.Recursors['base']._NodetypeMods['select'] = function(jq_elem, key) {
   if (jq_elem.prop('multiple')) {
     key += '_multiple';
   }
@@ -236,7 +236,7 @@ TreeEval.Contexts['global']._NodetypeMods['select'] = function(jq_elem, key) {
 }
 
 // Determine if a node should be evaluated.
-TreeEval.Contexts['global'].filter = function(nodetype) {
+TreeEval.Recursors['base'].filter = function(nodetype) {
   // TODO
 }
 
@@ -244,7 +244,7 @@ TreeEval.Contexts['global'].filter = function(nodetype) {
 // Leaf nodes will be evaluated immediately (literally),
 // whereas internal nodes will be evaluated recursively.
 // Some nodes make sense only as one type.
-TreeEval.Contexts['global'].isLeafNode = function(nodetype) {
+TreeEval.Recursors['base'].isLeafNode = function(nodetype) {
   // default value for nodetype
   var result = this._LeafNodeDefaults[nodetype];
   
@@ -261,22 +261,22 @@ TreeEval.Contexts['global'].isLeafNode = function(nodetype) {
   return result;
 }
 // default values for keys
-TreeEval.Context['global']._LeafNodeDefaults = {
+TreeEval.Context['base']._LeafNodeDefaults = {
   select: false, // requires dynamic override anyway. TODO: figure out what to do about that.
   select_multiple: true,
   input: true,
   div: false
 }
 // dynamic overrides
-TreeEval.Context['global']._LeafNodeOverrides = {}
-TreeEval.Context['global']._LeafNodeOverrides['select'] = function(jq_elem) {
+TreeEval.Context['base']._LeafNodeOverrides = {}
+TreeEval.Context['base']._LeafNodeOverrides['select'] = function(jq_elem) {
   var next_node = TreeEval.nextNode(jq_elem);
   // whether or not a matching child node is found. If not, this is a leaf.
   return next_node.length === 0;
 }
 
 // Evaluate a node as a leaf node.
-TreeEval.Contexts['global'].evaluateLeaf = function(jq_elem) {
+TreeEval.Recursors['base'].evaluateLeaf = function(jq_elem) {
   // TODO: perhaps pass this as a param to save second calculation?
   // perhaps add an optional parameter.
   var nodetype = this.nodetype(jq_elem);
@@ -286,8 +286,8 @@ TreeEval.Contexts['global'].evaluateLeaf = function(jq_elem) {
     return jq_elem.val();
   }
 }
-TreeEval.Contexts['global']._LeafEvaluators = {}
-TreeEval.Contexts['global']._LeafEvaluators['select_multiple'] = function(jq_elem) {
+TreeEval.Recursors['base']._LeafEvaluators = {}
+TreeEval.Recursors['base']._LeafEvaluators['select_multiple'] = function(jq_elem) {
   // TODO: why not just use sepAssemble()?
   var result = '';
   var selected = jq_elem.val();
@@ -302,7 +302,7 @@ TreeEval.Contexts['global']._LeafEvaluators['select_multiple'] = function(jq_ele
 }
 
 // Evaluate a node as an internal node.
-TreeEval.Contexts['global'].evaluateInternal = function(jq_elem) {
+TreeEval.Recursors['base'].evaluateInternal = function(jq_elem) {
   // TODO: perhaps pass this as a param to save second calculation?
   // perhaps add an optional parameter.
   var nodetype = this.nodetype(jq_elem);
@@ -315,12 +315,12 @@ TreeEval.Contexts['global'].evaluateInternal = function(jq_elem) {
     alert(msg);
   }
 }
-TreeEval.Contexts['global']._InternalEvaluators = {}
-TreeEval.Contexts['global']._InternalEvaluators['select'] = function(jq_elem) {
+TreeEval.Recursors['base']._InternalEvaluators = {}
+TreeEval.Recursors['base']._InternalEvaluators['select'] = function(jq_elem) {
   var next_node = TreeEval.nextNode(jq_elem);
   return TreeEval.nodeValue(next_node);
 }
-TreeEval.Contexts['global']._InternalEvaluators['div'] = function(jq_elem) {
+TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem) {
   var assemble = TreeEval.getAssembler(jq_elem);
   if (assemble) {
     var children = TreeEval.childValues(jq_elem);
