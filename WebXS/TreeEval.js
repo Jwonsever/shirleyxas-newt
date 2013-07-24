@@ -114,7 +114,42 @@ TreeEval.Contexts['base']._NodetypeGens['select'] = function(jq_elem) {
 }
 
 TreeEval.Contexts['base']._NodetypeGens['div'] = function(jq_elem) {
-  return 'div';
+  var this_context = TreeEval.Contexts['base'];
+  var listType = this_context._getListType(jq_elem);
+  if (listType === null) {
+    return 'pointer';
+  } else {
+    return listType;
+  }
+}
+
+// Return the list type of a node,
+// or null if it is not a list.
+// Meant for divs.
+TreeEval.Contexts['base']._getListType = function(jq_elem) {
+  // return first matching list type
+  var length = this._ListTypes.length;
+  for (var listType in this._ListTypes) {
+    if (this._ListTypes.hasOwnProperty(listType)) {
+      if (jq_elem.data(listType)) {
+        return this._ListTypes[listType];
+      }
+    }
+  }
+  return null;
+}
+
+// expected list types properties, mapped to pretties names for them.
+TreeEval.Contexts['base']._ListTypes = {
+  teListSlash: 'list_slash',
+  teListComma: 'list_comma',
+  teListConcat: 'list_concat'
+}
+
+// Return whether a nodetype represents a list.
+TreeEval.Contexts['base']._isListtype = function(nodetype) {
+  return nodetype.length > 5 &&
+         nodetype.substring(0, 5) === 'list_';
 }
 
 // If node overrides default leaf status, return the specified value.
@@ -229,22 +264,6 @@ TreeEval.Contexts['base'].childNodes = function(jq_elem) {
   return children;
 }
 
-TreeEval.Contexts['base']._getListType = function(jq_elem) {
-  // return first matching list type
-  var length = this._ListTypes.length;
-  var listType = null;
-  for (var i = 0; i < length; i++) {
-    listType = this._ListTypes[i];
-    if (jq_elem.data(listType)) {
-      return listType;
-    }
-  }
-  return null;
-}
-
-TreeEval.Contexts['base']._ListTypes = ['teListSlash',
-                                        'teListComma',
-                                        'teListConcat'];
 
 /*
  * Node filtering (true => pass)
@@ -324,10 +343,13 @@ TreeEval.Interpreters['base']._LeafNodeDefaults = {
   literal: true,
   literal_list: true,
   fork: false, // requires dynamic override anyway. TODO: figure out what to do about that.
-  div: false
+  pointer: false,
+  list_slash: false, // TODO: generalize this. will be a lot of repeating with more list types.
+  list_comma: false,
+  list_concat: false
 }
 
-// dynamic overrides
+// dynamic (runtime) overrides
 TreeEval.Interpreters['base']._LeafNodeOverrides = {}
 
 TreeEval.Interpreters['base']._LeafNodeOverrides['fork'] = function(jq_elem, context) {
@@ -369,7 +391,9 @@ TreeEval.Interpreters['base']._LeafEvaluators['literal_list'] = function(jq_elem
  */
 TreeEval.Interpreters['base'].evaluateInternal = function(jq_elem, context) {
   var nodetype = context.nodetype(jq_elem);
-  if (this._InternalEvaluators.hasOwnProperty(nodetype)) {
+  if (context._isListtype(nodetype)) {
+    return this._evaluateList(jq_elem, context);
+  } else if (this._InternalEvaluators.hasOwnProperty(nodetype)) {
     return this._InternalEvaluators[nodetype](jq_elem, context);
   } else {
     var msg = "TreeEval: Error: don't know how to recursively evaluate nodetype: ";
@@ -388,28 +412,29 @@ TreeEval.Interpreters['base']._InternalEvaluators['fork'] = function(jq_elem, co
   return TreeEval.treeValue(next_node, this_interpreter, context);
 }
 
-TreeEval.Interpreters['base']._InternalEvaluators['div'] = function(jq_elem, context) {
+TreeEval.Interpreters['base']._InternalEvaluators['pointer'] = function(jq_elem, context) {
   var this_interpreter = TreeEval.Interpreters['base'];
-  var assemble = this_interpreter._getAssembler(jq_elem, context);
-  if (assemble !== null) {
-    var children = context.childValues(jq_elem, this_interpreter);
-    return assemble(children);
-  } else {
-    // Not a list. try to forward it.
-    // NOTE: this can cause an infinite loop if document is improperly formatted.
-    // TODO: check that it has forwarding info.
-    // If not, throw an error to avoid infinite loop.
-    var next_node = context.nextNode(jq_elem);
-    return TreeEval.treeValue(next_node, this_interpreter, context);
-  }
+  // NOTE: this can probably cause an infinite loop if document is improperly formatted.
+  // TODO: check that it has forwarding info.
+  // If not, throw an error to avoid infinite loop.
+  var next_node = context.nextNode(jq_elem);
+  return TreeEval.treeValue(next_node, this_interpreter, context);
+}
+
+TreeEval.Interpreters['base']._evaluateList = function(jq_elem, context) {
+  var this_interpreter = TreeEval.Interpreters['base'];
+  var listType = context.nodetype(jq_elem);
+
+  var assemble = this_interpreter._getAssembler(listType);
+  var children = context.childValues(jq_elem, this_interpreter);
+  return assemble(children);
 }
 
 
 /*
  * list assembly
  */
-TreeEval.Interpreters['base']._getAssembler = function(jq_elem, context) {
-  var listType = context._getListType(jq_elem);
+TreeEval.Interpreters['base']._getAssembler = function(listType) {
   if (listType !== null) {
       if (this._Assemblers.hasOwnProperty(listType)) {
         return this._Assemblers[listType];
@@ -427,17 +452,17 @@ TreeEval.Interpreters['base']._getAssembler = function(jq_elem, context) {
 // list assemblers
 TreeEval.Interpreters['base']._Assemblers = {}
 
-TreeEval.Interpreters['base']._Assemblers['teListSlash'] = function(values) {
+TreeEval.Interpreters['base']._Assemblers['list_slash'] = function(values) {
   var this_interpreter = TreeEval.Interpreters['base'];
   return this_interpreter._sepAssemble(values, '/');
 }
 
-TreeEval.Interpreters['base']._Assemblers['teListComma'] = function(values) {
+TreeEval.Interpreters['base']._Assemblers['list_comma'] = function(values) {
   var this_interpreter = TreeEval.Interpreters['base'];
   return this_interpreter._sepAssemble(values, ',');
 }
 
-TreeEval.Interpreters['base']._Assemblers['teListConcat'] = function(values) {
+TreeEval.Interpreters['base']._Assemblers['list_concat'] = function(values) {
   var this_interpreter = TreeEval.Interpreters['base'];
   return this_interpreter._sepAssemble(values, '');
 }
