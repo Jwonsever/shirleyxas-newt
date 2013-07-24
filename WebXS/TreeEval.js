@@ -13,9 +13,10 @@ Essentially a text-replacement engine in an HTML context.
 TreeEval = {};
 
 /*
- * Node Evaluation.
+ * Tree Evaluation.
+ * Evaluates the tree rooted at the given node.
  */
-TreeEval.nodeValue = function(node, recursor, context) {
+TreeEval.treeValue = function(node, recursor, context) {
   // use base recursor if none specified
   if (typeof recursor === 'undefined') {
     recursor =  this.Recursors['base'];
@@ -57,6 +58,15 @@ TreeEval.Contexts = {}
 TreeEval.Contexts['html'] = new Object();
 
 TreeEval.Contexts['html']._meaningfulElems = 'input,select,div';
+
+
+/*
+ * Node evaluation.
+ * Evaluates a single node, not the whole tree rooted at it.
+ */
+TreeEval.Contexts['html'].nodeValue = function(jq_elem) {
+  return jq_elem.val();
+}
 
 
 /*
@@ -123,7 +133,7 @@ TreeEval.Contexts['html'].nextNode = function(jq_elem) {
     if (next_id.length > 1) {
       next_id += '_';
     }
-    next_id += jq_elem.val();
+    next_id += this.nodeValue(jq_elem);
   }
   return $(next_id);
 }
@@ -185,12 +195,12 @@ TreeEval.Contexts['html']._Forwarders['teForwardTo'] = function (elem_id, jq_ele
 TreeEval.Contexts['html'].childValues = function(jq_elem, recursor) {
   var childNodes = this.childNodes(jq_elem);
 
-  // mutual recursion: call nodeValue() on each child to get all child parameters
-  // essentially: values = map(this.nodeValue, childNodes)
+  // mutual recursion: call treeValue() on each child to get all child parameters
+  // essentially: values = map(this.treeValue, childNodes)
   var length = childNodes.length;
   var values = new Array(length);
   for (var i = 0; i < length; i++) {
-    values[i] = TreeEval.nodeValue($(childNodes[i]), recursor, this);
+    values[i] = TreeEval.treeValue($(childNodes[i]), recursor, this);
   }
 
   return values;
@@ -329,8 +339,7 @@ TreeEval.Recursors['base'].evaluateLeaf = function(jq_elem, context) {
   if (this._LeafEvaluators.hasOwnProperty(nodetype)) {
     return this._LeafEvaluators[nodetype](jq_elem, context);
   } else {
-    // move node.val() into <Context>.valueHere(node), or something.
-    return jq_elem.val();
+    return context.nodeValue(jq_elem);
   }
 }
 
@@ -339,7 +348,7 @@ TreeEval.Recursors['base']._LeafEvaluators = {}
 
 TreeEval.Recursors['base']._LeafEvaluators['select_multiple'] = function(jq_elem, context) {
   var this_recursor = TreeEval.Recursors['base'];
-  var selected = jq_elem.val();
+  var selected = context.nodeValue(jq_elem);
   return this_recursor._sepAssemble(selected, ',');
 }
 
@@ -365,7 +374,7 @@ TreeEval.Recursors['base']._InternalEvaluators = {}
 TreeEval.Recursors['base']._InternalEvaluators['select'] = function(jq_elem, context) {
   var this_recursor = TreeEval.Recursors['base'];
   var next_node = context.nextNode(jq_elem);
-  return TreeEval.nodeValue(next_node, this_recursor, context);
+  return TreeEval.treeValue(next_node, this_recursor, context);
 }
 
 TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem, context) {
@@ -380,7 +389,7 @@ TreeEval.Recursors['base']._InternalEvaluators['div'] = function(jq_elem, contex
     // TODO: check that it has forwarding info.
     // If not, throw an error to avoid infinite loop.
     var next_node = context.nextNode(jq_elem);
-    return TreeEval.nodeValue(next_node, this_recursor, context);
+    return TreeEval.treeValue(next_node, this_recursor, context);
   }
 }
 
@@ -408,15 +417,18 @@ TreeEval.Recursors['base']._getAssembler = function(jq_elem, context) {
 TreeEval.Recursors['base']._Assemblers = {}
 
 TreeEval.Recursors['base']._Assemblers['teListSlash'] = function(values) {
-  return TreeEval.Recursors['base']._sepAssemble(values, '/');
+  var this_recursor = TreeEval.Recursors['base'];
+  return this_recursor._sepAssemble(values, '/');
 }
 
 TreeEval.Recursors['base']._Assemblers['teListComma'] = function(values) {
-  return TreeEval.Recursors['base']._sepAssemble(values, ',');
+  var this_recursor = TreeEval.Recursors['base'];
+  return this_recursor._sepAssemble(values, ',');
 }
 
 TreeEval.Recursors['base']._Assemblers['teListConcat'] = function(values) {
-  return TreeEval.Recursors['base']._sepAssemble(values, '');
+  var this_recursor = TreeEval.Recursors['base'];
+  return this_recursor._sepAssemble(values, '');
 }
 
 TreeEval.Recursors['base']._sepAssemble = function(values, separator) {

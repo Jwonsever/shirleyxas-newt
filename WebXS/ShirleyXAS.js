@@ -1586,7 +1586,7 @@ function restQuery() {
 
   dest.html('working...');
   var root = $('#searchLocationChosen');
-  var url = TreeEval.nodeValue(root);
+  var url = TreeEval.treeValue(root);
 
   var end = url.substring(url.lastIndexOf('/') + 1,
                           url.length);
