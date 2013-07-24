@@ -1586,32 +1586,43 @@ function restQuery() {
 
   dest.html('working...');
   var root = $('#searchLocationChosen');
-  var url = TreeEval.nodeValue(root);
+  var url = TreeEval.treeValue(root);
 
   var end = url.substring(url.lastIndexOf('/') + 1,
                           url.length);
 
-  // don't send PNGs to JSmol.
+  // only send SDFs to JSmol.
   var result = '';
   switch(end) {
-    case 'PNG':
+    case 'SDF':
+      $.get(url, function(data, status) {
+        lastSearchResult = data;
+        result = '<p id="searchResult" ';
+        result += ' style="display:none">';
+        result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
+        dest.html(result);
+        $('#searchResult').fadeIn();
+      }).fail(function(xhr, textStatus, errorThrown) {
+        result = 'An error occurred with the request:<br><pre>';
+        result += errorThrown;
+        result += '<br><br>';
+        result += xhr.responseText;
+        result += '</pre>';
+        dest.html(result);
+      });
+      break;
+    default:
       result = '<a id="searchResult" ';
       result += 'style="display:none" ';
       result += 'target="_blank" href="';
       result += url;
-      result += '">View Image</a><br>';
+      if (end == 'PNG') {
+        result += '">View Image</a><br>';
+      } else {
+        result += '">Open Result</a><br>';
+      }
       dest.html(result);
       $('#searchResult').fadeIn();
-      break;
-    default:
-      $.get(url, function(data, status) {
-          lastSearchResult = data;
-          result = '<p id="searchResult" ';
-          result += ' style="display:none">';
-          result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
-          dest.html(result);
-          $('#searchResult').fadeIn();
-      });
       break;
   }
 }

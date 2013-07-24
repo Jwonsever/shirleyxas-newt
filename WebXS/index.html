@@ -267,28 +267,10 @@
                     <option value="inchi">inchi</option>
                     <option value="sdf">sdf</option>
                     <option value="inchikey">inchikey</option>
-                    <option value="structure">structure</option>
                     <option value="xref">xref</option>
-                    <option value="listkey">listkey</option>
                   </select>
 
                   <div style="padding:10px;" data-te-skip="true">
-                    <div id="PubChem_compound_structure" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
-                      <select id="PubChem_compound_structure_1">
-                        <option value="substructure" selected>substucture</input>
-                        <option value="superstructure">superstucture</input>
-                        <option value="similarity">similarity</input>
-                        <option value="identity">identity</input>
-                      </select>
-                      <br>
-                      <select id="PubChem_compound_structure_2">
-                        <option value="smiles" selected>smiles</input><br>
-                        <option value="inchi">inchi</input><br>
-                        <option value="sdf">sdf</input><br>
-                        <option value="cid">cid</input>
-                      </select>
-                    </div>
-
                     <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" id="PubChem_compound_xref_1" value="xref" style="display:none" disabled/>
                       <select id="PubChem_compound_xref_2">
@@ -315,7 +297,7 @@
 
                   Operation<br>
                   <select id="PubChem_compound_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Compound.chooseOperation(this.value);">
-                    <option value="record" selected>record</option>
+                    <option value="record" selected>record (openable in JSmol)</option>
                     <option value="property">property</option>
                     <option value="synonyms">synonyms</option>
                     <option value="sids">sids</option>
@@ -353,7 +335,7 @@
                   </div>
                 </div>
 
-                <div id="PubChem_substance" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                <div id="PubChem_substance" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
                   <input  id="PubChem_substance_domain" type="text" value="substance" style="display:none" disabled/>
 
                   Namespace<br>
@@ -363,10 +345,9 @@
                     <option value="sourceall">sourceall</option>
                     <option value="name">name</option>
                     <option value="xref">xref</option>
-                    <option value="listkey">listkey</option>
                   </select>
 
-                  <div style="padding:10px;">
+                  <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" value="sourceid" style="display:none" disabled/>
                       <!-- TODO: do this in javascipt -->
@@ -407,7 +388,7 @@
 
                   Operation<br>
                   <select id="PubChem_substance_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Substance.chooseOperation(this.value);">
-                    <option value="record" selected>record</option>
+                    <option value="record" selected>record (openable in JSmol)</option>
                     <option value="synonyms">synonyms</option>
                     <option value="sids">sids</option>
                     <option value="cids">cids</option>
@@ -437,38 +418,23 @@
                   </div>
                 </div>
 
-                <div id="PubChem_assay" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                <div id="PubChem_assay" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
                   <input  id="PubChem_assay_domain" type="text" value="assay" style="display:none" disabled/>
 
                   Namespace<br>
                   <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
                     <option value="aid" selected>aid</option>
-                    <option value="listkey">listkey</option>
-                    <option value="type">type</option>
                     <option value="sourceall">sourceall</option>
                   </select>
 
-                  <div style="padding:10px;">
-                    <div id="PubChem_assay_type" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_type_1" value="type" style="display:none" disabled/>
-                      <select id="PubChem_assay_type_2">
-                        <option value="all" selected>all</option>
-                        <option value="confirmatory">confirmatory</option>
-                        <option value="doseresponse">doseresponse</option>
-                        <option value="onhold">onhold</option>
-                        <option value="panel">panel</option>
-                        <option value="rnai">rnai</option>
-                        <option value="screening">screening</option>
-                        <option value="summary">summary</option>
-                      </select>
-                    </div>
-
+                  <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" value="sourceall" style="display:none" disabled/>
                       <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
                       <br>
                       <input type="text" id="PubChem_assay_sourceall_2" value=""/>
                     </div>
+
                     <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
                     <br>
                     <input type="Text" id="PubChem_assay_input" value=""/>
@@ -478,7 +444,7 @@
 
                   Operation<br>
                   <select id="PubChem_assay_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Assay.chooseOperation(this.value);">
-                    <option value="record" selected>record</option>
+                    <option value="record" selected>record (openable in JSmol)</option>
                     <option value="sids">sids</option>
                     <option value="cids">cids</option>
                     <option value="aids">aids</option>
@@ -490,10 +456,10 @@
                     <option value="xrefs">xrefs</option>
                   </select>
 
-                  <div style="padding:10px">
+                  <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_targets_2" value="targets" style="display:none" disabled/>
-                      <select multiple id="PubChem_assay_op_targets_1">
+                      <input type="text" id="PubChem_assay_op_targets_1" value="targets" style="display:none" disabled/>
+                      <select multiple id="PubChem_assay_op_targets_2">
                         <option value="ProteinGI">ProteinGI</input>
                         <option value="ProteinName">ProteinName</input>
                         <option value="GeneID">GeneID</input>
@@ -528,10 +494,10 @@
 
               Output format<br>
               <select id="PubChem_output">
-                <option value="XML" selected>XML</option>
+                <option value="SDF" selected>SDF (openable in JSmol)</option>
                 <option value="PNG">PNG</option>
+                <option value="XML">XML</option>
                 <option value="JSON">JSON</option>
-                <option value="SDF">SDF</option>
                 <option value="ASNT">ASNT</option>
                 <option value="ASNB">ASNB</option>
               </select>
