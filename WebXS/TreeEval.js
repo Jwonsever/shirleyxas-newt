@@ -144,7 +144,8 @@ TreeEval.Contexts['base']._ListTypes = {
   teListSlash: 'list_slash',
   teListComma: 'list_comma',
   teListConcat: 'list_concat',
-  teListQuery: 'list_query'
+  teListQuery: 'list_query',
+  teListEquals: 'list_equals'
 }
 
 // Return whether a nodetype represents a list.
