@@ -385,7 +385,7 @@ function drawMolInPreview() {
     Jmol.script(previewApplet, scr);
     $(document).ready(addSelections());
 
-    $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/24) + 1));
+    $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/48) + 1));
 }
 
 function numAtoms(xyz) {
