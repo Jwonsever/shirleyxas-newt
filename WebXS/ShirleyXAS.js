@@ -714,7 +714,7 @@ function getXCHShift(elem) {
 	else return 0;
     } else {
 	 $.newt_ajax({type: "GET",
-		url: "/file/hopper" + DATABASE_DIR + "XCHShifts.csv?view=read",
+		url: "/file/hopper" + DATABASE_DIR + "/XCHShifts.csv?view=read",
 		success: function(res){
 		     res = res.split("\n");
 		     cachedShifts.pulled=true;
