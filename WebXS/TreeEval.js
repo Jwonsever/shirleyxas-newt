@@ -106,11 +106,11 @@ TreeEval.Contexts['base']._NodetypeGens['input'] = function(jq_elem) {
 }
 
 TreeEval.Contexts['base']._NodetypeGens['select'] = function(jq_elem) {
-  var nodetype = 'select';
   if (jq_elem.prop('multiple')) {
-    nodetype += '_multiple';
+    return 'literal_list';
+  } else {
+    return 'fork';
   }
-  return nodetype;
 }
 
 TreeEval.Contexts['base']._NodetypeGens['div'] = function(jq_elem) {
@@ -322,15 +322,15 @@ TreeEval.Interpreters['base'].isLeafNode = function(jq_elem, context) {
 // default values for keys
 TreeEval.Interpreters['base']._LeafNodeDefaults = {
   literal: true,
-  select: false, // requires dynamic override anyway. TODO: figure out what to do about that.
-  select_multiple: true,
+  literal_list: true,
+  fork: false, // requires dynamic override anyway. TODO: figure out what to do about that.
   div: false
 }
 
 // dynamic overrides
 TreeEval.Interpreters['base']._LeafNodeOverrides = {}
 
-TreeEval.Interpreters['base']._LeafNodeOverrides['select'] = function(jq_elem, context) {
+TreeEval.Interpreters['base']._LeafNodeOverrides['fork'] = function(jq_elem, context) {
   var next_node = context.nextNode(jq_elem);
   // whether or not a matching child node is found. If not, this is a leaf.
   return next_node.length === 0;
@@ -357,7 +357,7 @@ TreeEval.Interpreters['base']._LeafEvaluators['literal'] = function(jq_elem, con
   return context.nodeValue(jq_elem);
 }
 
-TreeEval.Interpreters['base']._LeafEvaluators['select_multiple'] = function(jq_elem, context) {
+TreeEval.Interpreters['base']._LeafEvaluators['literal_list'] = function(jq_elem, context) {
   var this_interpreter = TreeEval.Interpreters['base'];
   var selected = context.nodeValue(jq_elem);
   return this_interpreter._sepAssemble(selected, ',');
@@ -382,7 +382,7 @@ TreeEval.Interpreters['base'].evaluateInternal = function(jq_elem, context) {
 // internal node evaluators
 TreeEval.Interpreters['base']._InternalEvaluators = {}
 
-TreeEval.Interpreters['base']._InternalEvaluators['select'] = function(jq_elem, context) {
+TreeEval.Interpreters['base']._InternalEvaluators['fork'] = function(jq_elem, context) {
   var this_interpreter = TreeEval.Interpreters['base'];
   var next_node = context.nextNode(jq_elem);
   return TreeEval.treeValue(next_node, this_interpreter, context);
