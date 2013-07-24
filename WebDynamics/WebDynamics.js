@@ -5,6 +5,14 @@ Mftheory
 6/26/2013
 */
 
+//Changing active viewing page
+var currentDiv;
+function CngClass(obj){
+    if (currentDiv) currentDiv.addClass('optionsDiv');
+    obj.removeClass('optionsDiv');
+    currentDiv=obj;
+}
+
 //Button to minimize structure
 function minimizeStructure() {
     Jmol.script(mainApplet,"minimize");
@@ -21,13 +29,6 @@ function toggleModelkitMode() {
     Jmol.script(mainApplet, "set allowModelKit " + (currentState == 'On'));
     $('#mkmode').prop('value', currentState);
     if (currentState == 'On') Jmol.script(mainApplet, "set modelKitMode");
-}
-
-var currentDiv;
-function CngClass(obj){
-    if (currentDiv) currentDiv.addClass('optionsDiv');
-    obj.removeClass('optionsDiv');
-    currentDiv=obj;
 }
 
 //Coordinates Div
@@ -145,7 +146,6 @@ function sterilize(xyzcoords) {
 }
 
 //Turns the given coordinates into a valid xyz file.
-//Used primarily by DrawMol
 function makeXYZfromCoords(i) {
     //i could be 0
     if (i === undefined) i = activeModel;
@@ -153,7 +153,7 @@ function makeXYZfromCoords(i) {
     var coords = sterilize(models[i]);
     var numberOfAtoms = coords.split("\n").length;
     var xyz = numberOfAtoms + "\n" + materialName + "\n" + coords;
-    //console.log(xyz);
+    console.log(xyz);
     return xyz;
 }
 //Redraw the molecule according to coordinates
@@ -166,12 +166,12 @@ function drawMol(suffix) {
 }
 
 function sendToWebXS() {
-    writeFileToFilesystem(DATABASE_DIR + "/tmp/transferFile.xyz");
+    if (models[0] == "") readCoordsFromJmol();
+    writeFileToFilesystem(DATABASE_DIR + "/tmp/"+myUsername+".xyz");
     window.open("../WebXS/index.html");
 }
 
-function saveFile() {
-    //todo	
+function saveFile() {	
     var fname = prompt("Save file as?", GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics.xyz");
 
     //put on Hopper
@@ -181,7 +181,7 @@ function saveFile() {
 function writeFileToFilesystem(filename) {
     var xyz = "";
     for (var i = 0; i < models.length; i++) {
-	xyz += makeXYZfromCoords(i);
+	xyz += makeXYZfromCoords(i) + "\n";
     }
     //post file
     //console.log(xyz);
@@ -189,6 +189,15 @@ function writeFileToFilesystem(filename) {
 		url: "/file/hopper/" + filename,
 		data: xyz,
 		success: function(res) {
+		
 		console.log("Written to Hopper");
-	},});
+		//chmod it 777
+		$.newt_ajax({type: "POST", 
+			    url: "/command/hopper",
+			    data: {"executable": "/bin/chmod 777 "+filename},
+			    success: function(res) {
+			    console.log("Chmoded the file.  No residuals.");
+			},});
+	},});    
 }
+

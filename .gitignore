@@ -1,12 +1,16 @@
 alsapi.js
+
 GlobalValues.js
 GlobalValues.in
 WebXS/xas_input/Input_Block.in
+./GlobalValues.js
+./GlobalValues.in
+./WebXS/xas_input/Input_Block.in
+
+./index.php
 
 Unconfigured*
 WebXS/xas_input/Unconfigured*
-
-
 
 #autosave files
 *~

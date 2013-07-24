@@ -73,7 +73,7 @@ def main(argv = None):
     importantEvs = list(set(importantEvs))
     goodStates = []
     for ev in importantEvs:
-        goodStates.extend(topEvContributors.main([argv[0], path, molName, ev, .25]))
+        goodStates.extend(topEvContributors.main([argv[0], path, molName, ev, .25, 5]))
 
     #remove duplicates
     goodStates = list(set(goodStates))

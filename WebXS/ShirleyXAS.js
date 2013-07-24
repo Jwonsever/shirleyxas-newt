@@ -4,17 +4,31 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 05/2012 -> Present
 
-Justin Patel
+James Wonsever & Justin Patel
 Lawrence Berkeley Laboratory
 Molecular Foundry
-06/2013 -> Present
 
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
  */
 
 function checkAuthCallback() {
+    //where to output files to for run jobs
     $('#outputDir').val(GLOBAL_SCRATCH_DIR + myUsername);
+    $('#customInputBlock').val(GLOBAL_SCRATCH_DIR + myUsername + "/CustomBlock.in");
+	
+    //See if there is a transfer file
+    openTransferFile();
+    getUserInfo();
+}
+
+function getUserInfo() {
+     $.newt_ajax({type: "GET", 
+		 url: "/account/usage/user/"+myUsername,
+		success: function(res) {
+		console.log(res['items'][0]['rname']);
+		$('#acctHours').val(res['items'][0]['rname']);
+	},});
 }
 
 //Globals for multiple models and related functions, to control jmol and submission of multiple files...
@@ -138,65 +152,102 @@ function properName(name) {
 
 //This command loads the "Finished Calculations" screen.
 function previousJobs() {
-    $('#previousjobslist').html("<h3>Finished Calculations</h3><center><img src=\"ajax-loader-2.gif\" width=40></center>");
+    $('#previousjobslist').html("<div id='previousUnfinishedJobs'>"
+				+ "<h3>Unfinished Calcualtions Available for Resubmission</h3><center>"
+				+ "<img src=\"ajax-loader-2.gif\" width=40></center></div>"
+				+ "<div id='previousFinishedJobs'><h3>Finished Calculations</h3>"
+				+ "<center><img src=\"ajax-loader-2.gif\" width=40></center></div>");
+
     $.newt_ajax({type: "GET",
 		url: "/file/hopper"+GLOBAL_SCRATCH_DIR+myUsername,
 		success: function(res){
 		if (res != null && res.length > 0) {
-		    var myText = "<h3>Finished Calculations</h3><br>";
+		    var myText = "<h3>Finished Calculations</h3>";
+		    myText += "<button onclick='previousJobs()'>Update</button><br>"
 		    myText += "<table width=100\%><tr><th width=62\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
 		    myText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
 		    var files = res;
 
-		    //Potentially rewok this from a LS and text triggers on completed jobs??
+		    //Potentially rework this from a LS and text triggers on completed jobs??
+		    //Would allow for directory searching of all jobs
+		    //Would also be a strange result list OR many ajax calls, neither is kosher
 
-		    //Find some way to display unfinished jobs.  Give a rerun option. (Try this tomorrow)
+		    var shortDir = GLOBAL_SCRATCH_DIR + myUsername;
+		    var command = SHELL_CMD_DIR+"/exceededWalltimeWrapper.sh " + shortDir;
+		    $.newt_ajax({type: "POST",
+				url: "/command/hopper",
+				data: {"executable": command},
+				success: function(res){
+			 	 unfText = "<h3>Unfinished Calcualtions Available for Resubmission</h3>"; 
+				 unfText += "<button onclick='previousJobs()'>Update</button><br>"
+				 unfText += "<table width=100\%><tr><th width=62\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
+				 unfText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
+				 unfcount = 0;
+				 var text = res.output.split("\n");
+				 for (var i = 0; i < text.length; i++) {
+				     var jname = text[i];
+
+				     //Was it run using this tool?
+				     if (!properName(jname)) continue;
+
+				     unfcount = unfcount + 1;
+				     if (unfcount%2 == 0) {	
+					 unfText += "<tr class='warningodd'>";
+				     } else {
+					 unfText += "<tr class='warning'>";
+				     }
+				     unfText += "<td width=62\%>" + jname
+					 + "</td><td class=\"statusnone\" width=15\% align=center>"
+					 + "Unfinished</td><td><button onClick=\""
+					 + "resubmit(\'" + jname + "\', \'hopper\');"
+					 + "$(this).attr('disabled','disabled');\" type=\"button\">Resubmit</button></td><td>"
+					 + "<button onClick=\"viewJobFiles(\'" 
+					 + jname + "\', \'" + "hopper"
+					 + "\')\" type=\"button\">View Files</button></td><tr>";
+				 }
+				 unfText += "</table><br>";
+				 $('#previousUnfinishedJobs').html(unfText);
+
+			    },
+				error: function(request,testStatus,errorThrown) {
+				console.log("Failed to grab incomplete jobs.");
+			    },});
+
 
 		    $.newt_ajax({type: "GET",
 				url: "/queue/completedjobs/"+myUsername+"&limit=1500",
 				success: function(res){
 				if (res != null && res.length > 0) {
-				    //why arent the new ones showing up
-				    console.log(res);
+				    //console.log(res);
 
 				    var occurs =[];
+				    var fnames =[];
                                     var mycount = 0;
 				    for (var i = 0 ; i < res.length ; i++) {					
 
-					var jname = res[i].jobname;
-					jname = jname.replace("-ANALYSE","").replace("-REF","").replace("-XAS","");
+					var fulljname = res[i].jobname;
+					var jname = fulljname.replace("-ANALYSE","").replace("-REF","").replace("-XAS","");
+
+					//Is this a repeat occurance?  If so, add hours and leave.
+					if (fnames.indexOf(fulljname) == -1) {
+					    fnames.push(fulljname);
+					} else {
+					    if (occurs[jname]) {
+						occurs[jname][1]+= Number(res[i].rawhours.replace(",",""));
+					    }
+					    continue;
+					}
+					
 					//Was it run using this tool?
 					if (!properName(jname)) continue;
+					
 					//Does it still exist?
 					var suc = false;
 					for (var j = 0; j < files.length; j++) {
 					    if (files[j].name == jname) {suc = true;break;}
 					} if (!suc) continue;
-					
-					//Does it exist AND did it exceed Walltime?
 
-					//This shows jobs after-resubmission....
-					if (res[i].wallclock > 1) {
-					    console.log("exceeded" + res[i].jobname);
-
-					    //ADD it! for resubmission!
-					    mycount = mycount + 1;
-					    if (mycount%2 == 0) {	
-						myText += "<tr class='warningodd'>";
-					    } else {
-						myText += "<tr class='warning'>";
-					    }
-					    myText += "<td width=62\%>" + jname
-						+ "</td><td class=\"statusnone\" width=15\% align=center>"
-						+ "Unfinished</td><td><button onClick=\"resubmit(\'" 
-						+ jname + "\', \'" + res[i].hostname
-						+ "\')\" type=\"button\">Resubmit</button></td><td>"
-						+ "<button onClick=\"viewJobFiles(\'" 
-						+ jname + "\', \'" + res[i].hostname
-						+ "\')\" type=\"button\">View Files</button></td><tr>"
-					}
-
-					//does it finish all 3 tasks?  (note resubmissions can fuck this up, not full wallhours/double posting)
+					//does it finish all 3 tasks?  (note resubmissions can screw this up, not full wallhours/double posting)
 					if(occurs[jname]) {
 					    occurs[jname][0]++; //log hours, occurances
 					    occurs[jname][1]+= Number(res[i].rawhours.replace(",",""));
@@ -212,7 +263,6 @@ function previousJobs() {
  					  myText += "<tr class='warning'>";
                                         }
 					
-
 					myText += "<td width=62\%>" + jname
 					    + "</td><td class=\"statusnone\" width=15\% align=center>"
 					    + (occurs[jname][1]+'').substr(0, 6)
@@ -224,12 +274,12 @@ function previousJobs() {
 					    + "\')\" type=\"button\">View Files</button></td>";
 					myText += "</tr>";
 				    }
-				    myText += "</table:><br>";
-				    $('#previousjobslist').html(myText);
-				    $('#previousjobslist').trigger('create');
+				    myText += "</table><br>";
+				    $('#previousFinishedJobs').html(myText);
+				    $('#previousFinishedJobs').trigger('create');
 				    
 				} else {
-				    $('#previousjobslist').html("<table width=100\%><th align=left>"
+				    $('#previousFinishedJobs').html("<table width=100\%><th align=left>"
 							    + "Finished Calculations</th>"
 							    + "</table><center><br>You don't"
 							    + " have any finished calculations");
@@ -237,10 +287,10 @@ function previousJobs() {
 			    },
 				error: function(request,testStatus,errorThrown) {
 				var myText = "Error: "+testStatus+" \n"+errorThrown;
-				$('#previousjobslist').html(myText);
-				$('#previousjobslist').trigger('create');},});
+				$('#previousFinishedJobs').html(myText);
+				$('#previousFinishedJobs').trigger('create');},});
 		} else {
-		    $('#previousjobslist').html("<table width=100\%><th align=left>Finished Calculations</th>"
+		    $('#previousFinishedJobs').html("<table width=100\%><th align=left>Finished Calculations</th>"
 					    + "</table><center><br>You don't have any finished calculations");
 		}
 	    },
@@ -261,10 +311,10 @@ function resubmit(jobName, machine) {
 		url: "/command/hopper",
 		data: {"executable": command},
 		success: function(res){
-		console.log("successfully restarted.");
+		alert("successfully restarted.");
 	    },
 		error: function(request,testStatus,errorThrown) {
-		console.log("restart failed.");
+		alert("restart failed.");
 	    },});
 }
 
@@ -382,10 +432,36 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     $('#jobresults').html(myHtml);
     $('#jobresults').trigger('create');
 
-    //add
-    //Postprocessing
 
-    //Can It crash in different models????? YES     
+    //Postprocessing
+    var ppHtml = "<h4>Postprocessing Options</h4>";
+    var stHtml = "<b>View States: </b>";
+    
+    var cmnd = SHELL_CMD_DIR + "topEvWrapper.sh " + directory.slice(12) + " " + jobName + " ";
+    ppHtml += "<b>Energy </b><input id='x' size='6' type='textbox' value='0'>";
+    ppHtml += "&nbsp;&nbsp;<button onclick='getStates(\""+cmnd+"\")'>Get States</button><br>";
+    ppHtml += "<br><button onclick='saveOutput(\""+directory+"\",\""+jobName+"\")'>";
+    ppHtml += "Save This Spectra To MFTheory Database</button><br>";
+    
+    stHtml += "<button style='float: right;' onclick=\"$('#customStateForm').show();\">Load Custom State</button><br><br>";
+    stHtml += "<div id='topStates' style='min-height:100px;width:100\%;padding:0.1em;margin: 0.1em;border-style:solid;border-width:1px;'>No contributing states.</div>";
+    stHtml += "Note, these will take a few minutes to load.";
+    
+    //This is hidden unless the user opens it
+    stHtml += "<div id='customStateForm' style='text-align:center;display:none;'>";
+    stHtml += "Atm#<input id='cuAt' type='text' size='4' value='"+XAS[0]+"'/> ";
+    stHtml += "M#<input id='cuMo' type='text' size='4' value='1'/> ";
+    stHtml += "St#<input id='cuSt' type='text' size='4' value='1'/><br>";
+    stHtml += "<button onclick=\"$('#customStateForm\').hide();\">Cancel</button> ";
+    stHtml += "&nbsp;&nbsp;<button onclick=\"postProcessing($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());";		
+    stHtml += "\">Run</button> ";
+    stHtml += "&nbsp;&nbsp;<button onclick=\"drawState($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());"
+    stHtml += "\">View</button></div>";
+    
+    $('#postprocessing').html(ppHtml);
+    $("#states").html(stHtml); 
+
+    //Find Crashes 
     var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
     var findCrash = "/usr/bin/find " + shortDir + " -type f -name 'CRASH'";
     $.newt_ajax({type: "POST",
@@ -394,44 +470,47 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
 		success: function(res){
 		console.log(res);
 		//Has a crash file in ground state.
-		if (res.output != "") {
-		    $('#postprocessing').html("<h3>This job crashed!!</h3><br>Crash Files Here:<br>"+res.output);
+		if (res.output.replace(/\n/g,'') != "") {
+		    $('#postprocessing').append("<h3>This job crashed!</h3>Crash Files Here:<br>"+res.output);
 		} else {
 		//no crash file in ground state, give postprocessing options
-
-		    //TODO REDO, THIS DOESNT MAKE SENSE WITH THE CURRENT VERSION
-		    var ppHtml = "<h4>Postprocessing Options</h4>";
-		    var stHtml = "<b>View States: </b>";
-		    
-		    var cmnd = SHELL_CMD_DIR + "topEvWrapper.sh " + directory.slice(12) + " " + jobName + " ";
-		    ppHtml += "<b>Energy </b><input id='x' size='6' type='textbox' value='0'>";
-		    ppHtml += "&nbsp;&nbsp;<button onclick='getStates(\""+cmnd+"\")'>Get States</button><br>";
-		    ppHtml += "<br><button onclick='saveOutput(\""+directory+"\",\""+jobName+"\")'>";
-		    ppHtml += "Save This Spectra To MFTheory Database</button><br>";
-		    
-		    stHtml += "<button style='float: right;' onclick=\"$('#customStateForm').show();\">Load Custom State</button><br><br>";
-		    stHtml += "<div id='topStates' style='min-height:100px;width:100\%;padding:0.1em;margin: 0.1em;border-style:solid;border-width:1px;'>No contributing states.</div>";
-		    stHtml += "Note, these will take a few minutes to load.";
-
-		    //This is hidden unless the user opens it
-		    stHtml += "<div id='customStateForm' style='text-align:center;display:none;'>";
-		    stHtml += "Atm#<input id='cuAt' type='text' size='4' value='"+XAS[0]+"'/> ";
-		    stHtml += "M#<input id='cuMo' type='text' size='4' value='1'/> ";
-		    stHtml += "St#<input id='cuSt' type='text' size='4' value='1'/><br>";
-		    stHtml += "<button onclick=\"$('#customStateForm\').hide();\">Cancel</button> ";
-		    stHtml += "&nbsp;&nbsp;<button onclick=\"postProcessing($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());";		
-		    stHtml += "\">Run</button> ";
-		    stHtml += "&nbsp;&nbsp;<button onclick=\"drawState($('#cuAt').val(), $('#cuMo').val()-1, $('#cuSt').val());"
-		    stHtml += "\">View</button></div>";
-		    
-		    $('#postprocessing').html(ppHtml);
-		    $("#states").html(stHtml); 
 		}
 	    },
 		error: function(request,testStatus,errorThrown) {
 		console.log("failed to run find command, no knowledge of crash state");
 	    },});
     
+    //Find Missing Pseudos
+    var findMissingPseudos = SHELL_CMD_DIR + "missingPseudos.sh " + shortDir;
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": findMissingPseudos},
+		success: function(res){
+		console.log(res);
+		if (res.output.replace(/\n/g,'') != "") {
+		    $('#postprocessing').append("<h3>Missing Pseudo!</h3>"+res.output);
+		}
+	    },
+		error: function(request,testStatus,errorThrown) {
+		console.log("failed to run missingPseudos, no knowledge of pseudo state");
+	    },});
+
+    //Find MPI Errors
+    var findMPI = SHELL_CMD_DIR + "mpiErrors.sh " + shortDir;
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": findMPI},
+		success: function(res){
+		console.log(res);
+		if (res.output.replace(/\n/g,'') != "") {
+		    $('#postprocessing').append("<h3>MPI Errors!</h3>"+res.output);
+		}
+	    },
+		error: function(request,testStatus,errorThrown) {
+		console.log("failed to run MPIerrors, no knowledge of MPI results");
+	    },});
+
+
     $("#placeholder").bind("plothover", function (event, pos, item) {
 	    $("#x").val(pos.x.toFixed(2));       
 	});
@@ -507,12 +586,13 @@ function getStates(cmnd, ev) {
 				 var line = sts[s].split(',');
 				 var type = line[0].replace(/\d/g,'');
 				 if (type != activeElement.replace(/\d/g,'')) continue;
-				 //myHtml +="<div><span onclick='postProcessing(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>&nbsp;&nbsp;";//todo (draw line on flot)
+				 //myHtml +="<div><span onclick='postProcessing(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>&nbsp;&nbsp;";
                                  myHtml += "<tr>"
 				 var evshift = roundNumber(Number(line[3]) + getXCHShift(activeElement), 2);
 				 myHtml += "<td>"+line[0] + "|" + line[1] + "|" + line[2] + "|" + evshift + "|" + line[4] + "</td>";
-                                 myHtml += "<td width=20></td>"
-				 //Dont Give Run Option anymore myHtml += "<td><button onclick='postProcessing(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>Run</button></td>";
+                                 myHtml += "<td width=20></td>";
+				 //Dont Give Run Option anymore (todo after new states)
+				 myHtml += "<td><button onclick='postProcessing(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>Run</button></td>";
 				 myHtml += "<td><button onclick='drawState(\""+line[0]+"\",\""+(line[1]-1)+"\",\""+line[2]+"\")'>View</button></td></tr>";
 			     }
                              myHtml += "</table>"
@@ -588,7 +668,9 @@ function drawState(atomNo, activeMo, state) {
 		    success: function(res) {
 		     console.log("fetched");
 		     if (res.output=="File does not exist\n") {
-			 alert("This state has not been calculated yet, please run this calculation first. It will take a few minutes to complete, so please be paitent.");return;}
+			 scr = "set echo top left;font echo 16;echo \"Load Failed!  State does not exist.\";refresh;";
+			 Jmol.script(resultsApplet, scr);
+		     }
 		     var stateFile = "../Shirley-data/tmp/"+jobName+"/state."+state+".cube";
 		     scr = "set echo top left;font echo 16;echo \"Reading...\";refresh;";
 		     scr += "load "+stateFile+";";
@@ -632,7 +714,7 @@ function getXCHShift(elem) {
 	else return 0;
     } else {
 	 $.newt_ajax({type: "GET",
-		url: "/file/hopper" + DATABASE_DIR + "XCHShifts.csv?view=read",
+		url: "/file/hopper" + DATABASE_DIR + "/XCHShifts.csv?view=read",
 		success: function(res){
 		     res = res.split("\n");
 		     cachedShifts.pulled=true;
@@ -741,10 +823,6 @@ function getSelectedElems() {
 	    if (document.getElementById("spect"+i).checked)
 		 elems.push(document.getElementById("spect"+i).name);
 	i++;
-	//todo
-	//tofix
-	//why did i need this
-	//if (i > 10) break;
     }
     return elems;
 }
@@ -755,10 +833,6 @@ function getSelectedModels() {
 	if (document.getElementById("model"+i).checked)
 	    selmodels.push(Number(document.getElementById("model"+i).name)-1);
 	i++;
-	//todo
-	//tofix
-	//why did i need this
-	//if (i > 10) break;
     }
     return selmodels;
 }
@@ -1118,12 +1192,12 @@ function validateInputs(form) {
     if (form.material.value.length <= 0) {
 	message += "Need material name to create output directory.\n";
 	invalid = true; }
-    //Set NNODES See if passes;
+    //Set NEXCITED See if passes;
     var XAS = form.XASELEMENTS.value;
     //references number of excited from the first model, no checking others
     var coordinates = sterilize(models[0]).split("\n");
-    form.NNODES.value = getExcitedElementsTotal(coordinates, XAS.split(" "));
-    if (form.NNODES.value <= 0) {
+    form.NEXCITED.value = getExcitedElementsTotal(coordinates, XAS.split(" "));
+    if (form.NEXCITED.value <= 0) {
 	message += "Must excite at least one atom in coordinates. \"Xx\" matches all of element Xx, \"Xx2\" matches the Xx atom in the second row of your corrdinates. Different atoms must be separated by whitespace.\n";
 	invalid = true; }
     //Check that all models have the same number of equivalent atoms
@@ -1139,10 +1213,19 @@ function validateInputs(form) {
     //PPP Passes (AutoSet)
     //check nperatom
     if (form.NPERATOM.value.match(/^\d+$/) == null) {
-	message += "Nodes per atom must be an integer. \n";
+	message += "Nodes per atom must be a positive integer. \n";
 	invalid = true; }
     if (form.NBANDFAC.value.match(/^\d+$/) == null) {
-	message += "NBANDFAC must be an integer. \n";
+	message += "NBANDFAC must be a positive integer. \n";
+	invalid = true; }
+    if (form.PPP.value.match(/^\d+$/) == null) {
+	message += "PPP must be a positive integer. \n";
+	invalid = true; }
+    if (form.NTG.value.match(/^\d+$/) == null) {
+	message += "NTG must be a positive integer. \n";
+	invalid = true; }
+    if (form.KPOINTS.value.match(/^\d+ \d+ \d+$/) == null) {
+	message += "KPoints must be of the form 'x y z'. \n";
 	invalid = true; }
 	
     //Check walltime
@@ -1151,7 +1234,7 @@ function validateInputs(form) {
 	invalid = true; }
     //Check totalCharge
     var tchg = form.TOTCHG.value;
-    if (tchg.match(/^\d$/) == null) {
+    if (tchg.match(/^\-?\d$/) == null) {
 	message += "Total charge must be an integer value. \n";
 	invalid = true; }  
   
@@ -1244,10 +1327,15 @@ function executeJob(form, materialName) {
     var inputs = "";
     var XAS = form.XASELEMENTS.value;
     var PPP = form.PPP.value;
-    var nodes = form.NNODES.value * form.NPERATOM.value;
+    var NTG = form.NTG.value;
+    var PPN = form.PPN.value;
+    var nodes = form.NEXCITED.value * form.NPERATOM.value;
     var machine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
+    var useCustomBlock = $('#useCustom').prop('checked');
+
+    //TODO Make this custom block absolute or something.  too many different things merging together here.
 
     //This is so hacked together, watch for escaped characters.
     //Pass inputs and pbs headers as files?
@@ -1261,23 +1349,32 @@ function executeJob(form, materialName) {
     inputs+="COSBC="+Math.cos(toRad(form.CellAlpha.value))+"\\n";
     inputs+="COSAC="+Math.cos(toRad(form.CellBeta.value))+"\\n";
     inputs+="COSAB="+Math.cos(toRad(form.CellGamma.value))+"\\n";
-    inputs+="NJOB="+form.NNODES.value+"\\n";
+    inputs+="NJOB="+form.NEXCITED.value+"\\n";
     inputs+="NBND_FAC="+form.NBANDFAC.value+"\\n";
     inputs+="tot_charge="+totChg+"\\n";
-    inputs+='PW_POSTFIX=\\"-ntg $PPP\\"\\n\"';
-    //console.log(inputs);
+    inputs+='PW_POSTFIX=\\"-ntg '+ NTG +'\\"\\n';
+    inputs+='K_POINTS=\\\"K_POINTS automatic \\n'+form.KPOINTS.value+' 0 0 0\\\"\\n\"';
+
+    console.log(inputs);
+    
 
     var command = SHELL_CMD_DIR+"submit.sh ";
     command += dir + " ";
     command += materialName + " ";
     command += inputs + " ";
     command += nodes + " ";
-    command += PPP + " ";
+    command += PPN + " ";
     command += machine + " ";
     command += form.Queue.value + " ";
     command += form.wallTime.value + " ";
     command += form.acctHours.value + " ";
-    //console.log(command);
+
+    console.log(useCustomBlock);
+    if (useCustomBlock) {
+	command += $('#customInputBlock').val() + " ";
+    }
+
+    console.log(command);
  
     var webdata = materialName + "\n"; //[0] Name
     var ahora = new Date();
@@ -1345,7 +1442,7 @@ function expandXAS(XAS, form) {
 //Opening a transfered file from webDynamics
 function openTransferFile() {
     $.newt_ajax({type: "GET",
-		url: "/file/hopper"+DATABASE_DIR+"/tmp/transferFile.xyz?view=read",
+		url: "/file/hopper"+DATABASE_DIR+"/tmp/"+myUsername+".xyz?view=read",
 		success: function (res) {
 
 		//TODO
@@ -1483,20 +1580,57 @@ function dbJob(elem, XCHShift, path) {
 }
 
 // query the selected REST API.
+var lastSearchResult = '';
 function restQuery() {
   var dest = $('#searchResults');
 
   dest.html('working...');
   var root = $('#searchLocationChosen');
-  var url = TreeEval.nodeValue(root);
+  var url = TreeEval.treeValue(root);
 
-  var result = '<a id="searchResultLink" ';
-  result += 'style="display:none" ';
-  result += 'target="_blank" href="';
-  result += url;
-  result += '">Open result in new tab</a><br>';
-  dest.html(result);
-  $('#searchResultLink').fadeIn();
+  var end = url.substring(url.lastIndexOf('/') + 1,
+                          url.length);
+
+  // only send SDFs to JSmol.
+  var result = '';
+  switch(end) {
+    case 'SDF':
+      $.get(url, function(data, status) {
+        lastSearchResult = data;
+        result = '<p id="searchResult" ';
+        result += ' style="display:none">';
+        result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
+        dest.html(result);
+        $('#searchResult').fadeIn();
+      }).fail(function(xhr, textStatus, errorThrown) {
+        result = 'An error occurred with the request:<br><pre>';
+        result += errorThrown;
+        result += '<br><br>';
+        result += xhr.responseText;
+        result += '</pre>';
+        dest.html(result);
+      });
+      break;
+    default:
+      result = '<a id="searchResult" ';
+      result += 'style="display:none" ';
+      result += 'target="_blank" href="';
+      result += url;
+      if (end == 'PNG') {
+        result += '">View Image</a><br>';
+      } else {
+        result += '">Open Result</a><br>';
+      }
+      dest.html(result);
+      $('#searchResult').fadeIn();
+      break;
+  }
+}
+
+// display the result of the last search result in JSmol.
+function displaySearchResult() {
+  var script = "try{Load INLINE '" + lastSearchResult + "'}catch(e){;}";
+  Jmol.script(previewApplet, script);
 }
 
 // organizes ICSD operations

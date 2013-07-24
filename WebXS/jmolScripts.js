@@ -21,10 +21,8 @@ function initPreviewApp() {
 }
 
 function help() {
-    //Jmol.script("set ScriptCallback \"helpHelper\";", mainApplet)
-    //var scr ="show unitcell;";
-    //Jmol.script(scr,mainApplet);
-    //explain jmol
+    //explain jsmol
+    window.open("./faq.html");
 }
 
 //Button to minimize structure
@@ -387,7 +385,7 @@ function drawMolInPreview() {
     Jmol.script(previewApplet, scr);
     $(document).ready(addSelections());
 
-    $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/24) + 1));
+    $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/48) + 1));
 }
 
 function numAtoms(xyz) {
@@ -436,6 +434,7 @@ function selectionCallback() {
     document.getElementById("inputs").XASELEMENTS.value = XAS;
     //edit so Knows to write "C" if all C's are selected
 }
+
 function animatePreview() {
     //Change Button
     $('#animatePreviewButton').hide();
@@ -463,6 +462,7 @@ function animatePreview() {
     //console.log(scr);
     Jmol.script(previewApplet, scr);
 }
+
 function supercellPreview() {
     var inx = Number($('#SupercellX').val());
     var iny = Number($('#SupercellY').val());
@@ -558,8 +558,8 @@ function animateResults(dir, numModels) {
 		 count ++;
 		 if (count == numModels) {
 		     var scr = "try{mod = '" + modata + "';";
-		     console.log(scr);
-		     scr += "\nLOAD '@mod';reset mod;selectionHalos on;select none;animation mode LOOP 1.0; frame PLAY;}";
+		     scr += "\nLOAD '@mod';reset mod;";
+		     scr += "selectionHalos on;select none;animation mode LOOP 1.0; frame PLAY;}";
 		     if (resultsAppReady) {Jmol.script(resultsApplet, scr);}
 		 } else {
 		     modata += "\n";

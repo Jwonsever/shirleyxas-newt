@@ -22,7 +22,7 @@
     <script src="../alsapi.js"></script>
     <script src="../als_portal.js"></script>
 
-    <!-- Major Function Values (incomplete)-->
+    <!-- Major Function Values-->
     <script src="../GlobalValues.js"></script>
 
     <!--Scripts required for JME injection-->
@@ -268,28 +268,10 @@
                     <option value="inchi">inchi</option>
                     <option value="sdf">sdf</option>
                     <option value="inchikey">inchikey</option>
-                    <option value="structure">structure</option>
                     <option value="xref">xref</option>
-                    <option value="listkey">listkey</option>
                   </select>
 
                   <div style="padding:10px;" data-te-skip="true">
-                    <div id="PubChem_compound_structure" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
-                      <select id="PubChem_compound_structure_1">
-                        <option value="substructure" selected>substucture</input>
-                        <option value="superstructure">superstucture</input>
-                        <option value="similarity">similarity</input>
-                        <option value="identity">identity</input>
-                      </select>
-                      <br>
-                      <select id="PubChem_compound_structure_2">
-                        <option value="smiles" selected>smiles</input><br>
-                        <option value="inchi">inchi</input><br>
-                        <option value="sdf">sdf</input><br>
-                        <option value="cid">cid</input>
-                      </select>
-                    </div>
-
                     <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" id="PubChem_compound_xref_1" value="xref" style="display:none" disabled/>
                       <select id="PubChem_compound_xref_2">
@@ -316,7 +298,7 @@
 
                   Operation<br>
                   <select id="PubChem_compound_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Compound.chooseOperation(this.value);">
-                    <option value="record" selected>record</option>
+                    <option value="record" selected>record (openable in JSmol)</option>
                     <option value="property">property</option>
                     <option value="synonyms">synonyms</option>
                     <option value="sids">sids</option>
@@ -354,7 +336,7 @@
                   </div>
                 </div>
 
-                <div id="PubChem_substance" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                <div id="PubChem_substance" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
                   <input  id="PubChem_substance_domain" type="text" value="substance" style="display:none" disabled/>
 
                   Namespace<br>
@@ -364,10 +346,9 @@
                     <option value="sourceall">sourceall</option>
                     <option value="name">name</option>
                     <option value="xref">xref</option>
-                    <option value="listkey">listkey</option>
                   </select>
 
-                  <div style="padding:10px;">
+                  <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" value="sourceid" style="display:none" disabled/>
                       <!-- TODO: do this in javascipt -->
@@ -408,7 +389,7 @@
 
                   Operation<br>
                   <select id="PubChem_substance_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Substance.chooseOperation(this.value);">
-                    <option value="record" selected>record</option>
+                    <option value="record" selected>record (openable in JSmol)</option>
                     <option value="synonyms">synonyms</option>
                     <option value="sids">sids</option>
                     <option value="cids">cids</option>
@@ -438,38 +419,23 @@
                   </div>
                 </div>
 
-                <div id="PubChem_assay" class="PubChem_domain" data-te-forward-with="_namespaceChosen" style="display:none;padding:10px">
+                <div id="PubChem_assay" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
                   <input  id="PubChem_assay_domain" type="text" value="assay" style="display:none" disabled/>
 
                   Namespace<br>
                   <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
                     <option value="aid" selected>aid</option>
-                    <option value="listkey">listkey</option>
-                    <option value="type">type</option>
                     <option value="sourceall">sourceall</option>
                   </select>
 
-                  <div style="padding:10px;">
-                    <div id="PubChem_assay_type" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_type_1" value="type" style="display:none" disabled/>
-                      <select id="PubChem_assay_type_2">
-                        <option value="all" selected>all</option>
-                        <option value="confirmatory">confirmatory</option>
-                        <option value="doseresponse">doseresponse</option>
-                        <option value="onhold">onhold</option>
-                        <option value="panel">panel</option>
-                        <option value="rnai">rnai</option>
-                        <option value="screening">screening</option>
-                        <option value="summary">summary</option>
-                      </select>
-                    </div>
-
+                  <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" value="sourceall" style="display:none" disabled/>
                       <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
                       <br>
                       <input type="text" id="PubChem_assay_sourceall_2" value=""/>
                     </div>
+
                     <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
                     <br>
                     <input type="Text" id="PubChem_assay_input" value=""/>
@@ -479,7 +445,7 @@
 
                   Operation<br>
                   <select id="PubChem_assay_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Assay.chooseOperation(this.value);">
-                    <option value="record" selected>record</option>
+                    <option value="record" selected>record (openable in JSmol)</option>
                     <option value="sids">sids</option>
                     <option value="cids">cids</option>
                     <option value="aids">aids</option>
@@ -491,10 +457,10 @@
                     <option value="xrefs">xrefs</option>
                   </select>
 
-                  <div style="padding:10px">
+                  <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_targets_2" value="targets" style="display:none" disabled/>
-                      <select multiple id="PubChem_assay_op_targets_1">
+                      <input type="text" id="PubChem_assay_op_targets_1" value="targets" style="display:none" disabled/>
+                      <select multiple id="PubChem_assay_op_targets_2">
                         <option value="ProteinGI">ProteinGI</input>
                         <option value="ProteinName">ProteinName</input>
                         <option value="GeneID">GeneID</input>
@@ -529,10 +495,10 @@
 
               Output format<br>
               <select id="PubChem_output">
-                <option value="XML" selected>XML</option>
+                <option value="SDF" selected>SDF (openable in JSmol)</option>
                 <option value="PNG">PNG</option>
+                <option value="XML">XML</option>
                 <option value="JSON">JSON</option>
-                <option value="SDF">SDF</option>
                 <option value="ASNT">ASNT</option>
                 <option value="ASNB">ASNB</option>
               </select>
@@ -678,7 +644,7 @@ website to jrdeslippe@lbl.gov.
                       <table cellpadding=8><tr><td>
 		      Output Directory:</td><td> <input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
                       </td></tr><tr><td>Cluster:</td><td>
-		      <select name="Select Cluster" id="machine" onchange="form.PPP.value=24; updateStatus(this.value);" value="hopper">
+		      <select name="Select Cluster" id="machine" onchange="form.PPN.value=24; updateStatus(this.value);" value="hopper">
 		        <option value="hopper">Hopper</option>
                       </select> <br><span id='clusterStatus' style='display:none;'></span></td></tr>
 		  
@@ -688,6 +654,8 @@ website to jrdeslippe@lbl.gov.
 		      <input type="Text" id="NBANDFAC" value="5"/></td></tr>
 		      <tr><td>Total Charge:</td><td>
 		      <input type="Text" id="TOTCHG" value="0"/></td></tr>
+		      <tr><td>K-Points</td><td>
+		      <input type="Text" id="KPOINTS" value="1 1 1"/></td></tr>
 
 		      <tr><td>Queue:</td><td>
 		      <select name="Select Queue" id="Queue" value="regular"
@@ -701,15 +669,23 @@ website to jrdeslippe@lbl.gov.
 		      &nbsp;&nbsp;<a href="#" onclick="window.open('http://www.nersc.gov/users/computational-systems/hopper/running-jobs/queues-and-policies/');")>About</a>
                       </td></tr>		  
 
-		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/></tr>
-		      <tr><td>Account:</td><td><input type="Text" id="acctHours" value="m1707"/>
-		      </td></tr>
+		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/></td></tr>
+		      <tr><td>Account:</td><td><input type="Text" id="acctHours" value="m1707"/></td></tr>
+		      <tr><td>PPP:</td><td><input type="Text" id="PPP" value="4"/></td></tr>
+		      <tr><td>NTG:</td><td><input type="Text" id="NTG" value="24"/></td></tr>
                       </table>
 
-		      <!-- Hidden From User -->
-		      <input type="hidden" id="NNODES" value="1"/>
-		      <input type="hidden" id="PPP" value="24"/> 
+		      <!-- Hidden From User todo-->
+		      <input type="hidden" id="NEXCITED" value="1"/>
+		      <input type="hidden" id="PPN" value="24"/>
 
+		      <input id="Full API" type='button' value='Full API' onClick="window.open('./API.php')"/>
+		      <br>
+		    
+		      <input type="Checkbox" onchange="" id="useCustom"/>  Use Custom Input Block?
+		      <span id='customBlock'>
+			<input type="Text" size="35" id="customInputBlock" value="/global/scratch/sd/invalid/CustomBlock.in"/>
+		      </span><br>Note, values on this page will overwrite values in your custom input block.<br>
 		      <input id="lessAdvanced" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
                       <br><br>
 		      <!-- End Advanced Options -->
@@ -718,6 +694,7 @@ website to jrdeslippe@lbl.gov.
 
 		      <input id="Submit" data-inline='true' type='button' value='Submit' onClick="validateInputs(this.form)"/>
 		      <div id="subStatus"></div>
+         
 		    </form>
 		    </td><td width=400></td><td valign=top>
 		      <!--Molecule Preview -->
@@ -754,7 +731,8 @@ website to jrdeslippe@lbl.gov.
 			  Note: Can get BIG.
                       </span>
 		      <span><input type='button' value='OpenWebDynamicsFile' onClick="openTransferFile();">
-		      
+		       <br>
+		       <input id="DisplaySearchQuery" type="button" value="Display from Search Query" onclick="displaySearchResult()"/>
 		      
 		      </td></tr></table>
 	       </div>
