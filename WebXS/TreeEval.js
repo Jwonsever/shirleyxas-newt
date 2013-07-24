@@ -92,6 +92,16 @@ TreeEval.Contexts['html']._NodetypeMods['select'] = function(jq_elem, nodetype) 
   return nodetype;
 }
 
+// If node overrides default leaf status, return the specified value.
+// If node does not override, return null.
+TreeEval.Contexts['html'].isLeafNodeOverride = function(jq_elem) {
+  if (jq_elem.attr('data-te-is-leaf')) {
+    return jq_elem.data('teIsLeaf');
+  } else {
+    return null;
+  }
+}
+
 
 /*
  * Node visiting.
@@ -284,11 +294,10 @@ TreeEval.Recursors['base'].isLeafNode = function(jq_elem, context) {
     result = this._LeafNodeOverrides[nodetype](jq_elem, context);
   }
 
-  // TODO: move the html into the HTML Context.
-  // Create a function that returns the override, or null if there is none.
   // statically override, if one is present
-  if (jq_elem.attr('data-te-is-leaf')) {
-    result = jq_elem.data('teIsLeaf');
+  var override = context.isLeafNodeOverride(jq_elem);
+  if (override !== null) {
+    result = override;
   }
 
   return result;
