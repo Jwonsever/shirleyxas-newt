@@ -424,25 +424,10 @@
                   Namespace<br>
                   <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
                     <option value="aid" selected>aid</option>
-                    <option value="type">type</option>
                     <option value="sourceall">sourceall</option>
                   </select>
 
                   <div style="padding:10px;" data-te-skip="true">
-                    <div id="PubChem_assay_type" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_type_1" value="type" style="display:none" disabled/>
-                      <select id="PubChem_assay_type_2">
-                        <option value="all" selected>all</option>
-                        <option value="confirmatory">confirmatory</option>
-                        <option value="doseresponse">doseresponse</option>
-                        <option value="onhold">onhold</option>
-                        <option value="panel">panel</option>
-                        <option value="rnai">rnai</option>
-                        <option value="screening">screening</option>
-                        <option value="summary">summary</option>
-                      </select>
-                    </div>
-
                     <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
                       <input type="text" value="sourceall" style="display:none" disabled/>
                       <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
