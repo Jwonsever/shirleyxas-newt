@@ -143,7 +143,8 @@ TreeEval.Contexts['base']._getListType = function(jq_elem) {
 TreeEval.Contexts['base']._ListTypes = {
   teListSlash: 'list_slash',
   teListComma: 'list_comma',
-  teListConcat: 'list_concat'
+  teListConcat: 'list_concat',
+  teListQuery: 'list_query'
 }
 
 // Return whether a nodetype represents a list.
@@ -242,25 +243,24 @@ TreeEval.Contexts['base']._Forwarders['teForwardTo'] = function (elem_id, jq_ele
 /*
  * List evaluation.
  */
-TreeEval.Contexts['base'].childValues = function(jq_elem, evaluator) {
-  var childNodes = this.childNodes(jq_elem);
-
-  // mutual recursion: call treeValue() on each child to get all child parameters
-  // essentially: values = map(this.treeValue, childNodes)
-  var length = childNodes.length;
-  var values = new Array(length);
-  for (var i = 0; i < length; i++) {
-    values[i] = TreeEval.treeValue($(childNodes[i]), evaluator, this);
-  }
-
-  return values;
-}
-
 TreeEval.Contexts['base'].childNodes = function(jq_elem) {
   // list all the (meaningful) 1-deep child nodes of elem.
   // Do not filter them here;
   // they will be filtered upon evaluation, by the context.
-  var children = jq_elem.children(this._meaningfulElems);
+  // TODO: change that. Might have to add logic to leaf
+  // node detection to account for this.
+  var jq_children = jq_elem.children(this._meaningfulElems);
+
+  // turn one jquery object of multiple elements into
+  // an array of multiple jquery objects, each with one element.
+  // This way they can be indexed by evaluators and evaluated
+  // without having to do context-specific reboxing.
+  var num_children = jq_children.length;
+  var children = new Array(num_children);
+  for (var i = 0; i < num_children; i++) {
+    children[i] = $(jq_children[i]);
+  }
+
   return children;
 }
 
@@ -294,6 +294,10 @@ TreeEval.Evaluators['base'] = new Object();
  * Determine if a node should be evaluated.
  */
 TreeEval.Evaluators['base'].filter = function(jq_elem, context) {
+  // TODO: refactor this. Shouldn't be able to access nodes that the
+  // context has filtered out. Make childNodes filter based on context's filters,
+  // so that evaluator can never even see what the context thinks is definitely
+  // not to be evaluated.
   return this._passesContextFilters(jq_elem, context)
 }
 
@@ -346,7 +350,8 @@ TreeEval.Evaluators['base']._LeafNodeDefaults = {
   pointer: false,
   list_slash: false, // TODO: generalize this. will be a lot of repeating with more list types.
   list_comma: false,
-  list_concat: false
+  list_concat: false,
+  list_query: false
 }
 
 // dynamic (runtime) overrides
@@ -426,8 +431,15 @@ TreeEval.Evaluators['base']._evaluateList = function(jq_elem, context) {
   var listType = context.nodetype(jq_elem);
 
   var assemble = this_evaluator._getAssembler(listType);
-  var children = context.childValues(jq_elem, this_evaluator);
-  return assemble(children);
+
+  var children = context.childNodes(jq_elem, this_evaluator);
+  var num_children = children.length;
+  var childValues = new Array(num_children);
+  for (var i = 0; i < num_children; i++) {
+    childValues[i] = TreeEval.treeValue(children[i], this_evaluator, context);
+  }
+
+  return assemble(childValues);
 }
 
 
