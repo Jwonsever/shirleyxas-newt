@@ -23,7 +23,7 @@ TreeEval.treeValue = function(node, recursor, context) {
   }
   // use HTML context if none specified
   if (typeof context === 'undefined') {
-    context =  this.Contexts['html'];
+    context =  this.Contexts['base'];
   }
 
   // let node know it has been visited, so any callbacks can fire
@@ -52,19 +52,19 @@ TreeEval.Contexts = {}
 
 
 /*
- * HTML Context.
+ * Base Context.
  * Used for evaluating HTML elements.
  */
-TreeEval.Contexts['html'] = new Object();
+TreeEval.Contexts['base'] = new Object();
 
-TreeEval.Contexts['html']._meaningfulElems = 'input,select,div';
+TreeEval.Contexts['base']._meaningfulElems = 'input,select,div';
 
 
 /*
  * Node evaluation.
  * Evaluates a single node, not the whole tree rooted at it.
  */
-TreeEval.Contexts['html'].nodeValue = function(jq_elem) {
+TreeEval.Contexts['base'].nodeValue = function(jq_elem) {
   return jq_elem.val();
 }
 
@@ -74,7 +74,7 @@ TreeEval.Contexts['html'].nodeValue = function(jq_elem) {
  * Determines the type of a node,
  * which will determine how it is evaluated.
  */
-TreeEval.Contexts['html'].nodetype = function(jq_elem) {
+TreeEval.Contexts['base'].nodetype = function(jq_elem) {
   // base nodetype on tag name
   var nodetype = jq_elem.prop('tagName').toLowerCase();
 
@@ -93,9 +93,9 @@ TreeEval.Contexts['html'].nodetype = function(jq_elem) {
 
 // attribute-based nodetype modifiers.
 // nodetypes are based on tag, and modified by these based on attributes
-TreeEval.Contexts['html']._NodetypeMods = {}
+TreeEval.Contexts['base']._NodetypeMods = {}
 
-TreeEval.Contexts['html']._NodetypeMods['select'] = function(jq_elem, nodetype) {
+TreeEval.Contexts['base']._NodetypeMods['select'] = function(jq_elem, nodetype) {
   if (jq_elem.prop('multiple')) {
     nodetype += '_multiple';
   }
@@ -104,7 +104,7 @@ TreeEval.Contexts['html']._NodetypeMods['select'] = function(jq_elem, nodetype) 
 
 // If node overrides default leaf status, return the specified value.
 // If node does not override, return null.
-TreeEval.Contexts['html'].isLeafNodeOverride = function(jq_elem) {
+TreeEval.Contexts['base'].isLeafNodeOverride = function(jq_elem) {
   if (jq_elem.attr('data-te-is-leaf')) {
     return jq_elem.data('teIsLeaf');
   } else {
@@ -116,7 +116,7 @@ TreeEval.Contexts['html'].isLeafNodeOverride = function(jq_elem) {
 /*
  * Node visiting.
  */
-TreeEval.Contexts['html'].visit = function(jq_elem) {
+TreeEval.Contexts['base'].visit = function(jq_elem) {
   jq_elem.trigger('visit.TreeEval');
 }
 
@@ -124,7 +124,7 @@ TreeEval.Contexts['html'].visit = function(jq_elem) {
 /*
  * Node progression.
  */
-TreeEval.Contexts['html'].nextNode = function(jq_elem) {
+TreeEval.Contexts['base'].nextNode = function(jq_elem) {
   // for internal (non-leaf) nodes,
   // i.e. divs and selects (but not select multiples).
   var next_id = this.forward(jq_elem);
@@ -138,7 +138,7 @@ TreeEval.Contexts['html'].nextNode = function(jq_elem) {
   return $(next_id);
 }
 
-TreeEval.Contexts['html'].forward = function(jq_elem) {
+TreeEval.Contexts['base'].forward = function(jq_elem) {
   var next_id = '#' + jq_elem.prop('id');
   // alter forwarding as requested by elem
   for (var forwarder in this._Forwarders) {
@@ -152,9 +152,9 @@ TreeEval.Contexts['html'].forward = function(jq_elem) {
 // Node forwarders:
 // IMPORTANT: the order of evaluation of these forwarders is intentional.
 // These are not positioned arbitrarily.
-TreeEval.Contexts['html']._Forwarders = {};
+TreeEval.Contexts['base']._Forwarders = {};
 
-TreeEval.Contexts['html']._Forwarders['teForwardThrough'] = function (elem_id, jq_elem) {
+TreeEval.Contexts['base']._Forwarders['teForwardThrough'] = function (elem_id, jq_elem) {
   if (jq_elem.data('teForwardThrough')) {
     // forward through this element:
     // drop the last part of the id
@@ -168,7 +168,7 @@ TreeEval.Contexts['html']._Forwarders['teForwardThrough'] = function (elem_id, j
   return elem_id;
 } 
 
-TreeEval.Contexts['html']._Forwarders['teForwardWith'] = function (elem_id, jq_elem) {
+TreeEval.Contexts['base']._Forwarders['teForwardWith'] = function (elem_id, jq_elem) {
   var forward_with = jq_elem.data('teForwardWith');
   if (forward_with) {
     // forward with an addition:
@@ -178,7 +178,7 @@ TreeEval.Contexts['html']._Forwarders['teForwardWith'] = function (elem_id, jq_e
   return elem_id;
 }
 
-TreeEval.Contexts['html']._Forwarders['teForwardTo'] = function (elem_id, jq_elem) {
+TreeEval.Contexts['base']._Forwarders['teForwardTo'] = function (elem_id, jq_elem) {
   var forward_to = jq_elem.data('teForwardTo');
   if (forward_to) {
     // forward to an element:
@@ -192,7 +192,7 @@ TreeEval.Contexts['html']._Forwarders['teForwardTo'] = function (elem_id, jq_ele
 /*
  * List evaluation.
  */
-TreeEval.Contexts['html'].childValues = function(jq_elem, recursor) {
+TreeEval.Contexts['base'].childValues = function(jq_elem, recursor) {
   var childNodes = this.childNodes(jq_elem);
 
   // mutual recursion: call treeValue() on each child to get all child parameters
@@ -206,7 +206,7 @@ TreeEval.Contexts['html'].childValues = function(jq_elem, recursor) {
   return values;
 }
 
-TreeEval.Contexts['html'].childNodes = function(jq_elem) {
+TreeEval.Contexts['base'].childNodes = function(jq_elem) {
   // list all the (meaningful) 1-deep child nodes of elem.
   // Do not filter them here;
   // they will be filtered upon evaluation, by the context.
@@ -214,7 +214,7 @@ TreeEval.Contexts['html'].childNodes = function(jq_elem) {
   return children;
 }
 
-TreeEval.Contexts['html']._getListType = function(jq_elem) {
+TreeEval.Contexts['base']._getListType = function(jq_elem) {
   // return first matching list type
   var length = this._ListTypes.length;
   var listType = null;
@@ -227,25 +227,16 @@ TreeEval.Contexts['html']._getListType = function(jq_elem) {
   return null;
 }
 
-TreeEval.Contexts['html']._ListTypes = ['teListSlash',
+TreeEval.Contexts['base']._ListTypes = ['teListSlash',
                                         'teListComma',
                                         'teListConcat'];
 
 /*
  * Node filtering (true => pass)
  */
-TreeEval.Contexts['html'].Filters = {};
+TreeEval.Contexts['base'].Filters = {};
 
-TreeEval.Contexts['html'].Filters['notUnchecked'] = function(jq_elem) {
-  if (jq_elem.prop('tagName').toLowerCase() === 'input' &&
-      jq_elem.prop('type') === 'checkbox') {
-    return jq_elem.prop('checked');
-  } else {
-    return true;
-  }
-}
-
-TreeEval.Contexts['html'].Filters['notSkipped'] = function(jq_elem) {
+TreeEval.Contexts['base'].Filters['notSkipped'] = function(jq_elem) {
   return !(jq_elem.data('teSkip'));
 }
 
