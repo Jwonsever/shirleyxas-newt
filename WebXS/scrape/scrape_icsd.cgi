@@ -63,7 +63,7 @@ sub untaint_field
   return $field;
 }
 
-my @cmd = ("./scrape.sh");
+my @cmd = ("./scrape_icsd.sh");
 my $scrubbed = "";
 my $scrubbed_field = "";
 my $input = "";
