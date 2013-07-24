@@ -75,31 +75,46 @@ TreeEval.Contexts['base'].nodeValue = function(jq_elem) {
  * which will determine how it is evaluated.
  */
 TreeEval.Contexts['base'].nodetype = function(jq_elem) {
-  // base nodetype on tag name
-  var nodetype = jq_elem.prop('tagName').toLowerCase();
-
-  // modify nodetype based on element attributes, if necessary
-  if (this._NodetypeMods.hasOwnProperty(nodetype)) {
-    nodetype = this._NodetypeMods[nodetype](jq_elem, nodetype);
-  }
-
-  // statically override, if one is present
+  // statically override nodetype, if one is present
   if (jq_elem.attr('data-te-nodetype')) {
-    nodetype = jq_elem.data('teNodetype');
+    return jq_elem.data('teNodetype');
   }
 
-  return nodetype;
+  // look up nodetype generator from tag name.
+  var tagName = jq_elem.prop('tagName').toLowerCase();
+  if (this._NodetypeGens.hasOwnProperty(tagName)) {
+    return this._NodetypeGens[tagName](jq_elem);
+  } else {
+    var msg = "TreeEval: Error: don't know nodetype for element of type: ";
+    msg += tagName;
+    msg += '.';
+    console.log(msg);
+  }
 }
 
-// attribute-based nodetype modifiers.
-// nodetypes are based on tag, and modified by these based on attributes
-TreeEval.Contexts['base']._NodetypeMods = {}
+// tag-based nodetype generators.
+TreeEval.Contexts['base']._NodetypeGens = {}
 
-TreeEval.Contexts['base']._NodetypeMods['select'] = function(jq_elem, nodetype) {
+TreeEval.Contexts['base']._NodetypeGens['input'] = function(jq_elem) {
+  var this_context = TreeEval.Contexts['base'];
+  var type = jq_elem.attr('type');
+  // TODO: add handlers for other input types here as it becomes necessary.
+  switch(type) {
+    default:
+      return 'literal';
+  }
+}
+
+TreeEval.Contexts['base']._NodetypeGens['select'] = function(jq_elem) {
+  var nodetype = 'select';
   if (jq_elem.prop('multiple')) {
     nodetype += '_multiple';
   }
   return nodetype;
+}
+
+TreeEval.Contexts['base']._NodetypeGens['div'] = function(jq_elem) {
+  return 'div';
 }
 
 // If node overrides default leaf status, return the specified value.
@@ -306,9 +321,9 @@ TreeEval.Interpreters['base'].isLeafNode = function(jq_elem, context) {
 
 // default values for keys
 TreeEval.Interpreters['base']._LeafNodeDefaults = {
+  literal: true,
   select: false, // requires dynamic override anyway. TODO: figure out what to do about that.
   select_multiple: true,
-  input: true,
   div: false
 }
 
@@ -330,12 +345,17 @@ TreeEval.Interpreters['base'].evaluateLeaf = function(jq_elem, context) {
   if (this._LeafEvaluators.hasOwnProperty(nodetype)) {
     return this._LeafEvaluators[nodetype](jq_elem, context);
   } else {
-    return context.nodeValue(jq_elem);
+    // by default, treat it as a literal
+    return this._LeafEvaluators['literal'](jq_elem, context);
   }
 }
 
 // leaf node evaluators
 TreeEval.Interpreters['base']._LeafEvaluators = {}
+
+TreeEval.Interpreters['base']._LeafEvaluators['literal'] = function(jq_elem, context) {
+  return context.nodeValue(jq_elem);
+}
 
 TreeEval.Interpreters['base']._LeafEvaluators['select_multiple'] = function(jq_elem, context) {
   var this_interpreter = TreeEval.Interpreters['base'];
