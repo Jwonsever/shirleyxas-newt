@@ -198,9 +198,9 @@ function previousJobs() {
 				     }
 				     unfText += "<td width=62\%>" + jname
 					 + "</td><td class=\"statusnone\" width=15\% align=center>"
-					 + "Unfinished</td><td><button onClick=\"resubmit(\'" 
-					 + jname + "\', \'" + "hopper"
-					 + "\')\" type=\"button\">Resubmit</button></td><td>"
+					 + "Unfinished</td><td><button onClick=\""
+					 + "resubmit(\'" + jname + "\', \'hopper\');"
+					 + "$(this).attr('disabled','disabled');\" type=\"button\">Resubmit</button></td><td>"
 					 + "<button onClick=\"viewJobFiles(\'" 
 					 + jname + "\', \'" + "hopper"
 					 + "\')\" type=\"button\">View Files</button></td><tr>";
@@ -296,8 +296,8 @@ function previousJobs() {
 	    },
 		error: function(request,testStatus,errorThrown) {
 		var myText = "Error: "+testStatus+" \n"+errorThrown;
-		$('#previousFinishedJobs').html(myText);
-		$('#previousFinishedJobs').trigger('create');
+		$('#previousjobslist').html(myText);
+		$('#previousjobslist').trigger('create');
 	    },
 		});
 }
@@ -714,7 +714,7 @@ function getXCHShift(elem) {
 	else return 0;
     } else {
 	 $.newt_ajax({type: "GET",
-		url: "/file/hopper" + DATABASE_DIR + "XCHShifts.csv?view=read",
+		url: "/file/hopper" + DATABASE_DIR + "/XCHShifts.csv?view=read",
 		success: function(res){
 		     res = res.split("\n");
 		     cachedShifts.pulled=true;
