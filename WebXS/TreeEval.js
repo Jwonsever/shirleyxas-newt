@@ -414,7 +414,7 @@ TreeEval.Evaluators['base']._InternalEvaluators = {}
 TreeEval.Evaluators['base']._InternalEvaluators['fork'] = function(node, context) {
   var this_evaluator = TreeEval.Evaluators['base'];
   var next_node = context.nextNode(node);
-  return TreeEval.treeValue(next_node, this_evaluator, context);
+  return this_evaluator._treeValue(next_node, context);
 }
 
 TreeEval.Evaluators['base']._InternalEvaluators['pointer'] = function(node, context) {
@@ -423,7 +423,7 @@ TreeEval.Evaluators['base']._InternalEvaluators['pointer'] = function(node, cont
   // TODO: check that it has forwarding info.
   // If not, throw an error to avoid infinite loop.
   var next_node = context.nextNode(node);
-  return TreeEval.treeValue(next_node, this_evaluator, context);
+  return this_evaluator._treeValue(next_node, context);
 }
 
 TreeEval.Evaluators['base']._evaluateList = function(node, context) {
@@ -432,14 +432,32 @@ TreeEval.Evaluators['base']._evaluateList = function(node, context) {
 
   var assemble = this_evaluator._getAssembler(listType);
 
-  var children = context.childNodes(node, this_evaluator);
+  var children = context.childNodes(node);
   var num_children = children.length;
   var childValues = new Array(num_children);
   for (var i = 0; i < num_children; i++) {
-    childValues[i] = TreeEval.treeValue(children[i], this_evaluator, context);
+    childValues[i] = this_evaluator._treeValue(children[i], context);
   }
 
   return assemble(childValues);
+}
+
+// wrapper for tree evaluation that chooses an evaluator based on the nodetype
+// of the node to be evaluated.
+TreeEval.Evaluators['base']._treeValue = function(node, context) {
+  var evaluator = null;
+  var nodetype = context.nodetype(node);
+  if (this._EvaluatorPrefs.hasOwnProperty(nodetype)) {
+    evaluator = this._evaluatorPrefs[nodetype];
+  } else {
+    evaluator = this;
+  }
+
+  return TreeEval.treeValue(node, evaluator, context);
+}
+
+// preferences for which evaluator to use for a given nodetype.
+TreeEval.Evaluators['base']._EvaluatorPrefs = {
 }
 
 
