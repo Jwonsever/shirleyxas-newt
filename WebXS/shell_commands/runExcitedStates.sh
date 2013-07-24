@@ -65,6 +65,6 @@ wait
 #todo
 
 #Remove all excess Data  (todo, needs to be AFTER all the other jobs complete.)
-${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
+#${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
 
 exit
