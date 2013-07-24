@@ -351,7 +351,8 @@ TreeEval.Evaluators['base']._LeafNodeDefaults = {
   list_slash: false, // TODO: generalize this. will be a lot of repeating with more list types.
   list_comma: false,
   list_concat: false,
-  list_query: false
+  list_query: false,
+  list_equals: false
 }
 
 // dynamic (runtime) overrides
@@ -495,6 +496,16 @@ TreeEval.Evaluators['base']._Assemblers['list_comma'] = function(values) {
 TreeEval.Evaluators['base']._Assemblers['list_concat'] = function(values) {
   var this_evaluator = TreeEval.Evaluators['base'];
   return this_evaluator._sepAssemble(values, '');
+}
+TreeEval.Evaluators['base']._Assemblers['list_query'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  var ret = '?';
+  ret +=  this_evaluator._sepAssemble(values, '&');
+  return ret;
+}
+TreeEval.Evaluators['base']._Assemblers['list_equals'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  return this_evaluator._sepAssemble(values, '=');
 }
 
 TreeEval.Evaluators['base']._sepAssemble = function(values, separator) {
