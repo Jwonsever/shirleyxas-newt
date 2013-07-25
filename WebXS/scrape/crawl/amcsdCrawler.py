@@ -6,6 +6,7 @@ from cif import CifList
 import argparse
 import HTMLParser
 import logging
+import time
 
 logging.basicConfig()
 
@@ -20,7 +21,7 @@ class AmcsdCrawlerGhost:
         'chemistry': '"Periodic"',
         'cellParam': '"CellParam"',
         'diffraction': '"diff"',
-        'general': '"key"',
+        'general': '"Key"',
     }
 
     # possible arguments that are not search terms, and their default values.
@@ -32,7 +33,8 @@ class AmcsdCrawlerGhost:
     selectors = {
         # for stage 1
         'search_form': 'form[name="myForm"]',
-        'search_button': 'form[name="myForm"] input[type="submit"]',
+        'format_btn': 'form[name="myForm"] input[type="radio"][name="Download"]',
+        'search_btn': 'form[name="myForm"] input[type="submit"]',
         'result_table': 'form[name="myForm"] table',
 
         # for stage 2.1
@@ -86,8 +88,8 @@ class AmcsdCrawlerGhost:
             setattr(self, var, val)
 
     def config_ghost(self):
-        self.ghost = Ghost(download_images=False,
-                           wait_timeout=20,
+        self.ghost = Ghost(download_images=True,
+                           wait_timeout=60,
                            display=self.debug)
 
     def crawl(self):
@@ -96,20 +98,38 @@ class AmcsdCrawlerGhost:
         Return a CifList of all the structures fetched.
         If an error occurs during search, this list will be empty.
         """
+        self.ghost.open(self.start_url)
         if self.do_search():
             return self.get_results()
         else:
             self.handle_search_error()
 
-    def do_search(self, search_url):
+    def do_search(self):
         """
         Stage 1: perform search query.
         Returns whether or not the search was performed successfully.
         """
+        form = self.selectors['search_form']
         # populate search terms.
-        self.ghost.fill(self.selectors['search_form'], self.search_terms)
+        self.ghost.fill(form, self.search_terms)
+        time.sleep(4)
+        self.ghost.set_field_value(self.selectors['format_btn'], 'cif')
+        time.sleep(4)
         # perform the search.
-        page, resources = self.ghost.click(self.selectors['run_query_btn'], expect_loading=True)
+        #print self.ghost.content
+        #print self.get_attr(self.selectors['search_btn'], 'outerHTML')
+        #print self.ghost.click(self.selectors['search_btn'], expect_loading=True)
+
+        #print self.get_attr(form, 'submit()')
+        #self.ghost.wait_for_page_loaded()
+
+        #self.ghost.fire_on(form, "submit", expect_loading=True)
+
+        self.ghost.evaluate(self.js_exprs['get_attr'] \
+                                   .format(form,
+                                           'submit()'),
+                            expect_loading=True)[0]
+
         # test if the search worked.
         return self.ghost.exists(self.selectors['result_table'])
     
