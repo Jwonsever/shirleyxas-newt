@@ -265,7 +265,7 @@ class IcsdCrawlerGhost:
 
 def parse_crawler_args():
     """ parse command-line arguments into a dictionary of web crawler arguments. """
-    parser = argparse.ArgumentParser()
+    parser = argparse.ArgumentParser(description='A scraper for the ICSD at http://icsd.fiz-karlsruhe.de/')
     parser.add_argument('--num_results',
                         default=10,
                         type=int,
