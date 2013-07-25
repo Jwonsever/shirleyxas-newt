@@ -105,8 +105,8 @@ cat $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/XAS-xyz.sh >> ./xas.qscript
 cat $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/XAS-xyz-ref.sh >> ./ref.qscript
 
 ## Submit xas and xas-ref
-cat "Submitting XAS" >> xas.out
-cat "Submitting REF" >> ref.out
+echo "Submitting XAS" >> xas.out
+echo "Submitting REF" >> ref.out
 ref_id=`qsub ref.qscript `
 xas_id=`qsub xas.qscript `
 
