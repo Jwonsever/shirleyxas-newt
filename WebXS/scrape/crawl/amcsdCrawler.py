@@ -31,15 +31,16 @@ class AmcsdCrawlerGhost:
     # CSS3 selectors
     selectors = {
         # for stage 1
-        'search_form': 'form[name="myForm"]'
+        'search_form': 'form[name="myForm"]',
         'search_button': 'form[name="myForm"] input[type="submit"]',
+        'result_table': 'form[name="myForm"] table',
 
         # for stage 2.1
-        'select_all_btn': 'form[name="result_form"] input[type="button"][onclick*="selectall()"]'
+        'select_all_btn': 'form[name="result_form"] input[type="button"][onclick*="selectall()"]',
         # for stage 2.2
-        'format_select': 'form[name="result_form"] select[name="down"]'
+        'format_select': 'form[name="result_form"] select[name="down"]',
         # for stage 2.3
-        # "ownload" for improvised case-insensitivity
+        # "ownload" for improvised case-insensitivity of "[Dd]ownload"
         'download_btn': 'form[name="result_form"] input[type="Submit"][value*="ownload"]'
     }
 
@@ -101,12 +102,12 @@ class AmcsdCrawlerGhost:
         Stage 1: perform search query.
         Returns whether or not the search was performed successfully.
         """
-        # populate search terms
+        # populate search terms.
         self.ghost.fill(self.selectors['search_form'], self.search_terms)
-        # perform the search
+        # perform the search.
         page, resources = self.ghost.click(self.selectors['run_query_btn'], expect_loading=True)
-        # TODO: test if the search worked, and return whether it did.
-        return True
+        # test if the search worked.
+        return self.ghost.exists(self.selectors['result_table'])
     
     def get_results(self):
         """
@@ -139,3 +140,9 @@ class AmcsdCrawlerGhost:
         _, resources = self.ghost.click(self.selectors['download_btn'])
         # TODO: return CifList of contents of resources.
         print resources
+
+    def handle_search_error(self):
+        """
+        Stage 2.error: handle an error with the search.
+        """
+        print 'poop'
