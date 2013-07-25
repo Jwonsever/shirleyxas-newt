@@ -41,7 +41,10 @@ class AmcsdCrawlerGhost:
         'format_select': 'form[name="result_form"] select[name="down"]',
         # for stage 2.3
         # "ownload" for improvised case-insensitivity of "[Dd]ownload"
-        'download_btn': 'form[name="result_form"] input[type="Submit"][value*="ownload"]'
+        'download_btn': 'form[name="result_form"] input[type="Submit"][value*="ownload"]',
+
+        # for stage 2.error
+        'error_msg': 'form[name="result_form"]>p'
     }
 
     # javascript expressions
@@ -55,6 +58,7 @@ class AmcsdCrawlerGhost:
 
     # various messages
     messages = {
+        'no_matches': 'No matches were found for the search',
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
 
@@ -145,4 +149,39 @@ class AmcsdCrawlerGhost:
         """
         Stage 2.error: handle an error with the search.
         """
-        print 'poop'
+        # TODO: generalize for different messages.
+        message = self.get_attr(self.selectors['error_msg'], 'innerHTML')
+        if message.find('No matches') >= 0:
+            print self.messages['no_matches']
+        else: 
+            print self.messages['default_search_error']
+
+    def set_attr(self, selector, attr, new_value):
+        """ Set an attribute of a DOM element. """
+        self.ghost.evaluate(self.js_exprs['set_attr'] \
+                            .format(selector,
+                                    attr,
+                                    new_value))
+
+    def get_attr(self, selector, attr):
+        """ Get an attribute from a DOM element. """
+        return self.ghost.evaluate(self.js_exprs['get_attr'] \
+                                   .format(selector,
+                                           attr))[0]
+
+    def get_attr_extract(self, selector, attr):
+        """ Get an attribute from a DOM element. Do so by parsing its tag. """
+        outerHtml = self.ghost.evaluate(self.js_exprs['get_attr'] \
+                                        .format(selector,
+                                                'outerHTML'))[0]
+        return self.extract_tag_attr(outerHtml, attr)
+
+    def extract_tag_attr(self, tag, attr, quote='"'):
+        """
+        Given a tag, extract the value of a given attribute inside it,
+        wrapped in the given type of quotes.
+        """ 
+        attr_assignment = tag.find(attr + '=')
+        first = tag.find(quote, attr_assignment)
+        last = tag.find(quote, first + 1)
+        return tag[first + 1 : last]
