@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from ghost import Ghost
 
-from cif import CifList
+from jsonList import JsonList
 
 import argparse
 import HTMLParser
@@ -136,14 +136,6 @@ class AmcsdCrawlerGhost:
         """
         Stage 2.2: download the selected results.
         """
-        # TODO: return CifList of contents of resources.
-        # They format their lists of many cifs differently.
-        # Instead of assuming one way, pass into CifList a function
-        # to split into individual Cifs, according to individial implementation.
-        #
-        # other idea: make an abstract base class,
-        # and inherit from it for each implementation.
-
         # TODO: split into two steps: navigation and downloading
 
         # get to results-viewing page
@@ -151,7 +143,14 @@ class AmcsdCrawlerGhost:
         self.ghost.fire_on(self.selectors['result_form'], 'submit', expect_loading=True)
 
         # get results
-        print self.get_attr(self.selectors['result_area'], 'innerHTML')
+        results_string = self.get_attr(self.selectors['result_area'], 'innerHTML')
+        results = results_string.split('\n\n')
+
+        # filter out any empty string elements
+        not_empty = lambda string: string != ''
+        results = filter(not_empty, results)
+
+        return JsonList(results)
 
     def handle_search_error(self):
         """
@@ -163,6 +162,9 @@ class AmcsdCrawlerGhost:
             print self.messages['no_matches']
         else: 
             print self.messages['default_search_error']
+
+        # empty CifList
+        return CifList()
 
     def set_attr(self, selector, attr, new_value, **kwargs):
         """ Set an attribute of a DOM element. """
@@ -177,7 +179,7 @@ class AmcsdCrawlerGhost:
         return self.ghost.evaluate(self.js_exprs['get_attr'] \
                                    .format(selector,
                                            attr),
-                                   **kwargs)
+                                   **kwargs)[0]
 
     def get_attr_extract(self, selector, attr):
         """ Get an attribute from a DOM element. Do so by parsing its tag. """

@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 from ghost import Ghost
 
-from cif import CifList
+from jsonList import JsonList
 
 import argparse
 import HTMLParser
@@ -202,7 +202,8 @@ class IcsdCrawlerGhost:
         _, resources = self.ghost.click(self.selectors['single_cif_dl'], expect_loading=True)
         # TODO: still getting duplication. Returning only the first resource hides this issue.
         # find out why duplication is happening.
-        return CifList(resources[0].content)
+        results = self.separate(resources[0].content)
+        return JsonList(results)
 
     def handle_search_error(self):
         """ Stage 3.error: handle an error with the search. """
@@ -216,8 +217,23 @@ class IcsdCrawlerGhost:
                 break
 
         print error_msg.strip()
-        # empty CifList
-        return CifList()
+        # empty JsonList
+        return JsonList()
+
+    def separate(self, cif):
+        """
+        Separate a single (string of a) CIF file containing multiple structures
+        into multiple files.
+        """
+        sep = '#'
+        length = len(cif)
+        start, end = 0, 0
+
+        while 0 <= end < length:
+            start = cif.find(sep, end)
+            end = cif.find(sep, start + 1)
+            end = cif.find(sep, end + 1)
+            yield cif[start : end]
 
     def set_attr(self, selector, attr, new_value):
         """ Set an attribute of a DOM element. """
