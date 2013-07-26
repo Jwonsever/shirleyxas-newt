@@ -34,17 +34,12 @@ class AmcsdCrawlerGhost:
         # for stage 1
         'search_form': 'form[name="myForm"]',
         'format_btn': 'form[name="myForm"] input[type="radio"][name="Download"]',
-        'search_btn': 'form[name="myForm"] input[type="submit"]',
         'result_table': 'form[name="result_form"] table',
 
         # for stage 2.1
         'select_all_btn': 'form[name="result_form"] input[type="button"][onclick*="selectall()"]',
-        'result_form': 'form[name="result_form"]',
-        'result_chk': 'form[name="result_form"] input[type="checkbox"][name="check[]"]',
         # for stage 2.2
-        'format_select': 'form[name="result_form"] select[name="down"]',
-        # for stage 2.3
-        'download_btn': 'form[name="result_form"] input[name="downloadSelected"]',
+        'result_form': 'form[name="result_form"]',
         'view_btn': 'form[name="result_form"] input[name="viewSelected"]',
         'result_area': 'pre',
 
@@ -117,21 +112,6 @@ class AmcsdCrawlerGhost:
         self.ghost.fill(form, self.search_terms)
         self.ghost.set_field_value(self.selectors['format_btn'], 'cif')
         # perform the search.
-        #print self.ghost.content
-        #print self.get_attr(self.selectors['search_btn'], 'outerHTML')
-        #print self.ghost.click(self.selectors['search_btn'], expect_loading=True)
-
-        #print self.get_attr(form, 'submit()')
-        #self.ghost.wait_for_page_loaded()
-
-        #self.ghost.fire_on(form, "submit", expect_loading=True)
-
-        '''
-        self.ghost.evaluate(self.js_exprs['get_attr'] \
-                                   .format(form,
-                                           'submit()'),
-                            expect_loading=True)
-        '''
         self.get_attr(form, 'submit()', expect_loading=True)
 
         # test if the search worked.
@@ -143,34 +123,19 @@ class AmcsdCrawlerGhost:
         TODO: limit the number of downloaded results to a specified maximum.
         """
         self.select_results()
-        #self.select_format()
         return self.download_selected()
 
     def select_results(self):
         """
         Stage 2.1: select the desired results to download.
         """
-        #print self.ghost.content
-        #self.ghost.click(self.selectors['select_all_btn'])
         self.get_attr(self.selectors['select_all_btn'], 'click()')
-        #print self.get_attr(self.selectors['result_form'], 'elements[0].checked')
 
-    def select_format(self):
-        """
-        Stage 2.2: select the desired format of the results.
-        DEPRECATED
-        """
-        # select the 'cif' option from the format selection drop-down menu.
-        self.ghost.evaluate("document.querySelector('{0}').setAttribute('{1}');" \
-                            .format(self.selectors['format_select'],
-                                    'cif'))
 
     def download_selected(self):
         """
-        Stage 2.3: download the selected results.
+        Stage 2.2: download the selected results.
         """
-        #_, resources = self.ghost.click(self.selectors['download_btn'])
-
         # TODO: return CifList of contents of resources.
         # They format their lists of many cifs differently.
         # Instead of assuming one way, pass into CifList a function
@@ -180,17 +145,10 @@ class AmcsdCrawlerGhost:
         # and inherit from it for each implementation.
 
         # TODO: split into two steps: navigation and downloading
-        #print resources
-        button = self.selectors['view_btn']
-        form = self.selectors['result_form']
 
-        #print self.ghost.exists(button)
-        #print self.get_attr_extract(button, 'onclick')
-        #print self.get_attr(button, 'outerHTML')
-        self.get_attr(button, 'click()')
-        #print self.ghost.click(button, expect_loading=True).content
-        #print self.ghost.exists(form)
-        self.ghost.fire_on(form, 'submit', expect_loading=True)
+        # get to results-viewing page
+        self.get_attr(self.selectors['view_btn'], 'click()')
+        self.ghost.fire_on(self.selectors['result_form'], 'submit', expect_loading=True)
 
         # get results
         print self.get_attr(self.selectors['result_area'], 'innerHTML')
