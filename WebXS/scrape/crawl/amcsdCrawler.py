@@ -35,15 +35,18 @@ class AmcsdCrawlerGhost:
         'search_form': 'form[name="myForm"]',
         'format_btn': 'form[name="myForm"] input[type="radio"][name="Download"]',
         'search_btn': 'form[name="myForm"] input[type="submit"]',
-        'result_table': 'form[name="myForm"] table',
+        'result_table': 'form[name="result_form"] table',
 
         # for stage 2.1
         'select_all_btn': 'form[name="result_form"] input[type="button"][onclick*="selectall()"]',
+        'result_form': 'form[name="result_form"]',
+        'result_chk': 'form[name="result_form"] input[type="checkbox"][name="check[]"]',
         # for stage 2.2
         'format_select': 'form[name="result_form"] select[name="down"]',
         # for stage 2.3
-        # "ownload" for improvised case-insensitivity of "[Dd]ownload"
-        'download_btn': 'form[name="result_form"] input[type="Submit"][value*="ownload"]',
+        'download_btn': 'form[name="result_form"] input[name="downloadSelected"]',
+        'view_btn': 'form[name="result_form"] input[name="viewSelected"]',
+        'result_area': 'pre',
 
         # for stage 2.error
         'error_msg': 'form[name="result_form"]>p'
@@ -112,9 +115,7 @@ class AmcsdCrawlerGhost:
         form = self.selectors['search_form']
         # populate search terms.
         self.ghost.fill(form, self.search_terms)
-        time.sleep(4)
         self.ghost.set_field_value(self.selectors['format_btn'], 'cif')
-        time.sleep(4)
         # perform the search.
         #print self.ghost.content
         #print self.get_attr(self.selectors['search_btn'], 'outerHTML')
@@ -125,10 +126,13 @@ class AmcsdCrawlerGhost:
 
         #self.ghost.fire_on(form, "submit", expect_loading=True)
 
+        '''
         self.ghost.evaluate(self.js_exprs['get_attr'] \
                                    .format(form,
                                            'submit()'),
-                            expect_loading=True)[0]
+                            expect_loading=True)
+        '''
+        self.get_attr(form, 'submit()', expect_loading=True)
 
         # test if the search worked.
         return self.ghost.exists(self.selectors['result_table'])
@@ -139,18 +143,22 @@ class AmcsdCrawlerGhost:
         TODO: limit the number of downloaded results to a specified maximum.
         """
         self.select_results()
-        self.select_format()
+        #self.select_format()
         return self.download_selected()
 
     def select_results(self):
         """
         Stage 2.1: select the desired results to download.
         """
-        self.ghost.click(self.selectors['select_all_btn'])
+        #print self.ghost.content
+        #self.ghost.click(self.selectors['select_all_btn'])
+        self.get_attr(self.selectors['select_all_btn'], 'click()')
+        #print self.get_attr(self.selectors['result_form'], 'elements[0].checked')
 
     def select_format(self):
         """
         Stage 2.2: select the desired format of the results.
+        DEPRECATED
         """
         # select the 'cif' option from the format selection drop-down menu.
         self.ghost.evaluate("document.querySelector('{0}').setAttribute('{1}');" \
@@ -161,9 +169,31 @@ class AmcsdCrawlerGhost:
         """
         Stage 2.3: download the selected results.
         """
-        _, resources = self.ghost.click(self.selectors['download_btn'])
+        #_, resources = self.ghost.click(self.selectors['download_btn'])
+
         # TODO: return CifList of contents of resources.
-        print resources
+        # They format their lists of many cifs differently.
+        # Instead of assuming one way, pass into CifList a function
+        # to split into individual Cifs, according to individial implementation.
+        #
+        # other idea: make an abstract base class,
+        # and inherit from it for each implementation.
+
+        # TODO: split into two steps: navigation and downloading
+        #print resources
+        button = self.selectors['view_btn']
+        form = self.selectors['result_form']
+
+        #print self.ghost.exists(button)
+        #print self.get_attr_extract(button, 'onclick')
+        #print self.get_attr(button, 'outerHTML')
+        self.get_attr(button, 'click()')
+        #print self.ghost.click(button, expect_loading=True).content
+        #print self.ghost.exists(form)
+        self.ghost.fire_on(form, 'submit', expect_loading=True)
+
+        # get results
+        print self.get_attr(self.selectors['result_area'], 'innerHTML')
 
     def handle_search_error(self):
         """
@@ -176,18 +206,20 @@ class AmcsdCrawlerGhost:
         else: 
             print self.messages['default_search_error']
 
-    def set_attr(self, selector, attr, new_value):
+    def set_attr(self, selector, attr, new_value, **kwargs):
         """ Set an attribute of a DOM element. """
         self.ghost.evaluate(self.js_exprs['set_attr'] \
                             .format(selector,
                                     attr,
-                                    new_value))
+                                    new_value),
+                            **kwargs)
 
-    def get_attr(self, selector, attr):
+    def get_attr(self, selector, attr, **kwargs):
         """ Get an attribute from a DOM element. """
         return self.ghost.evaluate(self.js_exprs['get_attr'] \
                                    .format(selector,
-                                           attr))[0]
+                                           attr),
+                                   **kwargs)
 
     def get_attr_extract(self, selector, attr):
         """ Get an attribute from a DOM element. Do so by parsing its tag. """
