@@ -5,18 +5,22 @@
 use strict;
 use warnings;
 
+# include our own modules
+use lib './lib';
+
 use Local::Scrapers;
 use CGI;
 
 my $query = new CGI;
 
 # extract database name from request
+my $target_db = '';
 my @matches = grep(/^db$/, $query->param);
 my $num_matches = length(@matches);
 if ($num_matches != 1) {
   die "Must specify database to scrape exactly once.";
 } else {
-  my $target_db = $matches[0];
+  $target_db = $query->param('db');
 }
 
 # get path to scraper executable for target database
@@ -34,6 +38,29 @@ foreach my $expected_param (keys %param_types) {
 $builder = substr($builder, 0, length($builder) - 1);
 $builder .= ")";
 my $expected_params = qr/$builder/;
+
+sub untaint_field
+{
+  my $field = $_[0];
+  if ($field =~ $expected_params) {
+    $field = $1;
+  } else {
+    $field = "";
+  }
+  return $field;
+}
+
+sub untaint
+{
+  my($field, $input) = ($_[0], $_[1]);
+  my $re = $param_types{$field};
+  if ($input =~ $re) {
+    $input = $1;
+  } else {
+    $input = "";
+  }
+  return $input;
+}
 
 my @cmd = ($scraper);
 my $scrubbed = "";
@@ -60,29 +87,6 @@ foreach my $field ($query->param) {
     push(@cmd, "--$scrubbed_field");
     push(@cmd, "$scrubbed");
   }
-}
-
-sub untaint_field
-{
-  my $field = $_[0];
-  if ($field =~ $expected_params) {
-    $field = $1;
-  } else {
-    $field = "";
-  }
-  return $field;
-}
-
-sub untaint
-{
-  my($field, $input) = ($_[0], $_[1]);
-  my $re = $param_types{$field};
-  if ($input =~ $re) {
-    $input = $1;
-  } else {
-    $input = "";
-  }
-  return $input;
 }
 
 $ENV{PATH} = "/bin:/usr/bin";

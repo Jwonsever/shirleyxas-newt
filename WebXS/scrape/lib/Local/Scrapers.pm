@@ -3,6 +3,8 @@
 #   - expected parameters for each scraper.
 #   - acceptable form for each parameter.
 
+package Local::Scrapers;
+
 use strict;
 use warnings;
 
@@ -11,24 +13,25 @@ use base 'Exporter';
 our @EXPORT = qw(get_scraper_path get_scraper_params);
 
 
+my %scraper_paths = (
+  'icsd' => './scrape_icsd.sh'
+);
+
 sub get_scraper_path {
   my $target_db = $_[0];
   return $scraper_paths{$target_db};
 }
 
-my %scraper_paths = (
-  'icsd' => './scrape_icsd.sh'
+
+# each one trims whitespace
+my %regexes = (
+  'num' => qr/^\s*(\d*)\s*$/,
+  'alpha_num' => qr/^\s*([a-zA-Z\d]*?)\s*$/,
+  'alpha_space' => qr/^\s*([a-zA-Z\s]*?)\s*$/,
+  'alpha_num_space' => qr/^\s*([a-zA-Z\d\s]*?)\s*$/,
+  'alpha_num_space_paren' => qr/^\s*([a-zA-Z\d\s\(\)]*?)\s*$/,
+  'alpha_space_paren_dash' => qr/^\s*([a-zA-Z\s\(\)-]*?)\s*$/
 );
-
-
-sub get_scraper_params {
-  my $target_db = $_[0];
-  return $db_params{$target_db};
-}
-
-my %db_params = (
-  'icsd' => \%icsd_params
-}
 
 my %icsd_params = (
   'composition' => $regexes{'alpha_num_space'},
@@ -42,15 +45,14 @@ my %icsd_params = (
   'num_fmla_units' => $regexes{'num'}
 );
 
-# each one trims whitespace
-my %regexes = (
-  'num' => qr/^\s*(\d*)\s*$/,
-  'alpha_num' => qr/^\s*([a-zA-Z\d]*?)\s*$/,
-  'alpha_space' => qr/^\s*([a-zA-Z\s]*?)\s*$/,
-  'alpha_num_space' => qr/^\s*([a-zA-Z\d\s]*?)\s*$/,
-  'alpha_num_space_paren' => qr/^\s*([a-zA-Z\d\s\(\)]*?)\s*$/,
-  'alpha_space_paren_dash' => qr/^\s*([a-zA-Z\s\(\)-]*?)\s*$/
+my %db_params = (
+  'icsd' => \%icsd_params
 );
+
+sub get_scraper_params {
+  my $target_db = $_[0];
+  return $db_params{$target_db};
+}
 
 # end of module
 1;
