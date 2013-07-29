@@ -36,11 +36,11 @@ my %regexes = (
   'alpha_space_comma' => qr/^\s*([a-zA-Z\s,]*?)\s*$/,
   'alpha_num_space' => qr/^\s*([a-zA-Z\d\s]*?)\s*$/,
   'alpha_num_space_paren' => qr/^\s*([a-zA-Z\d\s\(\)]*?)\s*$/,
-  'alpha_num_paren_comma' => qr/^\s*([a-zA-Z\d\(\),]*?)\s*$/,
+  'alpha_num_dot_paren_comma' => qr/^\s*([a-zA-Z\d\.\(\),]*?)\s*$/,
   'alpha_space_paren_dash' => qr/^\s*([a-zA-Z\s\(\)\-]*?)\s*$/,
   'alpha_num_space_squote_dquote' => qr/^\s*([a-zA-Z\d\s'"]*?)\s*$/,
   'alpha_space_paren_dash_comma' => qr/^\s*([a-zA-Z\s\(\)\-,]*?)\s*$/,
-  'alpha_num_score_space_dash_slash_equal' => qr/^\s*([\w\s\-\/=]*?)\s*$/
+  'alpha_num_score_space_dash_slash_equal_paren' => qr/^\s*([\w\s\-\/=\(\)]*?)\s*$/
 );
 
 # possible parameters for ICSD scraper,
@@ -63,8 +63,8 @@ my %amcsd_params = (
   'mineral' => $regexes{'alpha_space_paren_dash'},
   'author' => $regexes{'alpha_space_comma'},
   'chemistry' => $regexes{'alpha_space_paren_dash_comma'},
-  'cellParam' => $regexes{'alpha_num_space_score_dash_slash_equal'},
-  'diffraction' => $regexes{'alpha_num_paren_comma'},
+  'cellParam' => $regexes{'alpha_num_score_space_dash_slash_equal_paren'},
+  'diffraction' => $regexes{'alpha_num_dot_paren_comma'},
   'general' => $regexes{'alpha_num_space_squote_dquote'}
 );
 

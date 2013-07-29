@@ -104,7 +104,7 @@ class IcsdCrawlerGhost:
     def crawl(self):
         """
         Make search and parse list of results.
-        Return a CifList of all the structures fetched.
+        Return a JsonList of all the structures fetched.
         If an error occurs during search, this list will be empty.
         """
         # TODO: perhaps make this a little less hacky

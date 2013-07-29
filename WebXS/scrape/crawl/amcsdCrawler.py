@@ -44,7 +44,7 @@ class AmcsdCrawlerGhost:
         'result_area': 'pre',
 
         # for stage 2.error
-        'error_msg': 'form[name="result_form"]>p'
+        'error_msg': 'form[name="result_form"]'
     }
 
     # javascript expressions
@@ -93,14 +93,14 @@ class AmcsdCrawlerGhost:
     def crawl(self):
         """
         Make search and parse list of results.
-        Return a CifList of all the structures fetched.
+        Return a JsonList of all the structures fetched.
         If an error occurs during search, this list will be empty.
         """
         self.ghost.open(self.start_url)
         if self.do_search():
             return self.get_results()
         else:
-            self.handle_search_error()
+            return self.handle_search_error()
 
     def do_search(self):
         """
@@ -163,8 +163,8 @@ class AmcsdCrawlerGhost:
         else: 
             print self.messages['default_search_error']
 
-        # empty CifList
-        return CifList()
+        # empty JsonList
+        return JsonList()
 
     def set_attr(self, selector, attr, new_value, **kwargs):
         """ Set an attribute of a DOM element. """
