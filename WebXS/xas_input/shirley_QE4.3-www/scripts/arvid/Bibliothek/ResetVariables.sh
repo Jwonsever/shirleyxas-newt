@@ -76,7 +76,6 @@ TMP_TOLP='$TOLP'
 TMP_RM='from_scratch'
 TMP_wf_collect=.TRUE.
 TMP_disk_io='high'
-TMP_K_POINTS="$K_POINTS"
 TMP_BASIS_TRACE_TOL="$BASIS_TRACE_TOL"
 TMP_DELTA=0
 TMP_XAS_ARG="$XAS_ARG"

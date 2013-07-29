@@ -24,6 +24,10 @@ def main(argv = None):
     if (len(argv) >= 5):
         ebars = float(argv[4])
 
+    maximumResults = 100
+    if (len(argv) >= 6):
+        maximumResults = int(argv[5])
+
     os.chdir(path)
     ls = os.listdir('.')
     
@@ -90,8 +94,11 @@ def main(argv = None):
     goodStates = [];
     for l in topBands:
         goodStates.append(str(l[0]) + ',' + str(l[1]+1) + ',' + str(l[2]) + ',' + str(round(float(l[4]), 2)) + ',' + str(round(float(l[5])*1000000, 2)))
-            
+    
+
+    goodStates = goodStates[:maximumResults]
     fileinput.close()
+    
     return goodStates
 
 if __name__ == '__main__':

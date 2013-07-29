@@ -5,7 +5,6 @@
 #James Wonsever
 
 # Load Global Variables
-scriptDir=`dirname $0`
 . $scriptDir/../../GlobalValues.in
 
 SHELL_ROOT_SCRIPTS=$CODE_BASE_DIR/$CODE_LOC/$SERVER_SCRIPTS/
@@ -38,7 +37,7 @@ cat > PPin/$1.in <<EOF
 /
 EOF
 
-aprun -n 24 ${ppExe} < PPin/$1.in >> PPout/$1.out
+aprun -n 24 ${ppExe} < PPin/$1.in >> PPout/$1.out &
 }
 
 while IFS=, read atom model state ev str
@@ -60,10 +59,12 @@ done < states.csv
 #bzip all cube files
 find ./ -type f -name "*.cube" -exec bzip2 -k9 {} \;
 
+wait
+
 #Archive Everything
 #todo
 
-#Remove all excess Data
+#Remove all excess Data  (todo, needs to be AFTER all the other jobs complete.)
 ${SHELL_ROOT_SCRIPTS}wipeExcessFiles.sh `pwd` 
 
 exit

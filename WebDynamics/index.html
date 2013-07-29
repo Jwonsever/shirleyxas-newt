@@ -201,7 +201,6 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	  <div id="CoordinatesOptions" class="optionsDiv">
 	    Active Molecular Coordinates.  Editable.
 	    <div id = "Coordinates"></div>
-	    <script> var models = [""]; var activeModel = 0; makeCoordsDiv(); </script>
 	  </div>
 
 	  <div id="UploadOptions" class="optionsDiv">
@@ -265,6 +264,9 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 
     <script>
       myCheckAuth();
+      var models = [""]; 
+      var activeModel = 0; 
+      makeCoordsDiv();
 
       //todo
       Downloadify.create('downloadify',{

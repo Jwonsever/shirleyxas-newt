@@ -4,6 +4,10 @@ cd `dirname $0`
 
 WHERE_AM_I=`pwd`
 
+cp templates/UnconfiguredGV.in GlobalValues.in
+cp templates/UnconfiguredGV.js GlobalValues.js
+cp templates/UnconfiguredIB.in WebXS/xas_input/Input_Block.in
+
 WHERE_AM_I=${WHERE_AM_I//\//\\\/}
 sedCmd='s/TMP_HOME/'${WHERE_AM_I}'/g'
 sed -i $sedCmd GlobalValues.in
