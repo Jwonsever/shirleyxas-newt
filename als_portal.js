@@ -70,6 +70,10 @@ function doAfterFailure() {
     myCheckAuth();
 }
 
+function openWindowURL(url) {
+    OpenWindow=window.open(url, "newwin", "toolbar=no,location=no,status=no,menubar=no,scrollbars=yes,resizable=yes,width=650,height=650");
+}
+
 function openWindow(fileName) {
     OpenWindow=window.open("", "newwin", "status,resizable,scrollbars");
     OpenWindow.document.write("<html><title>"+fileName+"</title>")

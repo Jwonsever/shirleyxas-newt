@@ -118,7 +118,7 @@ function getAttributes(file, group) {
 }
 
 function otherDatasetFiles(dataset) {
-    //alert("In otherDatasetFiles "+dataset)
+    //alert("In otherDatasetFiles "+dataset+" /hdf/dataset?dataset="+dataset)
     $.alsapi_ajax({type: "GET",
         url: "/hdf/dataset?dataset="+dataset,
         success: function(res){
@@ -126,12 +126,17 @@ function otherDatasetFiles(dataset) {
               //alert("stage "+item.stage+" "+item.stage_date)
               //if (item.stage != "raw" && item.stage != "imgrec") {
               if (item.stage != "raw") {
+                //alert("Found another set "+item.stage)
                 var uniqueDate = item.stage_date.replace(':','')
                 var myText = '<table width=100%><tr width=100%><td><h3>'+item.stage+' images: ('+item.stage_date.replace('Z','').replace('T',' ')+')</h3></td>'
                 myText += '<td align=right>'
                 myText += '<br><button class="btn" onClick=downloadURL("'+alsapi_base_url+'/hdf/download'+item.path+'") style="width: 200px">Download H5 File</button><br>'
 
-                myText += '<div id="downloading-'+item.stage+uniqueDate+'"><button id="download-'+item.stage+uniqueDate+'" class="btn" onClick=downloadZip("'+item.path+'","/","#downloading-'+item.stage+uniqueDate+'","'+item.stage+uniqueDate+'") style="width: 200px">Download Zip File</button></div>'
+                if (item.stage == "imgrec" || item.stage == "gridrec") {
+                  myText += '<div id="render'+item.stage+uniqueDate+'"><button id="btnrender-'+item.stage+uniqueDate+'" class="btn" onClick=openWindowURL("http://portal.nersc.gov/project/als/alpha/volume-rendering/render.php?dataset='+item.name+'") style="width: 200px">Volume Rendering</button></div>'
+                }
+
+                //myText += '<div id="downloading-'+item.stage+uniqueDate+'"><button id="download-'+item.stage+uniqueDate+'" class="btn" onClick=downloadZip("'+item.path+'","/","#downloading-'+item.stage+uniqueDate+'","'+item.stage+uniqueDate+'") style="width: 200px">Download Zip File</button></div>'
                 myText += '<div id="progresscon-'+item.stage+uniqueDate+'" class="progress progress-striped active" style="width:200px;display:none;">'
                 myText += '<div id="progressbar-'+item.stage+uniqueDate+'" class="bar" style="width: 1%;"></div>'
                 myText += '</div><br></td></tr></table>'
