@@ -133,7 +133,7 @@ function otherDatasetFiles(dataset) {
                 myText += '<br><button class="btn" onClick=downloadURL("'+alsapi_base_url+'/hdf/download'+item.path+'") style="width: 200px">Download H5 File</button><br>'
 
                 if (item.stage == "imgrec" || item.stage == "gridrec") {
-                  myText += '<div id="render'+item.stage+uniqueDate+'"><button id="btnrender-'+item.stage+uniqueDate+'" class="btn" onClick=openWindowURL("http://portal.nersc.gov/project/als/alpha/volume-rendering/render.php?dataset='+item.name+'") style="width: 200px">Volume Rendering</button></div>'
+                  myText += '<div id="render'+item.stage+uniqueDate+'"><button id="btnrender-'+item.stage+uniqueDate+'" class="btn" onClick=openWindowURL("volume-rendering/render.php?dataset='+item.name+'") style="width: 200px">Volume Rendering</button></div>'
                 }
 
                 //myText += '<div id="downloading-'+item.stage+uniqueDate+'"><button id="download-'+item.stage+uniqueDate+'" class="btn" onClick=downloadZip("'+item.path+'","/","#downloading-'+item.stage+uniqueDate+'","'+item.stage+uniqueDate+'") style="width: 200px">Download Zip File</button></div>'
