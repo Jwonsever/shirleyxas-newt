@@ -39,6 +39,7 @@ $builder = substr($builder, 0, length($builder) - 1);
 $builder .= ")";
 my $expected_params = qr/$builder/;
 
+# untaint a field by testing if it was an expected scraper parameter.
 sub untaint_field
 {
   my $field = $_[0];
@@ -50,6 +51,7 @@ sub untaint_field
   return $field;
 }
 
+# untaint a parameter by testing if it fits the expected format.
 sub untaint
 {
   my($field, $input) = ($_[0], $_[1]);
@@ -89,11 +91,9 @@ foreach my $field ($query->param) {
   }
 }
 
+# Make %ENV safer
 $ENV{PATH} = "/bin:/usr/bin";
-delete @ENV{qw(IFS CDPATH ENV BASH_ENV)};   # Make %ENV safer
+delete @ENV{qw(IFS CDPATH ENV BASH_ENV)};
+
 print "Content-type: application/json\n\n";
-foreach my $c (@cmd) {
-  print "$c\n";
-}
 system(@cmd);
-print "[]\n";
