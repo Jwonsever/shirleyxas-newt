@@ -1633,16 +1633,16 @@ function displaySearchResult() {
   Jmol.script(previewApplet, script);
 }
 
-// organizes ICSD operations
-ICSD = {}
-//ICSD.scraperPath = 'scrape/scrape_icsd.cgi';
-ICSD.scraperPath = 'scrape/test.cgi';
-ICSD.getInputs = function(form) {
+// organizes scrapeing operations
+Scrape = {}
+//Scrape.scraperPath = 'scrape/scrape.cgi';
+Scrape.scraperPath = 'scrape/test.cgi';
+Scrape.getInputs = function(form) {
   var selector = '#' + form.id + ' table input';
   return $(selector);
 }
-ICSD.validateInputs = function(form) {
-  var inputs = ICSD.getInputs(form);
+Scrape.validateInputs = function(form) {
+  var inputs = Scrape.getInputs(form);
 
   var valid = true;
   var message = '';
@@ -1660,34 +1660,30 @@ ICSD.validateInputs = function(form) {
   }
 
   if (valid) {
-    ICSD.scrape(form);
+    Scrape.scrape(form);
   } else {
     alert(message);
   }
 }
-ICSD.scrape = function(form) {
-  var url = ICSD.scraperPath + '?';
-  var inputs = ICSD.getInputs(form);
-
+Scrape.scrape = function(form, db_name) {
+  var url = Scrape.scraperPath + '?';
+  url += db_name;
+  
+  var inputs = Scrape.getInputs(form);
   var input = null;
-  var isFirst = true;
   for (var i = 0; i < inputs.length; i++) {
     input = inputs[i];
     if (input.value.length > 0) {
-      if (isFirst) {
-        isFirst = false;
-      } else {
-        url += '&';
-      }
+      url += '&';
       url += input.name + '=' + input.value;
     }
   }
 
   $.get(url,
-        ICSD.handleResult);
+        Scrape.handleResult);
   $('#searchResults').html('working... (could take up to 30 seconds)');
 }
-ICSD.handleResult = function(data, status) {
+Scrape.handleResult = function(data, status) {
   $('#searchResults').html('<pre>' + data + '</pre>');
 }
 
