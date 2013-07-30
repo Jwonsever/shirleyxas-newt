@@ -620,11 +620,6 @@ website to jrdeslippe@lbl.gov.
 		      Jmol.jmolCommandInput(mainApplet);
 		    </script>
 
-		    <!-- Seems to only search through the NCI database?? -->
-		    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
-		    <span style="display:none"><select id="jmol_select"><option value=":" selected="">PubChem</option></select></span>
-		    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
-
 		    <form id='loadfile'>
 		      <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/>
 		      <br></form>	 
@@ -667,9 +662,16 @@ website to jrdeslippe@lbl.gov.
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellBeta" value="90"/> &beta;
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellGamma" value="90"/> &gamma;
 		      <br><br>
-                      <table cellpadding=8><tr><td>
-		      Output Directory:</td><td> <input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
-                      </td></tr><tr><td>Cluster:</td><td>
+                      <table cellpadding=8>
+			<tr><td>
+			    Output Directory:</td><td><input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
+			</td></tr>
+			<tr><td>
+			    Input Block:</td><td><input type="Text" size="35" id="customInputBlock" value="DEFAULT"/>
+			    <br>Note, values here may overrule values in your custom input block.<br>
+			</td></tr>
+
+		      <tr><td>Cluster:</td><td>
 		      <select name="Select Cluster" id="machine" onchange="form.PPN.value=24; updateStatus(this.value);" value="hopper">
 		        <option value="hopper">Hopper</option>
                       </select> <br><span id='clusterStatus' style='display:none;'></span></td></tr>
@@ -705,17 +707,10 @@ website to jrdeslippe@lbl.gov.
 		      <input type="hidden" id="NEXCITED" value="1"/>
 		      <input type="hidden" id="PPN" value="24"/>
 
-		      <input id="Full API" type='button' value='Full API' onClick="window.open('./API.php')"/>
-		      <br>
-		    
-		      <input type="Checkbox" onchange="" id="useCustom"/>  Use Custom Input Block?
-		      <span id='customBlock'>
-			<input type="Text" size="35" id="customInputBlock" value="/global/scratch/sd/invalid/CustomBlock.in"/>
-		      </span><br>Note, values on this page will overwrite values in your custom input block.<br>
-		      <input id="lessAdvanced" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
-                      <br><br>
+		      <input id="Open Full API" type='button' value='Full API' onClick="window.open('./API.php')"/>
 		      <!-- End Advanced Options -->
 		      </div>
+		      <input id="lessAdvanced" style="display:none" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
 		      <input id="AdvancedButton" data-inline='true' type='button' value='Advanced Options' onClick="showAdvancedOptions()"/>
 
 		      <input id="Submit" data-inline='true' type='button' value='Submit' onClick="validateInputs(this.form)"/>

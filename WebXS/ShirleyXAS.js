@@ -15,7 +15,9 @@ These scripts generally are used to send and retrieve data from NERSC computers.
 function checkAuthCallback() {
     //where to output files to for run jobs
     $('#outputDir').val(GLOBAL_SCRATCH_DIR + myUsername);
-    $('#customInputBlock').val(GLOBAL_SCRATCH_DIR + myUsername + "/CustomBlock.in");
+    
+    //If using a custom block was default
+    //$('#customInputBlock').val(GLOBAL_SCRATCH_DIR + myUsername + "/CustomBlock.in");
 	
     //See if there is a transfer file
     openTransferFile();
@@ -1114,10 +1116,13 @@ function updateStatus(machine) {
 function hideAdvancedOptions() {
     $('#advancedOptions').hide();
     $('#AdvancedButton').show();
+    $('#lessAdvanced').hide();
+
 }
 function showAdvancedOptions() {
     $('#advancedOptions').show();
     $('#AdvancedButton').hide();
+    $('#lessAdvanced').show();
     updateStatus($('#machine').val());
 }
 //Ensures that coordinates are properly written.
@@ -1333,7 +1338,7 @@ function executeJob(form, materialName) {
     var machine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
-    var useCustomBlock = $('#useCustom').prop('checked');
+    var useCustomBlock = ( $('#customInputBlock').val() == "DEFAULT" );
 
     //TODO Make this custom block absolute or something.  too many different things merging together here.
 

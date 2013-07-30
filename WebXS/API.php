@@ -76,8 +76,9 @@
 <div class="container">
   <br>
   <hr>
-  <H3>Here is the ResetVariables full list of inputs.</H3>
-  <p>Anything you check here will go into a temporary input file appended to InputBlock.in.</p>
+  <H3>Here is the ResetVariables full list of inputs.</H3>       
+  <p><input TYPE="button" onClick="parent.location='index.html'" value="Back">
+  Anything you check here will go into a temporary input file appended to InputBlock.in.</p>
   <p>If you are here, I assume you know how to properly format your inputs, because I don't, and I don't check them for you.</p>
   
   <!--form action="APIprocess.php" method="post"-->
