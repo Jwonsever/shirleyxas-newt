@@ -99,8 +99,21 @@ class BaseCrawler:
                                            prop),
                                    **kwargs)[0]
 
+    def get_attr(self, selector, attr, **kwargs):
+        """
+        Get an attribute from a DOM node.
+        """
+        return self.dom_prop(selector, 
+                             'getAttribute("{0}")'.format(attr),
+                             **kwargs)
+
     def get_attr_extract(self, selector, attr):
-        """ Get an attribute from a DOM node. Do so by parsing its tag. """
+        """
+        Get an attribute from a DOM node. Do so by parsing its tag.
+        You shouldn't really be using this. Use get_attr instead,
+        unless for some reason it doesn't work and this does.
+        That propably shouldn't happen, but browsers are strange.
+        """
         outerHtml = self.ghost.evaluate(self.js_exprs['dom_prop'] \
                                         .format(selector,
                                                 'outerHTML'))[0]

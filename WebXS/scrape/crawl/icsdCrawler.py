@@ -108,7 +108,7 @@ class IcsdCrawler(BaseCrawler):
         busy_msg = self.selectors['sorting_msg']
 
         def busy_msg_invisible():
-            style = self.get_attr_extract(busy_msg, 'style')
+            style = self.dom_prop(busy_msg, 'style')['cssText']
             return ('display: none' in style or     # <- lol in style
                     'display:none' in style)
 
@@ -137,8 +137,8 @@ class IcsdCrawler(BaseCrawler):
         # 2) bypass library API and edit internal list of selected results.
 
         # expression to access SweetDevRia table properties
-        onclick = self.get_attr_extract(self.selectors['nth_row_box'].format(1),
-                                        'onclick')
+        onclick = self.get_attr(self.selectors['nth_row_box'].format(1),
+                                'onclick')
         selector = onclick[: onclick.find(')') + 1]
         
         # selected results
