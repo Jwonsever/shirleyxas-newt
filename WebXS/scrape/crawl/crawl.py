@@ -93,7 +93,14 @@ class BaseCrawler:
     # utility methods
 
     def dom_prop(self, selector, prop, **kwargs):
-        """ Get a property from a DOM node. """
+        """
+        Access a property from a DOM node.
+        Passing a property name will get its value.
+        Assiging a property name, such as 'checked = true',
+        will assign to the property.
+        Note that member functions can be called like this as well;
+        see the implementation of get_attr().
+        """
         return self.ghost.evaluate(self.js_exprs['dom_prop'] \
                                    .format(selector,
                                            prop),
