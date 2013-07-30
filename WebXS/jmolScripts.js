@@ -205,6 +205,9 @@ function adjustToSupercell() {
     myform.CellA.value ="" + (Number(myform.CellA.value) * inx);
     myform.CellB.value ="" + (Number(myform.CellB.value) * iny);
     myform.CellC.value ="" + (Number(myform.CellC.value) * inz);
+    $('#SupercellX').val(1);
+    $('#SupercellY').val(1);
+    $('#SupercellZ').val(1);
     drawMolInPreview();
 }
 function readCoordsFromJmol() {
