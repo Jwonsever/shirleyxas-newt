@@ -22,3 +22,6 @@ Shirley-data/tmp/*
 
 # editor session
 session*
+
+# bytecode files
+*.pyc

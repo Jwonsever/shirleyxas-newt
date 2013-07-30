@@ -16,10 +16,10 @@ TreeEval = {};
  * Tree Evaluation.
  * Evaluates the tree rooted at the given node.
  */
-TreeEval.treeValue = function(node, interpreter, context) {
-  // use base interpreter if none specified
-  if (typeof interpreter === 'undefined') {
-    interpreter =  this.Interpreters['base'];
+TreeEval.treeValue = function(node, evaluator, context) {
+  // use base evaluator if none specified
+  if (typeof evaluator === 'undefined') {
+    evaluator =  this.Evaluators['base'];
   }
   // use HTML context if none specified
   if (typeof context === 'undefined') {
@@ -30,15 +30,15 @@ TreeEval.treeValue = function(node, interpreter, context) {
   context.visit(node);
 
   // base cases
-  if (interpreter.filter(node, context) === false) {
+  if (evaluator.filter(node, context) === false) {
     return null;
   }
-  if (interpreter.isLeafNode(node, context)) {
-    return interpreter.evaluateLeaf(node, context);
+  if (evaluator.isLeafNode(node, context)) {
+    return evaluator.evaluateLeaf(node, context);
   }
 
   // recursion
-  return interpreter.evaluateInternal(node, context);
+  return evaluator.evaluateInternal(node, context);
 }
 
 
@@ -143,7 +143,9 @@ TreeEval.Contexts['base']._getListType = function(jq_elem) {
 TreeEval.Contexts['base']._ListTypes = {
   teListSlash: 'list_slash',
   teListComma: 'list_comma',
-  teListConcat: 'list_concat'
+  teListConcat: 'list_concat',
+  teListQuery: 'list_query',
+  teListEquals: 'list_equals'
 }
 
 // Return whether a nodetype represents a list.
@@ -242,25 +244,24 @@ TreeEval.Contexts['base']._Forwarders['teForwardTo'] = function (elem_id, jq_ele
 /*
  * List evaluation.
  */
-TreeEval.Contexts['base'].childValues = function(jq_elem, interpreter) {
-  var childNodes = this.childNodes(jq_elem);
-
-  // mutual recursion: call treeValue() on each child to get all child parameters
-  // essentially: values = map(this.treeValue, childNodes)
-  var length = childNodes.length;
-  var values = new Array(length);
-  for (var i = 0; i < length; i++) {
-    values[i] = TreeEval.treeValue($(childNodes[i]), interpreter, this);
-  }
-
-  return values;
-}
-
 TreeEval.Contexts['base'].childNodes = function(jq_elem) {
   // list all the (meaningful) 1-deep child nodes of elem.
   // Do not filter them here;
   // they will be filtered upon evaluation, by the context.
-  var children = jq_elem.children(this._meaningfulElems);
+  // TODO: change that. Might have to add logic to leaf
+  // node detection to account for this.
+  var jq_children = jq_elem.children(this._meaningfulElems);
+
+  // turn one jquery object of multiple elements into
+  // an array of multiple jquery objects, each with one element.
+  // This way they can be indexed by evaluators and evaluated
+  // without having to do context-specific reboxing.
+  var num_children = jq_children.length;
+  var children = new Array(num_children);
+  for (var i = 0; i < num_children; i++) {
+    children[i] = $(jq_children[i]);
+  }
+
   return children;
 }
 
@@ -277,34 +278,38 @@ TreeEval.Contexts['base'].Filters['notSkipped'] = function(jq_elem) {
 
 
 /*
- * Evaluation interpreters.
+ * Evaluators.
  * Determine the flow of recursion and how nodes are evaluated.
- * Library can be extended by creating new interpreters.
+ * Library can be extended by creating new evaluators.
  */
-TreeEval.Interpreters = {}
+TreeEval.Evaluators = {}
 
 /*
- * Base interpreter.
+ * Base evaluator.
  * Defines base functionality.
  * Can be inherited in order to override certain aspects.
  */
-TreeEval.Interpreters['base'] = new Object();
+TreeEval.Evaluators['base'] = new Object();
 
 /*
  * Determine if a node should be evaluated.
  */
-TreeEval.Interpreters['base'].filter = function(jq_elem, context) {
-  return this._passesContextFilters(jq_elem, context)
+TreeEval.Evaluators['base'].filter = function(node, context) {
+  // TODO: refactor this. Shouldn't be able to access nodes that the
+  // context has filtered out. Make childNodes filter based on context's filters,
+  // so that evaluator can never even see what the context thinks is definitely
+  // not to be evaluated.
+  return this._passesContextFilters(node, context)
 }
 
 // whether it passes the filters defined by the context
-TreeEval.Interpreters['base']._passesContextFilters = function(jq_elem, context) {
+TreeEval.Evaluators['base']._passesContextFilters = function(node, context) {
   // iterate over all filters and apply each one
   var curr_filter = null;
   for (var filter_key in context.Filters) {
     if (context.Filters.hasOwnProperty(filter_key)) {
       curr_filter = context.Filters[filter_key];
-      if (!(curr_filter(jq_elem))) {
+      if (!(curr_filter(node))) {
         return false;
       }
     }
@@ -319,18 +324,18 @@ TreeEval.Interpreters['base']._passesContextFilters = function(jq_elem, context)
  * whereas internal nodes will be evaluated recursively.
  * Some nodes make sense only as one type.
  */
-TreeEval.Interpreters['base'].isLeafNode = function(jq_elem, context) {
+TreeEval.Evaluators['base'].isLeafNode = function(node, context) {
   // determine default value for nodetype
-  var nodetype = context.nodetype(jq_elem);
+  var nodetype = context.nodetype(node);
   var result = this._LeafNodeDefaults[nodetype];
   
   // dynamically override, if applicable
   if (this._LeafNodeOverrides.hasOwnProperty(nodetype)) {
-    result = this._LeafNodeOverrides[nodetype](jq_elem, context);
+    result = this._LeafNodeOverrides[nodetype](node, context);
   }
 
   // statically override, if one is present
-  var override = context.isLeafNodeOverride(jq_elem);
+  var override = context.isLeafNodeOverride(node);
   if (override !== null) {
     result = override;
   }
@@ -339,21 +344,23 @@ TreeEval.Interpreters['base'].isLeafNode = function(jq_elem, context) {
 }
 
 // default values for keys
-TreeEval.Interpreters['base']._LeafNodeDefaults = {
+TreeEval.Evaluators['base']._LeafNodeDefaults = {
   literal: true,
   literal_list: true,
   fork: false, // requires dynamic override anyway. TODO: figure out what to do about that.
   pointer: false,
   list_slash: false, // TODO: generalize this. will be a lot of repeating with more list types.
   list_comma: false,
-  list_concat: false
+  list_concat: false,
+  list_query: false,
+  list_equals: false
 }
 
 // dynamic (runtime) overrides
-TreeEval.Interpreters['base']._LeafNodeOverrides = {}
+TreeEval.Evaluators['base']._LeafNodeOverrides = {}
 
-TreeEval.Interpreters['base']._LeafNodeOverrides['fork'] = function(jq_elem, context) {
-  var next_node = context.nextNode(jq_elem);
+TreeEval.Evaluators['base']._LeafNodeOverrides['fork'] = function(node, context) {
+  var next_node = context.nextNode(node);
   // whether or not a matching child node is found. If not, this is a leaf.
   return next_node.length === 0;
 }
@@ -362,39 +369,39 @@ TreeEval.Interpreters['base']._LeafNodeOverrides['fork'] = function(jq_elem, con
 /*
  * Evaluate a node as a leaf node.
  */
-TreeEval.Interpreters['base'].evaluateLeaf = function(jq_elem, context) {
-  var nodetype = context.nodetype(jq_elem);
+TreeEval.Evaluators['base'].evaluateLeaf = function(node, context) {
+  var nodetype = context.nodetype(node);
   if (this._LeafEvaluators.hasOwnProperty(nodetype)) {
-    return this._LeafEvaluators[nodetype](jq_elem, context);
+    return this._LeafEvaluators[nodetype](node, context);
   } else {
     // by default, treat it as a literal
-    return this._LeafEvaluators['literal'](jq_elem, context);
+    return this._LeafEvaluators['literal'](node, context);
   }
 }
 
 // leaf node evaluators
-TreeEval.Interpreters['base']._LeafEvaluators = {}
+TreeEval.Evaluators['base']._LeafEvaluators = {}
 
-TreeEval.Interpreters['base']._LeafEvaluators['literal'] = function(jq_elem, context) {
-  return context.nodeValue(jq_elem);
+TreeEval.Evaluators['base']._LeafEvaluators['literal'] = function(node, context) {
+  return context.nodeValue(node);
 }
 
-TreeEval.Interpreters['base']._LeafEvaluators['literal_list'] = function(jq_elem, context) {
-  var this_interpreter = TreeEval.Interpreters['base'];
-  var selected = context.nodeValue(jq_elem);
-  return this_interpreter._sepAssemble(selected, ',');
+TreeEval.Evaluators['base']._LeafEvaluators['literal_list'] = function(node, context) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  var selected = context.nodeValue(node);
+  return this_evaluator._sepAssemble(selected, ',');
 }
 
 
 /*
  * Evaluate a node as an internal node.
  */
-TreeEval.Interpreters['base'].evaluateInternal = function(jq_elem, context) {
-  var nodetype = context.nodetype(jq_elem);
+TreeEval.Evaluators['base'].evaluateInternal = function(node, context) {
+  var nodetype = context.nodetype(node);
   if (context._isListtype(nodetype)) {
-    return this._evaluateList(jq_elem, context);
+    return this._evaluateList(node, context);
   } else if (this._InternalEvaluators.hasOwnProperty(nodetype)) {
-    return this._InternalEvaluators[nodetype](jq_elem, context);
+    return this._InternalEvaluators[nodetype](node, context);
   } else {
     var msg = "TreeEval: Error: don't know how to recursively evaluate nodetype: ";
     msg += nodetype;
@@ -404,37 +411,62 @@ TreeEval.Interpreters['base'].evaluateInternal = function(jq_elem, context) {
 }
 
 // internal node evaluators
-TreeEval.Interpreters['base']._InternalEvaluators = {}
+TreeEval.Evaluators['base']._InternalEvaluators = {}
 
-TreeEval.Interpreters['base']._InternalEvaluators['fork'] = function(jq_elem, context) {
-  var this_interpreter = TreeEval.Interpreters['base'];
-  var next_node = context.nextNode(jq_elem);
-  return TreeEval.treeValue(next_node, this_interpreter, context);
+TreeEval.Evaluators['base']._InternalEvaluators['fork'] = function(node, context) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  var next_node = context.nextNode(node);
+  return this_evaluator._treeValue(next_node, context);
 }
 
-TreeEval.Interpreters['base']._InternalEvaluators['pointer'] = function(jq_elem, context) {
-  var this_interpreter = TreeEval.Interpreters['base'];
+TreeEval.Evaluators['base']._InternalEvaluators['pointer'] = function(node, context) {
+  var this_evaluator = TreeEval.Evaluators['base'];
   // NOTE: this can probably cause an infinite loop if document is improperly formatted.
   // TODO: check that it has forwarding info.
   // If not, throw an error to avoid infinite loop.
-  var next_node = context.nextNode(jq_elem);
-  return TreeEval.treeValue(next_node, this_interpreter, context);
+  var next_node = context.nextNode(node);
+  return this_evaluator._treeValue(next_node, context);
 }
 
-TreeEval.Interpreters['base']._evaluateList = function(jq_elem, context) {
-  var this_interpreter = TreeEval.Interpreters['base'];
-  var listType = context.nodetype(jq_elem);
+TreeEval.Evaluators['base']._evaluateList = function(node, context) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  var listType = context.nodetype(node);
 
-  var assemble = this_interpreter._getAssembler(listType);
-  var children = context.childValues(jq_elem, this_interpreter);
-  return assemble(children);
+  var assemble = this_evaluator._getAssembler(listType);
+
+  var children = context.childNodes(node);
+  var num_children = children.length;
+  var childValues = new Array(num_children);
+  for (var i = 0; i < num_children; i++) {
+    childValues[i] = this_evaluator._treeValue(children[i], context);
+  }
+
+  return assemble(childValues);
+}
+
+// wrapper for tree evaluation that chooses an evaluator based on the nodetype
+// of the node to be evaluated.
+TreeEval.Evaluators['base']._treeValue = function(node, context) {
+  var evaluator = null;
+  var nodetype = context.nodetype(node);
+  if (this._EvaluatorPrefs.hasOwnProperty(nodetype)) {
+    evaluator = this._evaluatorPrefs[nodetype];
+  } else {
+    evaluator = this;
+  }
+
+  return TreeEval.treeValue(node, evaluator, context);
+}
+
+// preferences for which evaluator to use for a given nodetype.
+TreeEval.Evaluators['base']._EvaluatorPrefs = {
 }
 
 
 /*
  * list assembly
  */
-TreeEval.Interpreters['base']._getAssembler = function(listType) {
+TreeEval.Evaluators['base']._getAssembler = function(listType) {
   if (listType !== null) {
       if (this._Assemblers.hasOwnProperty(listType)) {
         return this._Assemblers[listType];
@@ -450,24 +482,34 @@ TreeEval.Interpreters['base']._getAssembler = function(listType) {
 }
 
 // list assemblers
-TreeEval.Interpreters['base']._Assemblers = {}
+TreeEval.Evaluators['base']._Assemblers = {}
 
-TreeEval.Interpreters['base']._Assemblers['list_slash'] = function(values) {
-  var this_interpreter = TreeEval.Interpreters['base'];
-  return this_interpreter._sepAssemble(values, '/');
+TreeEval.Evaluators['base']._Assemblers['list_slash'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  return this_evaluator._sepAssemble(values, '/');
 }
 
-TreeEval.Interpreters['base']._Assemblers['list_comma'] = function(values) {
-  var this_interpreter = TreeEval.Interpreters['base'];
-  return this_interpreter._sepAssemble(values, ',');
+TreeEval.Evaluators['base']._Assemblers['list_comma'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  return this_evaluator._sepAssemble(values, ',');
 }
 
-TreeEval.Interpreters['base']._Assemblers['list_concat'] = function(values) {
-  var this_interpreter = TreeEval.Interpreters['base'];
-  return this_interpreter._sepAssemble(values, '');
+TreeEval.Evaluators['base']._Assemblers['list_concat'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  return this_evaluator._sepAssemble(values, '');
+}
+TreeEval.Evaluators['base']._Assemblers['list_query'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  var ret = '?';
+  ret +=  this_evaluator._sepAssemble(values, '&');
+  return ret;
+}
+TreeEval.Evaluators['base']._Assemblers['list_equals'] = function(values) {
+  var this_evaluator = TreeEval.Evaluators['base'];
+  return this_evaluator._sepAssemble(values, '=');
 }
 
-TreeEval.Interpreters['base']._sepAssemble = function(values, separator) {
+TreeEval.Evaluators['base']._sepAssemble = function(values, separator) {
   var ret = '';
   var length = values.length;
   var value = null;

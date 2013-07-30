@@ -714,7 +714,7 @@ function getXCHShift(elem) {
 	else return 0;
     } else {
 	 $.newt_ajax({type: "GET",
-		url: "/file/hopper" + DATABASE_DIR + "XCHShifts.csv?view=read",
+		url: "/file/hopper" + DATABASE_DIR + "/XCHShifts.csv?view=read",
 		success: function(res){
 		     res = res.split("\n");
 		     cachedShifts.pulled=true;
@@ -1631,6 +1631,60 @@ function restQuery() {
 function displaySearchResult() {
   var script = "try{Load INLINE '" + lastSearchResult + "'}catch(e){;}";
   Jmol.script(previewApplet, script);
+}
+
+// organizes scrapeing operations
+Scrape = {}
+//Scrape.scraperPath = 'scrape/scrape.cgi';
+Scrape.scraperPath = 'scrape/test.cgi';
+Scrape.getInputs = function(form) {
+  var selector = '#' + form.id + ' table input';
+  return $(selector);
+}
+Scrape.validateInputs = function(form) {
+  var inputs = Scrape.getInputs(form);
+
+  var valid = true;
+  var message = '';
+
+  // must provide at least one search term
+  var termGiven = false;
+  for (var i = 0; i < inputs.length; i++) {
+    if (inputs[i].value.length > 0) {
+      termGiven = true;
+    }
+  }
+  if (!termGiven) {
+    message = 'Please enter at least one search term.';
+    valid = false;
+  }
+
+  if (valid) {
+    Scrape.scrape(form);
+  } else {
+    alert(message);
+  }
+}
+Scrape.scrape = function(form, db_name) {
+  var url = Scrape.scraperPath + '?';
+  url += db_name;
+  
+  var inputs = Scrape.getInputs(form);
+  var input = null;
+  for (var i = 0; i < inputs.length; i++) {
+    input = inputs[i];
+    if (input.value.length > 0) {
+      url += '&';
+      url += input.name + '=' + input.value;
+    }
+  }
+
+  $.get(url,
+        Scrape.handleResult);
+  $('#searchResults').html('working... (could take up to 30 seconds)');
+}
+Scrape.handleResult = function(data, status) {
+  $('#searchResults').html('<pre>' + data + '</pre>');
 }
 
 //Div Wrapper functions.  For Organization. Checks Login Status.
