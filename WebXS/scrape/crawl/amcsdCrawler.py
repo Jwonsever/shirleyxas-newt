@@ -1,20 +1,15 @@
 #!/usr/bin/env python
-from ghost import Ghost
-
+from crawl import BaseCrawler
 from jsonList import JsonList
 
 import argparse
-import HTMLParser
-import logging
 import time
 
-logging.basicConfig()
-
-class AmcsdCrawlerGhost:
+class AmcsdCrawler(BaseCrawler):
     start_url = 'http://rruff.geo.arizona.edu/AMS/amcsd.php'
 
-    # possible search-related arguments mapped to their names in the form
-    # apparently CSS3 selectors need quotes for these
+    # possible search-related arguments mapped to their names in the form.
+    # apparently CSS3 selectors need quotes for these.
     search_params = {
         'mineral': '"Mineral"',
         'author': '"Author"',
@@ -24,10 +19,12 @@ class AmcsdCrawlerGhost:
         'general': '"Key"',
     }
 
+    '''
     # possible arguments that are not search terms, and their default values.
     non_search_params = {
         'debug': False
     }
+    '''
     
     # CSS3 selectors
     selectors = {
@@ -47,6 +44,7 @@ class AmcsdCrawlerGhost:
         'error_msg': 'form[name="result_form"]'
     }
 
+    '''
     # javascript expressions
     js_exprs = {
         # {0} is a CSS3 selector for the element, {1} is the attribute to select.
@@ -55,6 +53,7 @@ class AmcsdCrawlerGhost:
         # {2} is the value to assign it.
         'set_attr': "document.querySelector('{0}').{1} = {2};"
     }
+    '''
 
     # various messages
     messages = {
@@ -62,6 +61,7 @@ class AmcsdCrawlerGhost:
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
 
+    '''
     def __init__(self, **terms):
         # specified arguments will overwrite defaults
         self.write_defaults()
@@ -89,6 +89,7 @@ class AmcsdCrawlerGhost:
         self.ghost = Ghost(download_images=True,
                            wait_timeout=60,
                            display=self.debug)
+    '''
 
     def crawl(self):
         """
@@ -138,6 +139,9 @@ class AmcsdCrawlerGhost:
         """
         # TODO: split into two steps: navigation and downloading
 
+        # TODO: HUGE BUG:
+        # if there is exactly one result, this will fail
+
         # get to results-viewing page
         self.get_attr(self.selectors['view_btn'], 'click()')
         self.ghost.fire_on(self.selectors['result_form'], 'submit', expect_loading=True)
@@ -166,6 +170,7 @@ class AmcsdCrawlerGhost:
         # empty JsonList
         return JsonList()
 
+    '''
     def set_attr(self, selector, attr, new_value, **kwargs):
         """ Set an attribute of a DOM element. """
         self.ghost.evaluate(self.js_exprs['set_attr'] \
@@ -197,6 +202,7 @@ class AmcsdCrawlerGhost:
         first = tag.find(quote, attr_assignment)
         last = tag.find(quote, first + 1)
         return tag[first + 1 : last]
+    '''
         
 
 
@@ -254,7 +260,7 @@ def verify_search_made(args):
     return search_given
 
 def main():
-    spider = AmcsdCrawlerGhost(**parse_crawler_args())
+    spider = AmcsdCrawler(**parse_crawler_args())
     cl = spider.crawl()
     print cl.json
     print 'fetched {0} results.'.format(len(cl))

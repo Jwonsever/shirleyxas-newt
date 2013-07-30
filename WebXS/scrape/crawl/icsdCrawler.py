@@ -1,19 +1,15 @@
 #!/usr/bin/env python
-from ghost import Ghost
-
+from crawl import BaseCrawler
 from jsonList import JsonList
 
 import argparse
 import HTMLParser
-import logging
 
-logging.basicConfig()
-
-class IcsdCrawlerGhost:
+class IcsdCrawler(BaseCrawler):
     start_url = 'http://icsd.fiz-karlsruhe.de/'
 
-    # possible search-related arguments mapped to their names in the form
-    # apparently CSS3 selectors need quotes for these
+    # possible search-related arguments mapped to their names in the form.
+    # apparently CSS3 selectors need quotes for these.
     search_params = {
         'composition': '"chemistrySearch.sumForm"',
         'num_elements': '"chemistrySearch.elCount"',
@@ -29,7 +25,9 @@ class IcsdCrawlerGhost:
     # possible arguments that are not search terms, and their default values.
     non_search_params = {
         'num_results': 10,
-        'debug': False
+        'debug': False,
+        'timeout': 20,
+        'dl_images': False
     }
     
     # CSS3 selectors
@@ -59,6 +57,7 @@ class IcsdCrawlerGhost:
         'too_many_results': 'td#WzBoDyI>p:first-child'
     }
 
+    '''
     # javascript expressions
     js_exprs = {
         # {0} is a CSS3 selector for the element, {1} is the attribute to select.
@@ -67,12 +66,14 @@ class IcsdCrawlerGhost:
         # {2} is the value to assign it.
         'set_attr': "document.querySelector('{0}').{1} = {2};"
     }
+    '''
 
     # various messages
     messages = {
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
 
+    '''
     def __init__(self, **terms):
         # specified arguments will overwrite defaults
         self.write_defaults()
@@ -100,6 +101,7 @@ class IcsdCrawlerGhost:
         self.ghost = Ghost(download_images=False,
                            wait_timeout=20,
                            display=self.debug)
+    '''
 
     def crawl(self):
         """
@@ -235,6 +237,7 @@ class IcsdCrawlerGhost:
             end = cif.find(sep, end + 1)
             yield cif[start : end]
 
+    '''
     def set_attr(self, selector, attr, new_value):
         """ Set an attribute of a DOM element. """
         self.ghost.evaluate(self.js_exprs['set_attr'] \
@@ -264,6 +267,7 @@ class IcsdCrawlerGhost:
         first = tag.find(quote, attr_assignment)
         last = tag.find(quote, first + 1)
         return tag[first + 1 : last]
+    '''
 
     def strip_url(self, url, c=';'):
         """
@@ -349,7 +353,7 @@ def verify_search_made(args):
     return search_given
 
 def main():
-    spider = IcsdCrawlerGhost(**parse_crawler_args())
+    spider = IcsdCrawler(**parse_crawler_args())
     cl = spider.crawl()
     print cl.json
     print 'fetched {0} results.'.format(len(cl))
