@@ -65,7 +65,7 @@ class AmcsdCrawler(BaseCrawler):
         self.ghost.fill(form, self.search_terms)
         self.ghost.set_field_value(self.selectors['format_btn'], 'cif')
         # perform the search.
-        self.get_attr(form, 'submit()', expect_loading=True)
+        self.dom_prop(form, 'submit()', expect_loading=True)
 
         # test if the search worked.
         return self.ghost.exists(self.selectors['result_table'])
@@ -82,7 +82,7 @@ class AmcsdCrawler(BaseCrawler):
         """
         Stage 2.1: select the desired results to download.
         """
-        self.get_attr(self.selectors['select_all_btn'], 'click()')
+        self.dom_prop(self.selectors['select_all_btn'], 'click()')
 
 
     def download_selected(self):
@@ -95,11 +95,11 @@ class AmcsdCrawler(BaseCrawler):
         # if there is exactly one result, this will fail
 
         # get to results-viewing page
-        self.get_attr(self.selectors['view_btn'], 'click()')
+        self.dom_prop(self.selectors['view_btn'], 'click()')
         self.ghost.fire_on(self.selectors['result_form'], 'submit', expect_loading=True)
 
         # get results
-        results_string = self.get_attr(self.selectors['result_area'], 'innerHTML')
+        results_string = self.dom_prop(self.selectors['result_area'], 'innerHTML')
         results = results_string.split('\n\n')
 
         # filter out any empty string elements
@@ -113,7 +113,7 @@ class AmcsdCrawler(BaseCrawler):
         Stage 2.error: handle an error with the search.
         """
         # TODO: generalize for different messages.
-        message = self.get_attr(self.selectors['error_msg'], 'innerHTML')
+        message = self.dom_prop(self.selectors['error_msg'], 'innerHTML')
         if message.find('No matches') >= 0:
             print self.messages['no_matches']
         else: 

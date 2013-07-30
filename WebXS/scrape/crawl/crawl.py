@@ -38,10 +38,7 @@ class BaseCrawler:
     #   - value: javascript expression.
     js_exprs = {
         # {0} is a CSS3 selector for the element, {1} is the attribute to select.
-        'get_attr': "document.querySelector('{0}').{1};" ,
-        # {0} is a CSS3 selector for the element, {1} is the attribute to set, and
-        # {2} is the value to assign it.
-        'set_attr': "document.querySelector('{0}').{1} = {2};"
+        'dom_prop': "document.querySelector('{0}').{1};"
     }
 
     # initialization methods
@@ -95,24 +92,16 @@ class BaseCrawler:
 
     # utility methods
 
-    def set_attr(self, selector, attr, new_value, **kwargs):
-        """ Set an attribute of a DOM element. """
-        self.ghost.evaluate(self.js_exprs['set_attr'] \
-                            .format(selector,
-                                    attr,
-                                    new_value),
-                            **kwargs)
-
-    def get_attr(self, selector, attr, **kwargs):
-        """ Get an attribute from a DOM element. """
-        return self.ghost.evaluate(self.js_exprs['get_attr'] \
+    def dom_prop(self, selector, prop, **kwargs):
+        """ Get a property from a DOM node. """
+        return self.ghost.evaluate(self.js_exprs['dom_prop'] \
                                    .format(selector,
-                                           attr),
+                                           prop),
                                    **kwargs)[0]
 
     def get_attr_extract(self, selector, attr):
-        """ Get an attribute from a DOM element. Do so by parsing its tag. """
-        outerHtml = self.ghost.evaluate(self.js_exprs['get_attr'] \
+        """ Get an attribute from a DOM node. Do so by parsing its tag. """
+        outerHtml = self.ghost.evaluate(self.js_exprs['dom_prop'] \
                                         .format(selector,
                                                 'outerHTML'))[0]
         return self.extract_tag_attr(outerHtml, attr)

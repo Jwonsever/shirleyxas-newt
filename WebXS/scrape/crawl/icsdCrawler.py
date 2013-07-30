@@ -122,7 +122,7 @@ class IcsdCrawler(BaseCrawler):
         Stage 3.2: verify that the number of results requested is possible.
         If fewer results exist than were requested, select them all.
         """
-        num_hits = self.get_attr(self.selectors['num_hits'], 'innerHTML')
+        num_hits = self.dom_prop(self.selectors['num_hits'], 'innerHTML')
         # trim away label part
         num_hits = num_hits[num_hits.find(':')+1:].strip()
         num_hits = int(num_hits)
@@ -151,11 +151,11 @@ class IcsdCrawler(BaseCrawler):
 
     def download_selected(self):
         """ Stage 3.4: download the selected results. """
-        # TODO: find out why get_attr why sometimes doesn't
+        # TODO: find out why dom_prop why sometimes doesn't
         # work when extract_tag_attr does.
 
         # navigate to area where we can download concatenated .cif files.
-        submitter = self.get_attr(self.selectors['export_data'], 'href')
+        submitter = self.dom_prop(self.selectors['export_data'], 'href')
         colon_index = submitter.find(':')
         self.ghost.evaluate(submitter[colon_index+1:], expect_loading=True)
 
@@ -173,7 +173,7 @@ class IcsdCrawler(BaseCrawler):
         # this is because of the inconsistency in the alerts.
         for selector in ('no_results', 'too_many_results'):
             if self.ghost.exists(self.selectors[selector]):
-                error_msg = self.get_attr(self.selectors[selector], 'innerHTML')
+                error_msg = self.dom_prop(self.selectors[selector], 'innerHTML')
                 error_msg = HTMLParser.HTMLParser().unescape(error_msg)
                 break
 
