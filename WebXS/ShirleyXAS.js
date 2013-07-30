@@ -1641,7 +1641,7 @@ Scrape.getInputs = function(form) {
   var selector = '#' + form.id + ' table input';
   return $(selector);
 }
-Scrape.validateInputs = function(form) {
+Scrape.validateInputs = function(form, db_name) {
   var inputs = Scrape.getInputs(form);
 
   var valid = true;
@@ -1660,14 +1660,14 @@ Scrape.validateInputs = function(form) {
   }
 
   if (valid) {
-    Scrape.scrape(form);
+    Scrape.scrape(form, db_name);
   } else {
     alert(message);
   }
 }
 Scrape.scrape = function(form, db_name) {
   var url = Scrape.scraperPath + '?';
-  url += db_name;
+  url += 'db=' + db_name;
   
   var inputs = Scrape.getInputs(form);
   var input = null;
