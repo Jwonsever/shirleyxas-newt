@@ -1,0 +1,29 @@
+#!/bin/bash
+#PBS -q debug
+#PBS -l mppnppn=24
+#PBS -l mppwidth=24
+#PBS -l walltime=00:30:00
+#PBS -e cp2k.err
+#PBS -o cp2k.out
+
+prefix=nacl-p1
+#PBS -N ${prefix}.geopt
+
+totprocs=`echo "24 * 1" | bc -l`
+
+cd $PBS_O_WORKDIR
+
+#module load cp2k
+#Where this module is
+cp2kpath=/usr/common/usg/cp2k/2.1.534/bin
+
+mkdir -p /global/scratch/sd/${USER}/${prefix}.geopt ./results/
+
+cp ${prefix}.* /global/scratch/sd/${USER}/${prefix}.geopt/
+
+cd /global/scratch/sd/${USER}/${prefix}.geopt
+echo "Total Processors: "$totprocs
+
+aprun -n 24 $cp2kpath/cp2k.popt ${prefix}.1x1x1.298K.cp2k.in > ${prefix}.cp2k.geopt.screen.out
+
+cp ${prefix}.*xyz ${prefix}.*.restart ${prefix}.*.mulliken ${prefix}.*.screen.out ${PBS_O_WORKDIR}/results/

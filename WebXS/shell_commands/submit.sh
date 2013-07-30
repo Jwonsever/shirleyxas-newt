@@ -46,7 +46,7 @@ echo -e ${inputs} >> ./Input_Block.in
 
 xasPBS="#!/bin/bash\n"
 xasPBS+="#PBS -q ${queue}\n"
-ppPBS+="#PBS -l walltime=${walltime}\n"
+xasPBS+="#PBS -l walltime=${walltime}\n"
 xasPBS+="#PBS -V\n"
 
 #Use Account,if not default.

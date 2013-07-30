@@ -1,0 +1,31 @@
+#!/bin/bash
+#PBS -q regular
+
+#PBS -l mppnppn=ppn_here
+
+ototprocs=`echo "ppn_here * nodes_here" | bc -l`
+#PBS -l mppwidth=procs_here
+#PBS -l walltime=12:00:00
+
+#PBS -e cp2k.err
+#PBS -o cp2k.out
+
+prefix=prefix_here
+fprefix=fprefix_here
+
+#PBS -N ${prefix}.geopt
+
+cd $PBS_O_WORKDIR
+
+#module load cp2k
+#Where the binary is
+cp2kpath=/usr/common/usg/cp2k/2.1.534/bin
+
+mkdir -p /global/scratch/sd/${USER}/${prefix}.geopt ./results/
+
+cp ${prefix}.* /global/scratch/sd/${USER}/${prefix}.geopt/
+cd /global/scratch/sd/${USER}/${prefix}.geopt
+
+echo "Total Processors: "$totprocs
+aprun -n ${totprocs} $cp2kpath/cp2k.popt < ${fprefix}.cp2k.in >> ${fprefix}.cp2k.geopt.screen.out
+cp ${prefix}.*xyz ${prefix}.*.restart ${prefix}.*.mulliken ${prefix}.*.screen.out ${PBS_O_WORKDIR}/results/
