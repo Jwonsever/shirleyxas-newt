@@ -9,10 +9,16 @@ logging.basicConfig()
 class BaseCrawler:
     # possible search-related arguments mapped to their names in the form.
     # apparently CSS3 selectors need quotes for these.
+    # INHERITORS: override this with:
+    #   - key: command-line search-related parameter name.
+    #   - value: search form input element name.
     search_params = {
     }
 
     # possible arguments that are not search terms, and their default values.
+    # INHERITORS: override this with:
+    #   - key: command-line not-search-related parameter name.
+    #   - value: default parameter value.
     non_search_params = {
         'debug': False,
         'timeout': 20,
@@ -20,10 +26,16 @@ class BaseCrawler:
     }
     
     # CSS3 selectors
+    # INHERITORS: recommend override this with:
+    #   - key: meaningful identifier for a CSS3 selector.
+    #   - value: CSS3 selector.
     selectors = {
     }
 
     # javascript expressions
+    # INHERITORS: recommend override this with:
+    #   - key: meaningful identifier for a javascript expression.
+    #   - value: javascript expression.
     js_exprs = {
         # {0} is a CSS3 selector for the element, {1} is the attribute to select.
         'get_attr': "document.querySelector('{0}').{1};" ,
@@ -35,6 +47,17 @@ class BaseCrawler:
     # initialization methods
 
     def __init__(self, **terms):
+        """
+        Handle command-line arguments:
+            - put search-related arguments in dict self.search_terms:
+                - key: search form input element name
+                - value: user-supplied search value, or blank by default.
+            - assign non-search-related arguments as instance variables:
+                - if not specified, uses default value, as defined by
+                  self.non_search_params.
+
+        Also configure Ghost.
+        """
         # specified arguments will overwrite defaults
         self.write_defaults()
 
@@ -47,7 +70,11 @@ class BaseCrawler:
         self.config_ghost()
 
     def write_defaults(self):
-        """ Write default values to all instance variables. """
+        """
+        Write default values to all instance variables:
+            - search-related: defaults to blank.
+            - non-search-related: defaults specified by self.non_search_params
+        """
         # maps webpage form inputs to user-supplied search terms
         self.search_terms = {}
         # if search term was not supplied, will be an empty string
@@ -58,6 +85,10 @@ class BaseCrawler:
             setattr(self, var, val)
 
     def config_ghost(self):
+        """
+        Configure Ghost.
+        """
+        # TODO: make a more flexible way to specify these options.
         self.ghost = Ghost(download_images=self.dl_images,
                            wait_timeout=self.timeout,
                            display=self.debug)

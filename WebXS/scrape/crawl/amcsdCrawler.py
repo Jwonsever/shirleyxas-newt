@@ -18,13 +18,6 @@ class AmcsdCrawler(BaseCrawler):
         'diffraction': '"diff"',
         'general': '"Key"',
     }
-
-    '''
-    # possible arguments that are not search terms, and their default values.
-    non_search_params = {
-        'debug': False
-    }
-    '''
     
     # CSS3 selectors
     selectors = {
@@ -44,52 +37,11 @@ class AmcsdCrawler(BaseCrawler):
         'error_msg': 'form[name="result_form"]'
     }
 
-    '''
-    # javascript expressions
-    js_exprs = {
-        # {0} is a CSS3 selector for the element, {1} is the attribute to select.
-        'get_attr': "document.querySelector('{0}').{1};" ,
-        # {0} is a CSS3 selector for the element, {1} is the attribute to set, and
-        # {2} is the value to assign it.
-        'set_attr': "document.querySelector('{0}').{1} = {2};"
-    }
-    '''
-
     # various messages
     messages = {
         'no_matches': 'No matches were found for the search',
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
-
-    '''
-    def __init__(self, **terms):
-        # specified arguments will overwrite defaults
-        self.write_defaults()
-
-        for key, value in terms.iteritems():
-            if key in self.non_search_params:
-                setattr(self, key, value)
-            else:
-                self.search_terms[self.search_params[key]] = value
-
-        self.config_ghost()
-
-    def write_defaults(self):
-        """ Write default values to all instance variables. """
-        # maps webpage form inputs to user-supplied search terms
-        self.search_terms = {}
-        # if search term was not supplied, will be an empty string
-        for form_field in self.search_params.itervalues():
-            self.search_terms[form_field] = ''
-
-        for var, val in self.non_search_params.iteritems():
-            setattr(self, var, val)
-
-    def config_ghost(self):
-        self.ghost = Ghost(download_images=True,
-                           wait_timeout=60,
-                           display=self.debug)
-    '''
 
     def crawl(self):
         """
@@ -169,40 +121,6 @@ class AmcsdCrawler(BaseCrawler):
 
         # empty JsonList
         return JsonList()
-
-    '''
-    def set_attr(self, selector, attr, new_value, **kwargs):
-        """ Set an attribute of a DOM element. """
-        self.ghost.evaluate(self.js_exprs['set_attr'] \
-                            .format(selector,
-                                    attr,
-                                    new_value),
-                            **kwargs)
-
-    def get_attr(self, selector, attr, **kwargs):
-        """ Get an attribute from a DOM element. """
-        return self.ghost.evaluate(self.js_exprs['get_attr'] \
-                                   .format(selector,
-                                           attr),
-                                   **kwargs)[0]
-
-    def get_attr_extract(self, selector, attr):
-        """ Get an attribute from a DOM element. Do so by parsing its tag. """
-        outerHtml = self.ghost.evaluate(self.js_exprs['get_attr'] \
-                                        .format(selector,
-                                                'outerHTML'))[0]
-        return self.extract_tag_attr(outerHtml, attr)
-
-    def extract_tag_attr(self, tag, attr, quote='"'):
-        """
-        Given a tag, extract the value of a given attribute inside it,
-        wrapped in the given type of quotes.
-        """ 
-        attr_assignment = tag.find(attr + '=')
-        first = tag.find(quote, attr_assignment)
-        last = tag.find(quote, first + 1)
-        return tag[first + 1 : last]
-    '''
         
 
 
