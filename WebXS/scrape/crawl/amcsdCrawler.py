@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from crawl import BaseCrawler
+from baseCrawler import BaseCrawler
 from jsonList import JsonList
 
 import argparse

@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from crawl import BaseCrawler
+from baseCrawler import BaseCrawler
 from jsonList import JsonList
 
 import argparse
@@ -151,9 +151,6 @@ class IcsdCrawler(BaseCrawler):
 
     def download_selected(self):
         """ Stage 3.4: download the selected results. """
-        # TODO: find out why dom_prop why sometimes doesn't
-        # work when extract_tag_attr does.
-
         # navigate to area where we can download concatenated .cif files.
         submitter = self.dom_prop(self.selectors['export_data'], 'href')
         colon_index = submitter.find(':')
