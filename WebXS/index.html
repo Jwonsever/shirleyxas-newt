@@ -112,11 +112,12 @@
           <div class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-pills nav-stacked">
               <li class="active"><a href="#shirleyinfo" data-toggle="tab">What is this?</a></li>
-              <li><a href="#searchDB" data-toggle="tab" onclick="switchToSearchDB()">Search Structure Database</a></li>
+              <li><a href="#searchDB" data-toggle="tab" onclick="switchToSearchDB()">Structure Database</a></li>
               <li><a href="#moleculeEditor" data-toggle="tab" onclick="switchToDrawMolecule()">Draw Molecule</a></li>
 	      <li><a href="#submitjobs" data-toggle="tab" onclick="switchToSubmitForm()">Submit Calculations</a></li>
 	      <li><a href="#runningjobs" data-toggle="tab" onclick="switchToRunning()">Running Calculations</a></li>
               <li><a href="#previousjobs" data-toggle="tab" onclick="switchToPrevious()">Finished Calculations</a></li>
+	      <li><a href="#spectrumDB" data-toggle="tab" onclick="switchToSpectrumDB()">Spectrum Database</a></li>
             </ul>
           </div>
         </div>
@@ -155,15 +156,28 @@
 		  </table>
 		</div>
 	      </div>
+	      <div id ='spectrumDB' class="tab-pane">
+		<h2 align="left">MFTheory Core Excitation Spectrum Database</h2>
+		
+		<p align="left">
+		  If you cannot find what you are looking for, try these:<br>
+		  <a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
+		  <a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a>
+		</p><br>
+		
+		--WebXS predicted Spectra<br>
+		<input type="Text" id="spectraSearchTerms" value=""/>
+		<button onclick="searchSpectrumDB()">Search</button>
+		<div id="searchSpectrumResults"><br></div>
+
+	      </div>
 
 	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
-          <h2 align="left">MFTheory Core Excitation Database</h2>
+	  <h2 align="left">MFTheory Structure Database</h2>
 
           <p align="left">
-          If you cannot find what you are looking for, try these:<br>
-          <a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
-          <a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a>
+          This page is meant for helping you find structures from prestablished structure databases.
           </p>
 
           <div align="left">

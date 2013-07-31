@@ -1519,10 +1519,10 @@ function addNewModel() {
 }
 
 //Searching the database for a saved job
-function searchDB() {
+function searchSpectrumDB() {
     
-    var term = $('#searchTerms').val();
-    var command = "/usr/bin/python " + DATABASE_DIR + "spectraDB/search.py " + term;
+    var term = $('#spectraSearchTerms').val();
+    var command = "/usr/bin/python " + DATABASE_DIR + "/spectraDB/search.py " + term;
 
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
@@ -1541,21 +1541,22 @@ function searchDB() {
 		    myText += "<td width=22\%>" + res[2] + "</td>";
 		    myText += "<td width=12\%>" + res[3] + "</td>";
 		    myText += "<td width=12\%>" + res[4] + "</td>";
-		    myText += "<td><button onclick='dbJob(\""+res[3]+"\",\""+res[4]+"\",\""+res[5]+"\")'>Go!</button></td>";
+		    myText += "<td><button onclick='dbSpectrumJob(\""+res[3]+"\",\""+res[4]+"\",\""+res[5]+"\")'>Go!</button></td>";
 		    myText += "</tr>";
 		}
-		myText += "</table><br><center><div id='flotHolder' style='display:none;width:400px;height:300px;'></div></center>";
-		$('#searchResults').html(myText);
+		myText += "</table><br><center><div id='flotHolder' style='display:none;margin_bottom:20px;width:400px;height:300px;'></div></center>";
+		myText += "<br>"
+		$('#searchSpectrumResults').html(myText);
 	    },
 		error: function(request,testStatus,errorThrown) {
-		$('#searchResults').html("Search failed!  " + errorThrown);
+		$('#searchSpectrumResults').html("Search failed!  " + errorThrown);
 	    },
 		});
 }
 //Show a saved job.
 //needs filling out
-function dbJob(elem, XCHShift, path) {
-    var fullPath = DATABASE_DIR+"spectraDB/" + path;
+function dbSpectrumJob(elem, XCHShift, path) {
+    var fullPath = DATABASE_DIR+"/spectraDB/" + path;
     $('#flotHolder').html("<center><img src=\"ajax-loader-2.gif\" width=40></center>");
     $('#flotHolder').show();
     var options = {
@@ -1785,6 +1786,10 @@ function switchToInfo() {
     window.clearInterval(autoInterval);
 }
 function switchToSearchDB() {
+    window.clearInterval(autoInterval);
+    searchWrapper();
+}
+function switchToSpectrumDB() {
     window.clearInterval(autoInterval);
     searchWrapper();
 }
