@@ -47,63 +47,8 @@
     <script src="TreeEval.js"></script>
     <script src="ShirleyXAS.js"></script>
     <script src="jmolScripts.js"></script>
-
-    <!--Applet, Initialization, And Options-->
-    <script>
-      var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
-	
-
-      var mainApplet = "mainApplet";
-      var jmeApplet = "jmeApplet";
-      var previewApplet = "previewApplet";
-      var resultsApplet = "resultsApplet";
-
-      // logic is set by indicating order of USE -- default is HTML5 for this test page, though
-      var use = "HTML5"; // JAVA HTML5 WEBGL IMAGE  are all otions     
-      var s = document.location.search;
-      Jmol.debugCode = (s.indexOf("debugcode") >= 0);
-
-
-      var JmolInfo = {
-      width: 400,
-      height: 400,
-      debug: false,
-      color: "black",
-      addSelectionOptions: false,
-      serverURL: "./javascript",
-
-      //for jsmol
-      use: "HTML5",
-      j2sPath: "javascript/jsmol-13.1.15/jsmol/j2s",
-
-      //These are for java version
-      //jarPath: "javascript/jmol-13-0",
-      //jarFile: "JmolAppletSigned.jar",
-      //isSigned: true,
-
-      //disableJ2SLoadMonitor: true,
-      //disableInitialConsole: true,
-      allowJavaScript: true,
-      console:"none",
-      script: ""
-      };
-      
-      var JMEInfo = {
-      use: "HTML5"
-
-      //for the java version
-      //jarPath: "javascript/",
-      //jarFile: "JME.jar"
-      };
-      
-
-      Jmol.setGrabberOptions(
-      [["$", "NCI(small molecules)"],
-      [":", "PubChem(small molecules)"],
-      ["=", "RCSB(macromolecules)"]]);
-
-    </script>
-
+    <Script src="jmolInit.js"></script>
+    
   </head>
   <body>
 
@@ -116,26 +61,19 @@
             <span class="icon-bar"></span>
           </a>
           <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><img src="../alslogo.png" width=56 padding=0 border=0></li>
+	    <ul class="nav">
+              <li><img src="../mfnewlogo.png" width=105 padding=0 border=0></li>
               <li><a href="../index.html">Home</a></li>
-              <li><a href="../about.html">About</a></li>
-              <li><a href="../status.html">Status</a></li>
-              <li><a href="../data.html">Data Browser</a></li>
+              <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
               <li class="dropdown active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li class="nav-header">X-Ray Scattering</li>
-                  <li><a href="#">GISAXS Code 1</a></li>
-                  <li><a href="#">GISAXS Code 2</a></li>
-                  <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
                   <li class="active"><a href="#">WebXS</a></li>
 		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
-                  <li><a href="#">FEFF</a></li>
+                  <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
-                  <li class="nav-header">Photoemission</li>
-                  <li><a href="#">BerkeleyGW</a></li>
+
                 </ul>
               </li>
             </ul>
@@ -174,11 +112,11 @@
           <div class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-pills nav-stacked">
               <li class="active"><a href="#shirleyinfo" data-toggle="tab">What is this?</a></li>
-              <li><a href="#searchDB" data-toggle="tab" onclick="switchToSearchDB()">Search Database</a></li>
-              <li><a href="#runningjobs" data-toggle="tab" onclick="switchToRunning()">Running Calculations</a></li>
-              <li><a href="#previousjobs" data-toggle="tab" onclick="switchToPrevious()">Finished Calculations</a></li>
-              <li><a href="#submitjobs" data-toggle="tab" onclick="switchToSubmitForm()">Submit Calculations</a></li>
+              <li><a href="#searchDB" data-toggle="tab" onclick="switchToSearchDB()">Search Structure Database</a></li>
               <li><a href="#moleculeEditor" data-toggle="tab" onclick="switchToDrawMolecule()">Draw Molecule</a></li>
+	      <li><a href="#submitjobs" data-toggle="tab" onclick="switchToSubmitForm()">Submit Calculations</a></li>
+	      <li><a href="#runningjobs" data-toggle="tab" onclick="switchToRunning()">Running Calculations</a></li>
+              <li><a href="#previousjobs" data-toggle="tab" onclick="switchToPrevious()">Finished Calculations</a></li>
             </ul>
           </div>
         </div>
@@ -591,7 +529,7 @@ simulations on high-performance computing resources at the National Energy Resea
 upload/build their molecule/crystal of choice, visualize it, generate its NEXAFS spectrum and interpret spectral features based on visualization of 
 electronic excited states.<br><br>This tool is not meant to work with IE.  Please use a different browser, such as Firefox or Google chrome.<br><br> 
 Currently computing K-edge spectra for Li, B, C, N, O, F, Cd, S, and Ti.  More coming soon. <br><br> Please send questions and comments regarding the 
-website to jrdeslippe@lbl.gov.
+website to jwonsever@lbl.gov.
   	  	    <!--Needs work-->
 		    <button valign="middle" onclick="window.open( './faq.html');">FAQ and Tutorial</button></p>
 		    <p><center>
