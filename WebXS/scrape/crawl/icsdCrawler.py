@@ -1,19 +1,15 @@
 #!/usr/bin/env python
-from ghost import Ghost
-
+from crawl import BaseCrawler
 from jsonList import JsonList
 
 import argparse
 import HTMLParser
-import logging
 
-logging.basicConfig()
-
-class IcsdCrawlerGhost:
+class IcsdCrawler(BaseCrawler):
     start_url = 'http://icsd.fiz-karlsruhe.de/'
 
-    # possible search-related arguments mapped to their names in the form
-    # apparently CSS3 selectors need quotes for these
+    # possible search-related arguments mapped to their names in the form.
+    # apparently CSS3 selectors need quotes for these.
     search_params = {
         'composition': '"chemistrySearch.sumForm"',
         'num_elements': '"chemistrySearch.elCount"',
@@ -29,7 +25,9 @@ class IcsdCrawlerGhost:
     # possible arguments that are not search terms, and their default values.
     non_search_params = {
         'num_results': 10,
-        'debug': False
+        'debug': False,
+        'timeout': 20,
+        'dl_images': False
     }
     
     # CSS3 selectors
@@ -59,47 +57,10 @@ class IcsdCrawlerGhost:
         'too_many_results': 'td#WzBoDyI>p:first-child'
     }
 
-    # javascript expressions
-    js_exprs = {
-        # {0} is a CSS3 selector for the element, {1} is the attribute to select.
-        'get_attr': "document.querySelector('{0}').{1};" ,
-        # {0} is a CSS3 selector for the element, {1} is the attribute to set, and
-        # {2} is the value to assign it.
-        'set_attr': "document.querySelector('{0}').{1} = {2};"
-    }
-
     # various messages
     messages = {
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
-
-    def __init__(self, **terms):
-        # specified arguments will overwrite defaults
-        self.write_defaults()
-
-        for key, value in terms.iteritems():
-            if key in self.non_search_params:
-                setattr(self, key, value)
-            else:
-                self.search_terms[self.search_params[key]] = value
-
-        self.config_ghost()
-
-    def write_defaults(self):
-        """ Write default values to all instance variables. """
-        # maps webpage form inputs to user-supplied search terms
-        self.search_terms = {}
-        # if search term was not supplied, will be an empty string
-        for form_field in self.search_params.itervalues():
-            self.search_terms[form_field] = ''
-
-        for var, val in self.non_search_params.iteritems():
-            setattr(self, var, val)
-
-    def config_ghost(self):
-        self.ghost = Ghost(download_images=False,
-                           wait_timeout=20,
-                           display=self.debug)
 
     def crawl(self):
         """
@@ -147,7 +108,7 @@ class IcsdCrawlerGhost:
         busy_msg = self.selectors['sorting_msg']
 
         def busy_msg_invisible():
-            style = self.get_attr_extract(busy_msg, 'style')
+            style = self.dom_prop(busy_msg, 'style')['cssText']
             return ('display: none' in style or     # <- lol in style
                     'display:none' in style)
 
@@ -161,7 +122,7 @@ class IcsdCrawlerGhost:
         Stage 3.2: verify that the number of results requested is possible.
         If fewer results exist than were requested, select them all.
         """
-        num_hits = self.get_attr(self.selectors['num_hits'], 'innerHTML')
+        num_hits = self.dom_prop(self.selectors['num_hits'], 'innerHTML')
         # trim away label part
         num_hits = num_hits[num_hits.find(':')+1:].strip()
         num_hits = int(num_hits)
@@ -176,8 +137,8 @@ class IcsdCrawlerGhost:
         # 2) bypass library API and edit internal list of selected results.
 
         # expression to access SweetDevRia table properties
-        onclick = self.get_attr_extract(self.selectors['nth_row_box'].format(1),
-                                        'onclick')
+        onclick = self.get_attr(self.selectors['nth_row_box'].format(1),
+                                'onclick')
         selector = onclick[: onclick.find(')') + 1]
         
         # selected results
@@ -190,11 +151,11 @@ class IcsdCrawlerGhost:
 
     def download_selected(self):
         """ Stage 3.4: download the selected results. """
-        # TODO: find out why get_attr why sometimes doesn't
+        # TODO: find out why dom_prop why sometimes doesn't
         # work when extract_tag_attr does.
 
         # navigate to area where we can download concatenated .cif files.
-        submitter = self.get_attr(self.selectors['export_data'], 'href')
+        submitter = self.dom_prop(self.selectors['export_data'], 'href')
         colon_index = submitter.find(':')
         self.ghost.evaluate(submitter[colon_index+1:], expect_loading=True)
 
@@ -212,7 +173,7 @@ class IcsdCrawlerGhost:
         # this is because of the inconsistency in the alerts.
         for selector in ('no_results', 'too_many_results'):
             if self.ghost.exists(self.selectors[selector]):
-                error_msg = self.get_attr(self.selectors[selector], 'innerHTML')
+                error_msg = self.dom_prop(self.selectors[selector], 'innerHTML')
                 error_msg = HTMLParser.HTMLParser().unescape(error_msg)
                 break
 
@@ -234,36 +195,6 @@ class IcsdCrawlerGhost:
             end = cif.find(sep, start + 1)
             end = cif.find(sep, end + 1)
             yield cif[start : end]
-
-    def set_attr(self, selector, attr, new_value):
-        """ Set an attribute of a DOM element. """
-        self.ghost.evaluate(self.js_exprs['set_attr'] \
-                            .format(selector,
-                                    attr,
-                                    new_value))
-
-    def get_attr(self, selector, attr):
-        """ Get an attribute from a DOM element. """
-        return self.ghost.evaluate(self.js_exprs['get_attr'] \
-                                   .format(selector,
-                                           attr))[0]
-
-    def get_attr_extract(self, selector, attr):
-        """ Get an attribute from a DOM element. Do so by parsing its tag. """
-        outerHtml = self.ghost.evaluate(self.js_exprs['get_attr'] \
-                                        .format(selector,
-                                                'outerHTML'))[0]
-        return self.extract_tag_attr(outerHtml, attr)
-
-    def extract_tag_attr(self, tag, attr, quote='"'):
-        """
-        Given a tag, extract the value of a given attribute inside it,
-        wrapped in the given type of quotes.
-        """ 
-        attr_assignment = tag.find(attr + '=')
-        first = tag.find(quote, attr_assignment)
-        last = tag.find(quote, first + 1)
-        return tag[first + 1 : last]
 
     def strip_url(self, url, c=';'):
         """
@@ -349,7 +280,7 @@ def verify_search_made(args):
     return search_given
 
 def main():
-    spider = IcsdCrawlerGhost(**parse_crawler_args())
+    spider = IcsdCrawler(**parse_crawler_args())
     cl = spider.crawl()
     print cl.json
     print 'fetched {0} results.'.format(len(cl))
