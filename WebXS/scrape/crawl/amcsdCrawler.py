@@ -6,18 +6,44 @@ import argparse
 import time
 
 class AmcsdCrawler(BaseCrawler):
-    start_url = 'http://rruff.geo.arizona.edu/AMS/amcsd.php'
+    """ Scraper for the AMCSD. """
 
-    # possible search-related arguments mapped to their names in the form.
+    # Startup resources
+
+    # possible search-related parameters.
     # apparently CSS3 selectors need quotes for these.
-    search_params = {
-        'mineral': '"Mineral"',
-        'author': '"Author"',
-        'chemistry': '"Periodic"',
-        'cellParam': '"CellParam"',
-        'diffraction': '"diff"',
-        'general': '"Key"',
+    search_params = ParamList(
+        SearchParam('--mineral',
+                    '"Mineral"',
+                    help='name of a mineral'),
+        SearchParam('--author',
+                    '"Author"',
+                    help='name of an author'),
+        SearchParam('--chemistry',
+                    '"Periodic"',
+                    help='comma-separated elements, all inside parentheses. See website for details.'),
+        SearchParam('--cellParam',
+                    '"CellParam"',
+                    help='cell parameters and symmetry. See website for details'),
+        SearchParam('--diffraction',
+                    '"diff"',
+                    help='diffraction pattern. See website for detials.'),
+        SearchParam('--general',
+                    '"Key"',
+                    help='general, keyword-based search. See website for details.')
+    )
+    
+    # arguments to this scraper's parser.
+    parser_params = {
+        'description': 'A scraper for the AMCSD at http://rruff.geo.arizona.edu/AMS/amcsd.php'    
     }
+
+    # Configuration Resources
+    # (default)
+
+    # Runtime Resources
+
+    start_url = 'http://rruff.geo.arizona.edu/AMS/amcsd.php'
     
     # CSS3 selectors
     selectors = {
@@ -42,6 +68,8 @@ class AmcsdCrawler(BaseCrawler):
         'no_matches': 'No matches were found for the search',
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
+
+    # Runtime methods
 
     def crawl(self):
         """
@@ -122,6 +150,9 @@ class AmcsdCrawler(BaseCrawler):
         # empty JsonList
         return JsonList()
         
+    # Utility methods
+    # (default)
+
 
 
 def parse_crawler_args():

@@ -5,7 +5,7 @@ import logging
 # import all known crawlers
 # if you make a new crawler, import it here.
 from icsdCrawler import IcsdCrawler
-#from amcsdCrawler import AmcsdCrawler
+from amcsdCrawler import AmcsdCrawler
 
 logging.basicConfig()
 
@@ -15,7 +15,7 @@ crawlers = {
         # TODO:
         # change js to use caps
     'ICSD': IcsdCrawler,
-    'AMCSD': IcsdCrawler
+    'AMCSD': AmcsdCrawler
 }
 
 def get_crawler():
