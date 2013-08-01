@@ -63,8 +63,9 @@ def get_crawler():
     '''
 
     # verify crawler-specific argument validity.
-    # assume validity if crawler does not call parser.error('error message').
-    Crawler.verify_args(args)
+    status = Crawler.verify_args(args)
+    if not status:
+        parser.error(status.message)
 
     return Crawler(**args)
 

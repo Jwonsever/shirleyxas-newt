@@ -118,3 +118,28 @@ class ParamList(list):
         Remove leading dashes from a string.
         """
         return name.lstrip('-')
+    
+
+class Status(object):
+    """
+    Represents either success or failure,
+    and an optional message detail.
+    Essentially just a wrapper for a boolean and a string.
+    """
+    
+    def __init__(self, success, message=''):
+        """
+        success: boolean
+            - True: success
+            - False: failure
+        message: string detailing status
+        """
+        self.success = success
+        self.message = message
+
+    def __nonzero__(self):
+        """
+        Implements truth testing.
+        Returns whether or not things are successful.
+        """
+        return self.success

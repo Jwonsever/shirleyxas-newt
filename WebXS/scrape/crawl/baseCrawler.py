@@ -77,13 +77,24 @@ class BaseCrawler(object):
         args: a dict of:
             - key: argument name.
             - value: argument value.
+
+        return: Status object.
+            - Success: no message required.
+            - Failure: message required
         """
         # verify at least one search arg was given
-        for param_name in args:
-            if cls.search_params.hasParam(param_name):
-                return True
+        #print args
+        for param_name, arg_value in args.iteritems():
+            #print param_name, arg_value
+            #print cls.search_params.hasParam(param_name)
+            if (arg_value != '' and
+                cls.search_params.hasParam(param_name)):
+                    #print 'SUCCESS'
+                    return Status(True)
 
-        return False
+        m = 'No search made. Must provide at least one search argument.'
+        #print 'FAILURE'
+        return Status(False, m)
 
     # Initialization methods
 
