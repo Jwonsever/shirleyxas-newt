@@ -1,25 +1,25 @@
 #!/usr/bin/env python
+from util import *
+
 from ghost import Ghost
 
-class BaseCrawler:
-    # possible search-related parameters mapped to their names in the form.
-    # apparently CSS3 selectors need quotes for these.
-    # INHERITORS: override this with:
-    #   - key: command-line search-related parameter name (with any dashes).
-    #   - value: search form input element name.
-    search_params = {
-    }
+class BaseCrawler(object):
+    """ Base class for scrapers. """
 
-    # possible parameters that are not search terms, and their specifications.
-    # INHERITORS: recommend override this with:
-    #   - key: command-line not-search-related parameter name (with any dashes).
-    #   - value: dict containing argparse add_argument() arguments.
-    non_search_params = {
-        '--debug': {
-            'action': 'store_true',
-            'help': 'enables debug mode'
-        }
-    }
+    # Startup resources
+
+    # possible search-related parameters.
+    # apparently CSS3 selectors need quotes for these.
+    # INHERITORS: override this with ParamList of desired SearchParam objects.
+    search_params = ParamList()
+
+    # possible parameters that are not search terms.
+    # INHERITORS: recommend override this with ParamList of desired Param objects.
+    non_search_params = ParamList(
+        Param('--debug',
+              action='store_true',
+              help='enables debug mode')
+    )
 
     # arguments to this scraper's parser.
     # INHERITORS: override this with:
@@ -28,6 +28,8 @@ class BaseCrawler:
     parser_params = {
         'description': 'An example web scraper'
     }
+
+    # Configuration resources
 
     # Ghost configuration options.
     # will be unpacked in Ghost constructor;
@@ -44,6 +46,8 @@ class BaseCrawler:
         'wait_timeout': 20,
         'download_images': False
     }
+
+    # Runtime resources
     
     # CSS3 selectors
     # INHERITORS: recommend override this with:
@@ -61,7 +65,27 @@ class BaseCrawler:
         'dom_prop': "document.querySelector('{0}').{1};"
     }
 
-    # initialization methods
+    # Configuration methods
+
+    @classmethod
+    def verify_args(cls, args):
+        """
+        Verify that the given command-line arguments are valid.
+        They have already been syntactically validated;
+        this is meant to check semantic validity.
+
+        args: a dict of:
+            - key: argument name.
+            - value: argument value.
+        """
+        # verify at least one search arg was given
+        for param_name in args:
+            if cls.search_params.hasParam(param_name):
+                return True
+
+        return False
+
+    # Initialization methods
 
     def __init__(self, **terms):
         """
@@ -75,31 +99,43 @@ class BaseCrawler:
 
         Also configure Ghost.
         """
+        '''
         # specified arguments will overwrite defaults
         self.write_defaults()
-
-        for key, value in terms.iteritems():
-            if key in self.non_search_params:
-                setattr(self, key, value)
+        '''
+        # maps webpage form <input> names to user-supplied search terms
+        self.search_terms = {}
+        
+        for param_name, arg_value in terms.iteritems():
+            #print 'looking for', param_name
+            if self.non_search_params.hasParam(param_name):
+                #print 'found non_search_param'
+                setattr(self, param_name, arg_value)
             else:
-                self.search_terms[self.search_params[key]] = value
+                # must be a search param
+                #print 'must be a search_param'
+                input_name = self.search_params.getParam(param_name).input_name
+                self.search_terms[input_name] = arg_value
 
         self.config_ghost()
 
+    '''
     def write_defaults(self):
         """
         Write default values to all instance variables:
             - search-related: defaults to blank.
             - non-search-related: defaults specified by self.non_search_params
         """
-        # maps webpage form inputs to user-supplied search terms
+        # maps webpage form <input> names to user-supplied search terms
         self.search_terms = {}
+        
         # if search term was not supplied, will be an empty string
-        for form_field in self.search_params.itervalues():
-            self.search_terms[form_field] = ''
+        for searchParam in self.search_params:
+            self.search_terms[searchParam.input_name] = ''
 
         for var, val in self.non_search_params.iteritems():
             setattr(self, var, val)
+    '''
 
     def config_ghost(self):
         """
@@ -108,7 +144,19 @@ class BaseCrawler:
         # TODO: make a more flexible way to specify these options.
         self.ghost = Ghost(**self.ghost_params)
 
-    # utility methods
+    # Runtime methods
+
+    def crawl(self):
+        """
+        Crawl the website.
+        This is the "business method".
+        Will be called automatically, do not call it yourself.
+        INHERITORS: must override this.
+        """
+        # empty JsonList
+        return JsonList()
+
+    # Utility methods
 
     def dom_prop(self, selector, prop, **kwargs):
         """

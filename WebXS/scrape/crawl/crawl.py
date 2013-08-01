@@ -5,7 +5,7 @@ import logging
 # import all known crawlers
 # if you make a new crawler, import it here.
 from icsdCrawler import IcsdCrawler
-from amcsdCrawler import AmcsdCrawler
+#from amcsdCrawler import AmcsdCrawler
 
 logging.basicConfig()
 
@@ -15,7 +15,7 @@ crawlers = {
         # TODO:
         # change js to use caps
     'ICSD': IcsdCrawler,
-    'AMCSD': AmcsdCrawler
+    'AMCSD': IcsdCrawler
 }
 
 def get_crawler():
@@ -23,12 +23,6 @@ def get_crawler():
     Parse command-line arguments and return a crawler for the desired
     database, with the specified crawler arguments.
     """
-    # TODO:
-    # this doesn't work. Need to know what crawler was chosen
-    # before we parse its crawler-specific args.
-    #
-    # I think argparse has a way to do this.
-
     '''
     parser = Crawler.get_parser()
 
@@ -37,8 +31,7 @@ def get_crawler():
                         choices=crawlers.iterkeys(),
                         help='which crawler to use')
     '''
-    desc = 'Scrape an online database.'
-    parser = argparse.ArgumentParser(description=desc)
+    parser = argparse.ArgumentParser(description='Scrape an online database.')
     subparsers = parser.add_subparsers(help='database to scrape')
 
     # set up parsing for each crawler.
@@ -48,12 +41,16 @@ def get_crawler():
         # register this CrawlerClass with its subparser
         subparser.set_defaults(Crawler=CrawlerClass)
         # add crawler-specific search-related and non-search-related parameters
-        for argdict in (CrawlerClass.search_params, CrawlerClass.non_search_params):
-            for param, options in argdict.iteritems():
-                subparser.add_argument(param, **options)
+        for params in (CrawlerClass.search_params, CrawlerClass.non_search_params):
+            for param in params:
+                subparser.add_argument(param.name, **param.config_pack)
 
     args = vars(parser.parse_args())
-    Crawler = args.Crawler
+    Crawler = args['Crawler']
+
+    # remove Crawler from args so constructor doesn't get confused.
+    # it was only used for our convenience.
+    del args['Crawler']
 
     '''
     # verify crawler argument validity
@@ -65,9 +62,9 @@ def get_crawler():
         parser.error(message)
     '''
 
-    # verify crawler-specific argument validity
-    # assume validity if crawler does not call parser.error('error message')
-    Crawler.verify_args(parser, args)
+    # verify crawler-specific argument validity.
+    # assume validity if crawler does not call parser.error('error message').
+    Crawler.verify_args(args)
 
     return Crawler(**args)
 

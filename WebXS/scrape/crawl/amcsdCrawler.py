@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 from baseCrawler import BaseCrawler
-from jsonList import JsonList
+from util import *
 
 import argparse
 import time
