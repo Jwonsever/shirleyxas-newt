@@ -102,29 +102,23 @@
             <span class="icon-bar"></span>
           </a>
           <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><img src="alslogo.png" width=56 padding=0 border=0></li>
+	    <ul class="nav">
+              <li><img src="../mfnewlogo.png" width=105 padding=0 border=0></li>
               <li><a href="../index.html">Home</a></li>
-              <li><a href="../about.html">About</a></li>
-              <li><a href="../status.html">Status</a></li>
-              <li><a href="../data.html">Data Browser</a></li>
-              <li class="dropdown">
+              <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
+              <li class="dropdown active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li class="nav-header">X-Ray Scattering</li>
-                  <li><a href="#">GISAXS Code 1</a></li>
-                  <li><a href="#">GISAXS Code 2</a></li>
-                  <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
                   <li><a href="../WebXS/index.html">WebXS</a></li>
 		  <li class="active"><a href="#">WebDynamics</a></li>
-                  <li><a href="#">FEFF</a></li>
+                  <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
-                  <li class="nav-header">Photoemission</li>
-                  <li><a href="#">BerkeleyGW</a></li>
                 </ul>
               </li>
             </ul>
+
+
             <div class="pull-right" id="auth-spinner"> <img src="white-ajax-loader.gif"></div>
             <div id=login-area style='display:none;' class="pull-right">
               <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
@@ -224,12 +218,41 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	    <div id="completedRelaxations">
 	      Here will be listed, in order, all successful relaxations completed, and names/dates
 	    </div>
+	    
 	  </div>
 
 	  <div id="DynamicsOptions" class="optionsDiv">
-	    trajectories, move an atom and show what happens in between, temerature vibrations.
-	  </div>
+	    Run a cp2k simulation!
+	    <br>
+	    XYZ File?  (Will be the file shown in JMOL right now, AS IS!)
+	    <br>
+	    Change this in the other tabs.
+	    <hr>
+	    Temperature<input type="text" value="298">K<br>
+	    Pressure<input type="text" value="760">Pa<br>
+	    <span>&nbsp&nbsp<b> Supercell:</b> X
+	      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px">
+		<option value="1">1</option><option value="2">2</option>
+		<option value="3">3</option><option value="4">4</option>
+	      </select> Y
+              <select id='SupercellY' onChange="supercellPreview()" style="width: 50px">
+                <option value="1">1</option><option value="2">2</option>
+		<option value="3">3</option><option value="4">4</option>
+	      </select> Z
+	      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px">
+		<option value="1">1</option><option value="2">2</option>
+		<option value="3">3</option><option value="4">4</option>
+	      </select>
+	    </span><br>
+	    WallTime<input type="text" value="00:30:00"> (do n^2 on atoms?)<br>
+	    Cores<input type="text" value="1"> (do [n_atoms/24]?)<br>
+	    Snapshots<input type="text" value="10"> To return, funct time/step<br>
 
+	    <div id="completedCP2K">
+	      Here will be shown completed calculations
+	    </div>
+
+	  </div>
 	  <div id="JmolConsole" class="optionsDiv">
 	   Full jmol console, with help links
 	   <script>

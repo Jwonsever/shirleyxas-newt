@@ -12,6 +12,8 @@ WebXS/xas_input/Input_Block.in
 Unconfigured*
 WebXS/xas_input/Unconfigured*
 
+Shirley-data/tmp/*
+
 #autosave files
 *~
 [#]*[#]
@@ -20,3 +22,6 @@ WebXS/xas_input/Unconfigured*
 
 # editor session
 session*
+
+# bytecode files
+*.pyc

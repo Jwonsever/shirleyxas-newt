@@ -205,6 +205,49 @@ function adjustToSupercell() {
     myform.CellA.value ="" + (Number(myform.CellA.value) * inx);
     myform.CellB.value ="" + (Number(myform.CellB.value) * iny);
     myform.CellC.value ="" + (Number(myform.CellC.value) * inz);
+    $('#SupercellX').val(1);
+    $('#SupercellY').val(1);
+    $('#SupercellZ').val(1);
+    drawMolInPreview();
+}
+
+function centerCoords() {
+    //Ignore this if you are in a crystal cell
+    var cryflag = document.getElementById('inputs').CrystalFlag.checked;
+    if (cryflag) {return false;}
+
+    coo = sterilize(models[activeModel]);
+    var lines = coo.split("\n");
+    var out = "";
+
+    var xmin = 0;
+    var xmax = 0;
+    var ymin = 0;
+    var ymax = 0;
+    var zmin = 0;
+    var zmax = 0;
+
+    for (var l = 0; l < lines.length; l++) {
+	var line = lines[l].split(" ");
+	xmin = Math.min(line[1], xmin);
+	xmax = Math.max(line[1], xmax);
+	ymin = Math.min(line[2], ymin);
+	ymax = Math.max(line[2], ymax);		
+	zmin = Math.min(line[3], zmin);
+	zmax = Math.max(line[3], zmax);
+    }
+    var xmid = (xmin + xmax) / 2;
+    var ymid = (ymin + ymax) / 2;
+    var zmid = (zmin + zmax) / 2;
+
+    for (var l = 0; l < lines.length; l++) {
+	var line = lines[l].split(" ");
+	var newx = line[1] - xmid;
+	var newy = line[2] - ymid;
+	var newz = line[3] - zmid;
+	out += line[0] + " " + newx + " " + newy + " " + newz+ " \n";
+    }
+    models[activeModel] = out;
     drawMolInPreview();
 }
 function readCoordsFromJmol() {
@@ -289,7 +332,7 @@ function uploadCoordinates() {
 function runThroughGdisAndReload(filedata, filename) {
     //Clean dirty charcters from filename
     filename = filename.replace(/[|&;$%@"<>()+,]/g, "");
-    //"//Emacs coloring bug (Serves no purpose other then making my screen look nicer)
+    //"//Emacs coloring bug
 
     //post webdata
     $.newt_ajax({type: "PUT", 

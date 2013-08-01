@@ -1,0 +1,21 @@
+Warning: no access to tty (Bad file descriptor).
+Thus no job control in this shell.
+Total Processors: 24
+
+ + --------------------------------------------------------------------------
+ +        Job name: nacl-p1.1x1x1.298K.cp2k.pbs
+ +          Job Id: 6264509.hopper11
+ +          System: hopper
+ +     Queued Time: Mon Jul 29 16:03:15 2013
+ +      Start Time: Mon Jul 29 16:04:51 2013
+ + Completion Time: Mon Jul 29 16:19:20 2013
+ +            User: wonsever
+ +        MOM Host: nid04943
+ +           Queue: debug
+ +  Req. Resources: mppnodect=1,mppnppn=24,mppwidth=24,walltime=00:30:00
+ +  Used Resources: cput=00:00:02,mem=10692kb,vmem=77336kb,walltime=00:14:33
+ +     Acct String: m1141
+ +   PBS_O_WORKDIR: /global/u2/w/wonsever/cp2k/webcp2k/cp2ktest
+ +     Submit Args: nacl-p1.1x1x1.298K.cp2k.pbs
+ + --------------------------------------------------------------------------
+

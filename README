@@ -1,6 +1,6 @@
 WEBXS
 7/10/2013
 
-To begin usage, please run ./configure.sh
+To install, please run ./configure.sh
 
 This will set necessary paths and set proper computation permissions.

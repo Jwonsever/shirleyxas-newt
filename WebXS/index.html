@@ -47,63 +47,8 @@
     <script src="TreeEval.js"></script>
     <script src="ShirleyXAS.js"></script>
     <script src="jmolScripts.js"></script>
-
-    <!--Applet, Initialization, And Options-->
-    <script>
-      var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
-	
-
-      var mainApplet = "mainApplet";
-      var jmeApplet = "jmeApplet";
-      var previewApplet = "previewApplet";
-      var resultsApplet = "resultsApplet";
-
-      // logic is set by indicating order of USE -- default is HTML5 for this test page, though
-      var use = "HTML5"; // JAVA HTML5 WEBGL IMAGE  are all otions     
-      var s = document.location.search;
-      Jmol.debugCode = (s.indexOf("debugcode") >= 0);
-
-
-      var JmolInfo = {
-      width: 400,
-      height: 400,
-      debug: false,
-      color: "black",
-      addSelectionOptions: false,
-      serverURL: "./javascript",
-
-      //for jsmol
-      use: "HTML5",
-      j2sPath: "javascript/jsmol-13.1.15/jsmol/j2s",
-
-      //These are for java version
-      //jarPath: "javascript/jmol-13-0",
-      //jarFile: "JmolAppletSigned.jar",
-      //isSigned: true,
-
-      //disableJ2SLoadMonitor: true,
-      //disableInitialConsole: true,
-      allowJavaScript: true,
-      console:"none",
-      script: ""
-      };
-      
-      var JMEInfo = {
-      use: "HTML5"
-
-      //for the java version
-      //jarPath: "javascript/",
-      //jarFile: "JME.jar"
-      };
-      
-
-      Jmol.setGrabberOptions(
-      [["$", "NCI(small molecules)"],
-      [":", "PubChem(small molecules)"],
-      ["=", "RCSB(macromolecules)"]]);
-
-    </script>
-
+    <Script src="jmolInit.js"></script>
+    
   </head>
   <body>
 
@@ -116,26 +61,19 @@
             <span class="icon-bar"></span>
           </a>
           <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><img src="../alslogo.png" width=56 padding=0 border=0></li>
+	    <ul class="nav">
+              <li><img src="../mfnewlogo.png" width=105 padding=0 border=0></li>
               <li><a href="../index.html">Home</a></li>
-              <li><a href="../about.html">About</a></li>
-              <li><a href="../status.html">Status</a></li>
-              <li><a href="../data.html">Data Browser</a></li>
+              <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
               <li class="dropdown active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li class="nav-header">X-Ray Scattering</li>
-                  <li><a href="#">GISAXS Code 1</a></li>
-                  <li><a href="#">GISAXS Code 2</a></li>
-                  <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
                   <li class="active"><a href="#">WebXS</a></li>
 		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
-                  <li><a href="#">FEFF</a></li>
+                  <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
-                  <li class="nav-header">Photoemission</li>
-                  <li><a href="#">BerkeleyGW</a></li>
+
                 </ul>
               </li>
             </ul>
@@ -174,11 +112,12 @@
           <div class="tabbable"> <!-- Only required for left/right tabs -->
             <ul class="nav nav-pills nav-stacked">
               <li class="active"><a href="#shirleyinfo" data-toggle="tab">What is this?</a></li>
-              <li><a href="#searchDB" data-toggle="tab" onclick="switchToSearchDB()">Search Database</a></li>
-              <li><a href="#runningjobs" data-toggle="tab" onclick="switchToRunning()">Running Calculations</a></li>
-              <li><a href="#previousjobs" data-toggle="tab" onclick="switchToPrevious()">Finished Calculations</a></li>
-              <li><a href="#submitjobs" data-toggle="tab" onclick="switchToSubmitForm()">Submit Calculations</a></li>
+              <li><a href="#searchDB" data-toggle="tab" onclick="switchToSearchDB()">Structure Database</a></li>
               <li><a href="#moleculeEditor" data-toggle="tab" onclick="switchToDrawMolecule()">Draw Molecule</a></li>
+	      <li><a href="#submitjobs" data-toggle="tab" onclick="switchToSubmitForm()">Submit Calculations</a></li>
+	      <li><a href="#runningjobs" data-toggle="tab" onclick="switchToRunning()">Running Calculations</a></li>
+              <li><a href="#previousjobs" data-toggle="tab" onclick="switchToPrevious()">Finished Calculations</a></li>
+	      <li><a href="#spectrumDB" data-toggle="tab" onclick="switchToSpectrumDB()">Spectrum Database</a></li>
             </ul>
           </div>
         </div>
@@ -217,15 +156,28 @@
 		  </table>
 		</div>
 	      </div>
+	      <div id ='spectrumDB' class="tab-pane">
+		<h2 align="left">MFTheory Core Excitation Spectrum Database</h2>
+		
+		<p align="left">
+		  If you cannot find what you are looking for, try these:<br>
+		  <a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
+		  <a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a>
+		</p><br>
+		
+		--WebXS predicted Spectra<br>
+		<input type="Text" id="spectraSearchTerms" value=""/>
+		<button onclick="searchSpectrumDB()">Search</button>
+		<div id="searchSpectrumResults"><br></div>
+
+	      </div>
 
 	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
-          <h2 align="left">MFTheory Core Excitation Database</h2>
+	  <h2 align="left">MFTheory Structure Database</h2>
 
           <p align="left">
-          If you cannot find what you are looking for, try these:<br>
-          <a href="http://unicorn.mcmaster.ca/corex/Search-List.html">Mcmasters Gas phase Core Excitation experimental database.</a><br>
-          <a href="http://foundry.lbl.gov/">Molecular Foundry collected experimental database.</a>
+          This page is meant for helping you find structures from prestablished structure databases.
           </p>
 
           <div align="left">
@@ -234,7 +186,8 @@
               <!-- make a data-te-forward-with-after-val attribute or something to append after value has been added -->
               <option value="default_searchTerms" selected>Default</option>
               <option value="PubChem_searchTerms">PubChem</option>
-              <option value="PDB_searchTerms">PDB</option>
+              <option value="ICSD_searchTerms">ICSD (~30s)</option>
+              <option value="AMCSD_searchTerms">AMCSD (~2s)</option>
             </select>
           </div>
 
@@ -505,9 +458,76 @@
               <br>
               <button onclick="restQuery()">Query</button>
             </div>
-            <div id="PDB_searchTerms" class="searchTermSet" style="display:none">
-              <p>PDB terms</p>
-            </div>
+            <form id="ICSD_searchTerms" class="searchTermSet" style="display:none">
+              <table>
+                <tr>
+                  <td>Composition (e.g. Na Cl)</td>
+                  <td> <input type="text" name="composition"/> </td>
+                </tr>
+                <tr>
+                  <td>Number of Elements</td>
+                  <td> <input type="text" name="num_elements"/> </td>
+                </tr>
+                <tr>
+                  <td>Structural Formula (e.g. Pb (W 04))</td>
+                  <td> <input type="text" name="struct_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td>Chemical Name</td>
+                  <td> <input type="text" name="chem_name"/> </td>
+                </tr>
+                <tr>
+                  <td>Mineral Name (e.g. Adamite)</td>
+                  <td> <input type="text" name="mineral_name"/> </td>
+                </tr>
+                <tr>
+                  <td>Mineral Group (e.g. Pyroxene)</td>
+                  <td> <input type="text" name="mineral_grp"/> </td>
+                </tr>
+                <tr>
+                  <td>ANX Formula Crystal Composition</td>
+                  <td> <input type="text" name="anx_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td>AB Formula Crystal Composition</td>
+                  <td> <input type="text" name="ab_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td>Number of Formula Units</td>
+                  <td> <input type="text" name="num_fmla_units"/> </td>
+                </tr>
+              </table>
+              <input type="button" id="ICSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'icsd')"/>
+            </form>
+            <form id="AMCSD_searchTerms" class="searchTermSet" style="display:none">
+              <table>
+                <tr>
+                  <td>Mineral</td>
+                  <td> <input type="text" name="mineral"/> </td>
+                </tr>
+                <tr>
+                  <td>Author</td>
+                  <td> <input type="text" name="author"/> </td>
+                </tr>
+                <tr>
+                  <td>Chemistry Search</td>
+                  <td> <input type="text" name="chemistry"/> </td>
+                </tr>
+                <tr>
+                  <td>Cell Parameters and Symmetry</td>
+                  <td> <input type="text" name="cellParam"/> </td>
+                </tr>
+                <tr>
+                  <td>Diffraction Search</td>
+                  <td> <input type="text" name="diffraction"/> </td>
+                </tr>
+                <tr>
+                  <td>General Search</td>
+                  <td> <input type="text" name="general"/> </td>
+                </tr>
+              </table>
+              <input type="button" id="AMCSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'amcsd')"/>
+            </form>
           </div>
           <div id="searchResults"></div>
         </div>
@@ -523,7 +543,7 @@ simulations on high-performance computing resources at the National Energy Resea
 upload/build their molecule/crystal of choice, visualize it, generate its NEXAFS spectrum and interpret spectral features based on visualization of 
 electronic excited states.<br><br>This tool is not meant to work with IE.  Please use a different browser, such as Firefox or Google chrome.<br><br> 
 Currently computing K-edge spectra for Li, B, C, N, O, F, Cd, S, and Ti.  More coming soon. <br><br> Please send questions and comments regarding the 
-website to jrdeslippe@lbl.gov.
+website to jwonsever@lbl.gov.
   	  	    <!--Needs work-->
 		    <button valign="middle" onclick="window.open( './faq.html');">FAQ and Tutorial</button></p>
 		    <p><center>
@@ -551,11 +571,6 @@ website to jrdeslippe@lbl.gov.
 		    <script>
 		      Jmol.jmolCommandInput(mainApplet);
 		    </script>
-
-		    <!-- Seems to only search through the NCI database?? -->
-		    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
-		    <span style="display:none"><select id="jmol_select"><option value=":" selected="">PubChem</option></select></span>
-		    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
 
 		    <form id='loadfile'>
 		      <input type=file id="uploadfile" name="uploadfile" onchange="uploadToEditor(this.form)"/>
@@ -599,9 +614,16 @@ website to jrdeslippe@lbl.gov.
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellBeta" value="90"/> &beta;
 		      <input type="text" size="10" onchange="drawMolInPreview()" id="CellGamma" value="90"/> &gamma;
 		      <br><br>
-                      <table cellpadding=8><tr><td>
-		      Output Directory:</td><td> <input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
-                      </td></tr><tr><td>Cluster:</td><td>
+                      <table cellpadding=8>
+			<tr><td>
+			    Output Directory:</td><td><input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
+			</td></tr>
+			<tr><td>
+			    Input Block:</td><td><input type="Text" size="35" id="customInputBlock" value="DEFAULT"/>
+			    <br>Note, values here may overrule values in your custom input block.<br>
+			</td></tr>
+
+		      <tr><td>Cluster:</td><td>
 		      <select name="Select Cluster" id="machine" onchange="form.PPN.value=24; updateStatus(this.value);" value="hopper">
 		        <option value="hopper">Hopper</option>
                       </select> <br><span id='clusterStatus' style='display:none;'></span></td></tr>
@@ -637,17 +659,10 @@ website to jrdeslippe@lbl.gov.
 		      <input type="hidden" id="NEXCITED" value="1"/>
 		      <input type="hidden" id="PPN" value="24"/>
 
-		      <input id="Full API" type='button' value='Full API' onClick="window.open('./API.php')"/>
-		      <br>
-		    
-		      <input type="Checkbox" onchange="" id="useCustom"/>  Use Custom Input Block?
-		      <span id='customBlock'>
-			<input type="Text" size="35" id="customInputBlock" value="/global/scratch/sd/invalid/CustomBlock.in"/>
-		      </span><br>Note, values on this page will overwrite values in your custom input block.<br>
-		      <input id="lessAdvanced" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
-                      <br><br>
+		      <input id="Open Full API" type='button' value='Full API' onClick="window.open('./API.php')"/>
 		      <!-- End Advanced Options -->
 		      </div>
+		      <input id="lessAdvanced" style="display:none" data-inline='true' type='button' value='Hide Advanced Options' onClick="hideAdvancedOptions()"/>
 		      <input id="AdvancedButton" data-inline='true' type='button' value='Advanced Options' onClick="showAdvancedOptions()"/>
 
 		      <input id="Submit" data-inline='true' type='button' value='Submit' onClick="validateInputs(this.form)"/>
@@ -674,13 +689,13 @@ website to jrdeslippe@lbl.gov.
 			<input type='button' value='Stop Animation' onClick="drawMolInPreview();">
 		      </span>
 		      <span>&nbsp&nbsp<b> Supercell:</b> X
-		      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px"/>
-		         <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
-	              </select> Y
-		      <select id='SupercellY' onChange="supercellPreview()" style="width: 50px"/>
+		      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px">
+		        <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
+                      </select> Y
+		      <select id='SupercellY' onChange="supercellPreview()" style="width: 50px">
                          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
 	              </select> Z
-		      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px"/>
+		      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px">
                          <option value="1">1</option><option value="2">2</option><option value="3">3</option><option value="4">4</option>
 	              </select>
                       </span>
@@ -688,9 +703,11 @@ website to jrdeslippe@lbl.gov.
 			  <input type='button' value='Make Supercell the Unitcell' onClick="adjustToSupercell();">
 			  Note: Can get BIG.
                       </span>
-		      <span><input type='button' value='OpenWebDynamicsFile' onClick="openTransferFile();">
-		       <br>
-		       <input id="DisplaySearchQuery" type="button" value="Display from Search Query" onclick="displaySearchResult()"/>
+		      <span><input type='button' value='Center Atoms' onClick="centerCoords();"></span>
+		      <br>
+		      <span><input type='button' value='OpenWebDynamicsFile' onClick="openTransferFile();"></span>
+		      <br>
+		      <input id="DisplaySearchQuery" type="button" value="Display from Search Query" onclick="displaySearchResult()"/>
 		      
 		      </td></tr></table>
 	       </div>
