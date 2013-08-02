@@ -207,6 +207,8 @@ function previousJobs() {
 					 + "<button onClick=\"viewJobFiles(\'" 
 					 + jname + "\', \'" + "hopper"
 					 + "\')\" type=\"button\">View Files</button></td>";
+				     unfText += "<td><img onClick=archiveJobFiles('"+shortDir+"','"+jname+"')";
+				     unfText += " width='28px' src='images/archivesymbol.png'/></td>";
 				     unfText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
 				     unfText += " width='28px' src='images/trash.png'/></td>";
 				     unfText += "</tr>";
@@ -280,7 +282,8 @@ function previousJobs() {
 					myText += "<td><button onClick=\"viewJobFiles(\'"
 					    + jname + "\', \'" + res[i].hostname
 					    + "\')\" type=\"button\">View Files</button></td>";
-					
+					myText += "<td><img onClick=archiveJobFiles('"+shortDir+"','"+jname+"')";
+					myText += " width='28px' src='images/archivesymbol.png'/></td>";
 					myText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
 					myText += " width='28px' src='images/trash.png'/></td>";
 					myText += "</tr>";
@@ -537,7 +540,19 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     $("#model1").prop("checked", true);
     $(document).ready(makePlotWrapper(directory, jobName));
 }
-  
+
+//Send all files to a tar on HPSS
+function archiveJobFiles(dir, molName) {
+    if (!molName) molName = $('#jobName').text();
+    var dirToArchive = dir + "/" + molName;
+    if (!confirm('Are you sure?  This disables future state calculations.')) return;
+    command = SHELL_CMD_DIR+"htarAndClean.sh " + dirToArchive;
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": command},
+		success: function(res) {switchToPrevious();},});
+}
+//Delete all files from this job
 function deleteJobFiles(dir, molName) {
     if (!molName) molName = $('#jobName').text();
     if (!confirm('Are you sure?  All files will be permanently deleted.')) return;
