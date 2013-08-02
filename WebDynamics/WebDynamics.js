@@ -201,3 +201,19 @@ function writeFileToFilesystem(filename) {
 	},});    
 }
 
+function runCp2k() {
+    //grab all inputs
+
+    //put xyz file.
+
+    //(pass unitcell)
+    //runcp2k script for n snapshots
+
+    //Track
+
+    //load in at bottom (from gscratch location)
+
+    //pull into jsmol
+
+
+}

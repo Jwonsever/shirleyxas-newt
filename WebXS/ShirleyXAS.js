@@ -15,7 +15,9 @@ These scripts generally are used to send and retrieve data from NERSC computers.
 function checkAuthCallback() {
     //where to output files to for run jobs
     $('#outputDir').val(GLOBAL_SCRATCH_DIR + myUsername);
-    $('#customInputBlock').val(GLOBAL_SCRATCH_DIR + myUsername + "/CustomBlock.in");
+    
+    //If using a custom block was default
+    //$('#customInputBlock').val(GLOBAL_SCRATCH_DIR + myUsername + "/CustomBlock.in");
 	
     //See if there is a transfer file
     openTransferFile();
@@ -152,6 +154,8 @@ function properName(name) {
 
 //This command loads the "Finished Calculations" screen.
 function previousJobs() {
+    var shortDir = GLOBAL_SCRATCH_DIR + myUsername;
+
     $('#previousjobslist').html("<div id='previousUnfinishedJobs'>"
 				+ "<h3>Unfinished Calcualtions Available for Resubmission</h3><center>"
 				+ "<img src=\"ajax-loader-2.gif\" width=40></center></div>"
@@ -159,12 +163,12 @@ function previousJobs() {
 				+ "<center><img src=\"ajax-loader-2.gif\" width=40></center></div>");
 
     $.newt_ajax({type: "GET",
-		url: "/file/hopper"+GLOBAL_SCRATCH_DIR+myUsername,
+		url: "/file/hopper"+shortDir,
 		success: function(res){
 		if (res != null && res.length > 0) {
 		    var myText = "<h3>Finished Calculations</h3>";
 		    myText += "<button onclick='previousJobs()'>Update</button><br>"
-		    myText += "<table width=100\%><tr><th width=62\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
+		    myText += "<table width=100\%><tr><th width=50\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
 		    myText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
 		    var files = res;
 
@@ -172,7 +176,6 @@ function previousJobs() {
 		    //Would allow for directory searching of all jobs
 		    //Would also be a strange result list OR many ajax calls, neither is kosher
 
-		    var shortDir = GLOBAL_SCRATCH_DIR + myUsername;
 		    var command = SHELL_CMD_DIR+"/exceededWalltimeWrapper.sh " + shortDir;
 		    $.newt_ajax({type: "POST",
 				url: "/command/hopper",
@@ -180,7 +183,7 @@ function previousJobs() {
 				success: function(res){
 			 	 unfText = "<h3>Unfinished Calcualtions Available for Resubmission</h3>"; 
 				 unfText += "<button onclick='previousJobs()'>Update</button><br>"
-				 unfText += "<table width=100\%><tr><th width=62\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
+				 unfText += "<table width=100\%><tr><th width=50\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
 				 unfText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
 				 unfcount = 0;
 				 var text = res.output.split("\n");
@@ -189,21 +192,24 @@ function previousJobs() {
 
 				     //Was it run using this tool?
 				     if (!properName(jname)) continue;
-
+				     
 				     unfcount = unfcount + 1;
 				     if (unfcount%2 == 0) {	
 					 unfText += "<tr class='warningodd'>";
 				     } else {
 					 unfText += "<tr class='warning'>";
 				     }
-				     unfText += "<td width=62\%>" + jname
+				     unfText += "<td width=50\%>" + jname
 					 + "</td><td class=\"statusnone\" width=15\% align=center>"
 					 + "Unfinished</td><td><button onClick=\""
 					 + "resubmit(\'" + jname + "\', \'hopper\');"
 					 + "$(this).attr('disabled','disabled');\" type=\"button\">Resubmit</button></td><td>"
 					 + "<button onClick=\"viewJobFiles(\'" 
 					 + jname + "\', \'" + "hopper"
-					 + "\')\" type=\"button\">View Files</button></td><tr>";
+					 + "\')\" type=\"button\">View Files</button></td>";
+				     unfText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
+				     unfText += " width='28px' src='images/trash.png'/></td>";
+				     unfText += "</tr>";
 				 }
 				 unfText += "</table><br>";
 				 $('#previousUnfinishedJobs').html(unfText);
@@ -263,15 +269,20 @@ function previousJobs() {
  					  myText += "<tr class='warning'>";
                                         }
 					
-					myText += "<td width=62\%>" + jname
+					myText += "<td width=50\%>" + jname
 					    + "</td><td class=\"statusnone\" width=15\% align=center>"
-					    + (occurs[jname][1]+'').substr(0, 6)
-					    + "</td><td><button onClick=\"viewJob(\'" 
+					    + (occurs[jname][1]+'').substr(0, 6) + "</td>";
+
+					myText += "<td><button onClick=\"viewJob(\'" 
 					    + jname + "\', \'" + res[i].hostname
-					    + "\')\" type=\"button\">View Results</button></td>"
-					    + "<td><button onClick=\"viewJobFiles(\'" 
+					    + "\')\" type=\"button\">View Results</button></td>";
+					 
+					myText += "<td><button onClick=\"viewJobFiles(\'"
 					    + jname + "\', \'" + res[i].hostname
 					    + "\')\" type=\"button\">View Files</button></td>";
+					
+					myText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
+					myText += " width='28px' src='images/trash.png'/></td>";
 					myText += "</tr>";
 				    }
 				    myText += "</table><br>";
@@ -326,8 +337,8 @@ function individualJobOutput(jobName, machine) {
 
      activeElement = undefined;//reset activeElement
      machine = machine.toLowerCase();
-     var shortDir = "/global/scratch/sd/" + myUsername;
-     var directory = "/file/" + machine + "/global/scratch/sd/" + myUsername + "/"+jobName;
+     var shortDir = GLOBAL_SCRATCH_DIR + myUsername;
+     var directory = "/file/" + machine + shortDir + "/"+jobName;
      var webdata = directory + "/webdata.in";
      var myHtml = ""
 
@@ -344,7 +355,7 @@ function individualJobOutput(jobName, machine) {
 		 myHtml += "<table><tr><td align=left>Run "+myTime.toLocaleString()+"</td>";
 		 myHtml += "<td width=5></td><td align=right><button onClick=switchToPrevious()>Other Calculations</button>&nbsp;&nbsp;";
 		 myHtml += "<button onClick=individualJobWrapper('"+jobName+"','"+machine+"')>View Files</button>&nbsp;&nbsp;	";
-		 myHtml += "<button onClick=deleteJobFiles('"+shortDir+"','"+machine+"')>Delete Job</button></td></tr>";
+		 myHtml += "<button onClick=deleteJobFiles('"+shortDir+"')>Delete Job</button></td></tr>";
 		 myHtml += "</table>";
 
 		 $('#jobHeader').html(myHtml);
@@ -527,12 +538,12 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     $(document).ready(makePlotWrapper(directory, jobName));
 }
   
-function deleteJobFiles(dir, machine) {
-    var molName = $('#jobName').text();
+function deleteJobFiles(dir, molName) {
+    if (!molName) molName = $('#jobName').text();
     if (!confirm('Are you sure?  All files will be permanently deleted.')) return;
     command = SHELL_CMD_DIR+"rmFileDir.sh " + dir + " " + molName;
     $.newt_ajax({type: "POST",
-		url: "/command/" + machine,
+		url: "/command/hopper",
 		data: {"executable": command},
 		success: function(res) {switchToPrevious();},});
 }
@@ -1114,10 +1125,13 @@ function updateStatus(machine) {
 function hideAdvancedOptions() {
     $('#advancedOptions').hide();
     $('#AdvancedButton').show();
+    $('#lessAdvanced').hide();
+
 }
 function showAdvancedOptions() {
     $('#advancedOptions').show();
     $('#AdvancedButton').hide();
+    $('#lessAdvanced').show();
     updateStatus($('#machine').val());
 }
 //Ensures that coordinates are properly written.
@@ -1333,7 +1347,7 @@ function executeJob(form, materialName) {
     var machine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
-    var useCustomBlock = $('#useCustom').prop('checked');
+    var useCustomBlock = ( $('#customInputBlock').val() == "DEFAULT" );
 
     //TODO Make this custom block absolute or something.  too many different things merging together here.
 
@@ -1505,10 +1519,10 @@ function addNewModel() {
 }
 
 //Searching the database for a saved job
-function searchDB() {
+function searchSpectrumDB() {
     
-    var term = $('#searchTerms').val();
-    var command = "/usr/bin/python " + DATABASE_DIR + "spectraDB/search.py " + term;
+    var term = $('#spectraSearchTerms').val();
+    var command = "/usr/bin/python " + DATABASE_DIR + "/spectraDB/search.py " + term;
 
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
@@ -1527,21 +1541,22 @@ function searchDB() {
 		    myText += "<td width=22\%>" + res[2] + "</td>";
 		    myText += "<td width=12\%>" + res[3] + "</td>";
 		    myText += "<td width=12\%>" + res[4] + "</td>";
-		    myText += "<td><button onclick='dbJob(\""+res[3]+"\",\""+res[4]+"\",\""+res[5]+"\")'>Go!</button></td>";
+		    myText += "<td><button onclick='dbSpectrumJob(\""+res[3]+"\",\""+res[4]+"\",\""+res[5]+"\")'>Go!</button></td>";
 		    myText += "</tr>";
 		}
-		myText += "</table><br><center><div id='flotHolder' style='display:none;width:400px;height:300px;'></div></center>";
-		$('#searchResults').html(myText);
+		myText += "</table><br><center><div id='flotHolder' style='display:none;margin_bottom:20px;width:400px;height:300px;'></div></center>";
+		myText += "<br>"
+		$('#searchSpectrumResults').html(myText);
 	    },
 		error: function(request,testStatus,errorThrown) {
-		$('#searchResults').html("Search failed!  " + errorThrown);
+		$('#searchSpectrumResults').html("Search failed!  " + errorThrown);
 	    },
 		});
 }
 //Show a saved job.
 //needs filling out
-function dbJob(elem, XCHShift, path) {
-    var fullPath = DATABASE_DIR+"spectraDB/" + path;
+function dbSpectrumJob(elem, XCHShift, path) {
+    var fullPath = DATABASE_DIR+"/spectraDB/" + path;
     $('#flotHolder').html("<center><img src=\"ajax-loader-2.gif\" width=40></center>");
     $('#flotHolder').show();
     var options = {
@@ -1771,6 +1786,10 @@ function switchToInfo() {
     window.clearInterval(autoInterval);
 }
 function switchToSearchDB() {
+    window.clearInterval(autoInterval);
+    searchWrapper();
+}
+function switchToSpectrumDB() {
     window.clearInterval(autoInterval);
     searchWrapper();
 }
