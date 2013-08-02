@@ -3,6 +3,27 @@ from util import *
 
 from ghost import Ghost
 
+# this is defined outside the class so that it can be referenced
+# while the class is being interpreted.
+def param_debug(param, self, value):
+    """
+    Override the default NonSearchParam on_eval callback for --debug,
+    so that is can change the Ghost configuration options.
+    Note the order of parameters, especially where 'self' is. This should be
+    attached as a method to the Param for --debug.
+
+    param: the NonSearchParam this will be attached to. See implementation
+    of util.Param for details of how this all works.
+
+    self: this crawler
+
+    value: the parameter value passed by the user.
+    """
+    self.debug = value
+    self.ghost_params['display'] = value
+
+
+
 class BaseCrawler(object):
     """ Base class for scrapers. """
 
@@ -18,7 +39,7 @@ class BaseCrawler(object):
     # desired NonSearchParam objects.
     non_search_params = ParamList(
         NonSearchParam('--debug',
-                       param_debug,
+                       on_eval=param_debug, # INHERITORS: use 'baseCrawler.param_debug'
                        action='store_true',
                        help='enables debug mode')
     )
@@ -48,23 +69,6 @@ class BaseCrawler(object):
         'wait_timeout': 20,
         'download_images': False
     }
-
-    def param_debug(param, self, value):
-        """
-        Override the default NonSearchParam on_eval callback for --debug,
-        so that is can change the Ghost configuration options.
-        Note the order of parameters, especially where 'self' is. This should be
-        attached as a method to the Param for --debug.
-
-        param: the NonSearchParam this will be attached to. See implementation
-        of util.Param for details of how this all works.
-
-        self: this crawler
-
-        value: the parameter value passed by the user.
-        """
-        self.debug = value
-        self.ghost_params['display'] = value
 
     # Runtime resources
     
@@ -136,16 +140,21 @@ class BaseCrawler(object):
         # maps webpage form <input> names to user-supplied search terms
         self.search_terms = {}
         
+        param = None
         for param_name, arg_value in terms.iteritems():
             #print 'looking for', param_name
             if self.non_search_params.hasParam(param_name):
+                param = self.non_search_params.getParam(param_name)
                 #print 'found non_search_param'
                 setattr(self, param_name, arg_value)
             else:
                 # must be a search param
                 #print 'must be a search_param'
+                param = self.search_params.getParam(param_name)
                 input_name = self.search_params.getParam(param_name).input_name
                 self.search_terms[input_name] = arg_value
+
+            self.visit_param(param, arg_value)
 
         self.config_ghost()
 
@@ -166,6 +175,16 @@ class BaseCrawler(object):
         for var, val in self.non_search_params.iteritems():
             setattr(self, var, val)
     '''
+
+    def visit_param(self, param, value):
+        """
+        Visit a param during evaluation.
+        This fires its on_eval callback.
+        """
+        print param.name
+        print type(param.on_eval)
+        print type(self.config_ghost)
+        param.on_eval(self, value)
 
     def config_ghost(self):
         """

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 import json
+import types
 
 class JsonList(list):
     """ A list that can easily convert itself to JSON. """
@@ -25,7 +26,7 @@ class Param(object):
     # these should not be given to add_argument().
     # instead, they will be setattr()'d.
     non_configs = (
-        'on_eval'
+        'on_eval',
     )
 
     def __init__(self, name, **config_pack):
@@ -63,9 +64,15 @@ class Param(object):
         Remove non-configuration-related entries from a config_pack.
         For such values, assign them as attributes instead.
         """
-        for entry in non_configs:
+        value = None
+        for entry in self.non_configs:
             if entry in pack:
-                setattr(self, entry, pack[entry])
+                value = pack[entry]
+                # if it's a function, should end up a bound method
+                if isinstance(value, types.FunctionType):
+                    value = types.MethodType(value, self)
+
+                setattr(self, entry, value)
                 del pack[entry]
 
         return pack

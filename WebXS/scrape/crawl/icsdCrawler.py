@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from baseCrawler import BaseCrawler
+from baseCrawler import BaseCrawler, param_debug
 from util import *
 
 import argparse
@@ -45,7 +45,7 @@ class IcsdCrawler(BaseCrawler):
     # possible parameters that are not search terms.
     non_search_params = ParamList(
         NonSearchParam('--debug',
-                       param_debug,
+                       on_eval=param_debug,
                        action='store_true',
                        help='enables debug mode'),
         NonSearchParam('--num_results',
