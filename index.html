@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ALS Data and Simulation Portal</title>
+    <title>MFTheory Webtools</title>
     <!-- Bootstrap -->
     <link href="bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -24,7 +24,7 @@
           </a>
           <div class="nav-collapse collapse">
             <ul class="nav">
-              <li><img src="mfnewlogo.png" width=105 padding=0 border=0></li>
+              <li><img src="images/mfnewlogo.png" width=105 padding=0 border=0></li>
               <li class="active"><a href="#">Home</a></li>
               <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
               <li class="dropdown">
@@ -39,7 +39,7 @@
                 </ul>
               </li>
             </ul>
-            <div class="pull-right" id="auth-spinner"> <img src="white-ajax-loader.gif"></div>
+            <div class="pull-right" id="auth-spinner"> <img src="images/white-ajax-loader.gif"></div>
             <div id=login-area style='display:none;' class="pull-right">
               <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
                 <input class="span2" type="text" placeholder="Username" id="id_username">
@@ -68,16 +68,16 @@
 
       <div class="row">
         <div class="span4">
-        <center><img src='lbl1.png' width=250></center>
+        <center><img src='images/lbl1.png' width=250></center>
         </div>
         <div class="span4">
         <center>
-        <img src='als1.jpg' width=250>
+        <img src='images/mfbuilding.jpg' width=350>
         </center>
         </div>
         <div class="span4">
         <center>
-        <img src='nersc1.jpg' width=250>
+        <img src='images/nersc1.jpg' width=250>
         </center>
         </div>
       </div>
@@ -91,11 +91,11 @@
     </div> <!-- /container -->
 
     <!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
-    <script src="jquery-latest.js"></script>
+    <script src="js/jquery-latest.js"></script>
     <script src="bootstrap/js/bootstrap.min.js"></script>
-    <script src="mynewt.js"></script>
-    <script src="alsapi.js"></script>
-    <script src="als_portal.js"></script>
+    <script src="js/mynewt.js"></script>
+    <script src="js/alsapi.js"></script>
+    <script src="js/als_portal.js"></script>
 
     <script>
       myCheckAuth();

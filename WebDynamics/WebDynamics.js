@@ -205,15 +205,30 @@ function runCp2k() {
     //grab all inputs
 
     //put xyz file.
+    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/cp2k";
 
+    writeFileToFilesystem(filePath);
+
+    var command = "cp2k/runCp2k.sh " ;
+    var args = "";
     //(pass unitcell)
-    //runcp2k script for n snapshots
+
+    //runcp2k script for n snapshots    
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": command + args},
+	});
 
     //Track
+    //draw progressbar based on walltime req
 
     //load in at bottom (from gscratch location)
+    //Same interface as ABOVE
 
     //pull into jsmol
+    var scr = "try {"
 
+    scr += "}catch(e){}"
+    Jmol.script("mainApplet", scr/*Do This*/)
 
 }
