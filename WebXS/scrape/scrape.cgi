@@ -4,40 +4,55 @@
 
 use strict;
 use warnings;
+#use diagnostics;
 
 # include our own modules
 use lib './lib';
 
-use Local::Scrapers;
+use Local::Scrapers qw(scrapers get_scraper_params);
 use CGI;
 
 my $query = new CGI;
 
+my $executable_path = './scrape.sh';
+
+# construct a regex with alternatives for each element in an array
+sub alternate_elems {
+  my @array = @_;
+  my $builder = "(";
+  foreach (@array) {
+    $builder .= $_ . "|";
+  }
+  # remove trailing extra |
+  $builder = substr($builder, 0, length($builder) - 1);
+  $builder .= ")";
+  return qr/$builder/;
+}
+
 # extract database name from request
 my $target_db = '';
 my @matches = grep(/^db$/, $query->param);
-my $num_matches = length(@matches);
+my $num_matches = @matches;
 if ($num_matches != 1) {
   die "Must specify database to scrape exactly once.";
 } else {
   $target_db = $query->param('db');
 }
 
-# get path to scraper executable for target database
-my $scraper = &get_scraper_path($target_db);
+# untiant database name
+my @scrapers = &Local::Scrapers::scrapers();
+my $expected_databases = &alternate_elems(@scrapers);
+if ($target_db =~ $expected_databases) {
+  $target_db = $1
+} else {
+  die "Scraper received unmatched data. Possible breakin attempt:$!";
+}
 
 # get parameter hash corresponding to target database
-my %param_types = %{&get_scraper_params($target_db)};
+my %param_types = %{&Local::Scrapers::get_scraper_params($target_db)};
 
 # construct parameter scrubber from expected parameter hash
-my $builder = "(";
-foreach my $expected_param (keys %param_types) {
-  $builder .= $expected_param . "|";
-}
-# remove trailing extra |
-$builder = substr($builder, 0, length($builder) - 1);
-$builder .= ")";
-my $expected_params = qr/$builder/;
+my $expected_params = &alternate_elems(keys %param_types);
 
 # untaint a field by testing if it was an expected scraper parameter.
 sub untaint_field
@@ -64,7 +79,7 @@ sub untaint
   return $input;
 }
 
-my @cmd = ($scraper);
+my @cmd = ($executable_path, $target_db);
 my $scrubbed = "";
 my $scrubbed_field = "";
 my $input = "";
