@@ -1648,7 +1648,7 @@ function displaySearchResult() {
   Jmol.script(previewApplet, script);
 }
 
-// organizes scrapeing operations
+// organizes scraping operations
 Scrape = {}
 //Scrape.scraperPath = 'scrape/scrape.cgi';
 Scrape.scraperPath = 'scrape/test.cgi';
