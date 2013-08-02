@@ -1,34 +1,69 @@
 #!/usr/bin/env python
-from crawl import BaseCrawler
-from jsonList import JsonList
+from baseCrawler import BaseCrawler
+from util import *
 
 import argparse
 import HTMLParser
 
 class IcsdCrawler(BaseCrawler):
-    start_url = 'http://icsd.fiz-karlsruhe.de/'
+    """ Scraper for the ICSD. """
 
-    # possible search-related arguments mapped to their names in the form.
+    # Startup resources
+
+    # possible search-related parameters.
     # apparently CSS3 selectors need quotes for these.
-    search_params = {
-        'composition': '"chemistrySearch.sumForm"',
-        'num_elements': '"chemistrySearch.elCount"',
-        'struct_fmla': '"chemistrySearch.structForm"',
-        'chem_name': '"chemistrySearch.chemName"',
-        'mineral_name': '"chemistrySearch.mineralName"',
-        'mineral_grp': '"chemistrySearch.mineralGroup"',
-        'anx_fmla': '"chemistrySearch.anxFormula"',
-        'ab_fmla': '"chemistrySearch.abFormula"',
-        'num_fmla_units': '"chemistrySearch.z"'
+    search_params = ParamList(
+        SearchParam('--composition',
+                    '"chemistrySearch.sumForm"',
+                    help='space-separated chemical composition e.g. "Na Cl"'),
+        SearchParam('--num_elements',
+                    '"chemistrySearch.elCount"',
+                    help='number of elements'),
+        SearchParam('--struct_fmla',
+                    '"chemistrySearch.structForm"',
+                    help='space-separated structural formula e.g. "Pb (W 04)"'),
+        SearchParam('--chem_name',
+                    '"chemistrySearch.chemName"',
+                    help='chemical name'),
+        SearchParam('--mineral_name',
+                    '"chemistrySearch.mineralName"',
+                    help='mineral name'),
+        SearchParam('--mineral_grp',
+                    '"chemistrySearch.mineralGroup"',
+                    help='mineral group'),
+        SearchParam('--anx_fmla',
+                    '"chemistrySearch.anxFormula"',
+                    help='ANX formula crystal composition'),
+        SearchParam('--ab_fmla',
+                    '"chemistrySearch.abFormula"',
+                    help='AB formula crystal composition'),
+        SearchParam('--num_fmla_units',
+                    '"chemistrySearch.z"',
+                    help='number of formula units')
+    )
+
+    # possible parameters that are not search terms.
+    non_search_params = ParamList(
+        Param('--debug',
+              action='store_true',
+              help='enables debug mode'),
+        Param('--num_results',
+              default=10,
+              type=int,
+              help='desired number of results to fetch')
+    )
+    
+    # arguments to this scraper's parser.
+    parser_params = {
+        'description': 'A scraper for the ICSD at http://icsd.fiz-karlsruhe.de/'    
     }
 
-    # possible arguments that are not search terms, and their default values.
-    non_search_params = {
-        'num_results': 10,
-        'debug': False,
-        'timeout': 20,
-        'dl_images': False
-    }
+    # Configuration Resources
+    # (default)
+
+    # Runtime Resources
+
+    start_url = 'http://icsd.fiz-karlsruhe.de/'
     
     # CSS3 selectors
     selectors = {
@@ -61,6 +96,8 @@ class IcsdCrawler(BaseCrawler):
     messages = {
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
+
+    # Runtime methods
 
     def crawl(self):
         """
@@ -151,9 +188,6 @@ class IcsdCrawler(BaseCrawler):
 
     def download_selected(self):
         """ Stage 3.4: download the selected results. """
-        # TODO: find out why dom_prop why sometimes doesn't
-        # work when extract_tag_attr does.
-
         # navigate to area where we can download concatenated .cif files.
         submitter = self.dom_prop(self.selectors['export_data'], 'href')
         colon_index = submitter.find(':')
@@ -180,6 +214,8 @@ class IcsdCrawler(BaseCrawler):
         print error_msg.strip()
         # empty JsonList
         return JsonList()
+
+    # Utility methods
 
     def separate(self, cif):
         """
