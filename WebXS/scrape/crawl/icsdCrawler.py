@@ -44,13 +44,14 @@ class IcsdCrawler(BaseCrawler):
 
     # possible parameters that are not search terms.
     non_search_params = ParamList(
-        Param('--debug',
-              action='store_true',
-              help='enables debug mode'),
-        Param('--num_results',
-              default=10,
-              type=int,
-              help='desired number of results to fetch')
+        NonSearchParam('--debug',
+                       param_debug,
+                       action='store_true',
+                       help='enables debug mode'),
+        NonSearchParam('--num_results',
+                       default=10,
+                       type=int,
+                       help='desired number of results to fetch')
     )
     
     # arguments to this scraper's parser.

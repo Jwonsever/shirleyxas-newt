@@ -21,6 +21,13 @@ class Param(object):
         'default': ''
     }
 
+    # non-configuration-related kwargs.
+    # these should not be given to add_argument().
+    # instead, they will be setattr()'d.
+    non_configs = (
+        'on_eval'
+    )
+
     def __init__(self, name, **config_pack):
         """
         name: name of parameter, with any dashes (e.g. --debug).
@@ -30,11 +37,17 @@ class Param(object):
         If you want to put additional parameters when add_argument() is called,
         name them directly in this constructor and they will be handled
         properly.
+            - some other attributes, not to be used in add_argument() may
+              also be specified. If expected, these will be assigned as
+              instance attributes.
         """
         self.name = name
-        self.config_pack = self.fill_from_proto(config_pack)
 
-    def fill_from_proto(self, pack):
+        self._fill_from_proto(config_pack)
+        self._remove_non_configs(config_pack)
+        self.config_pack = config_pack
+
+    def _fill_from_proto(self, pack):
         """
         Fill a config_pack's unspecified values with any defaults
         specified by proto_config.
@@ -44,6 +57,41 @@ class Param(object):
                 pack[key] = value
 
         return pack
+
+    def _remove_non_configs(self, pack):
+        """
+        Remove non-configuration-related entries from a config_pack.
+        For such values, assign them as attributes instead.
+        """
+        for entry in non_configs:
+            if entry in pack:
+                setattr(self, entry, pack[entry])
+                del pack[entry]
+
+        return pack
+
+    def on_eval(self, crawler, value):
+        """
+        Callback for when a crawler evaluates this parameter.
+        This should modify the crawler.
+
+        crawler: crawler being initialized.
+
+        value: value passed by user for this parameter.
+        """
+        pass
+
+
+class NonSearchParam(Param):
+    """ A non-search-related command-line parameter. """
+
+    def on_eval(self, crawler, value):
+        """
+        Unless overridden, assign the name of the parameter as an instance
+        attribute of the corresponding crawler, with the value given by
+        the user.
+        """
+        setattr(crawler, self.name, value)
 
 
 class SearchParam(Param):

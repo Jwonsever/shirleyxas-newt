@@ -14,11 +14,13 @@ class BaseCrawler(object):
     search_params = ParamList()
 
     # possible parameters that are not search terms.
-    # INHERITORS: recommend override this with ParamList of desired Param objects.
+    # INHERITORS: recommend override this with ParamList of
+    # desired NonSearchParam objects.
     non_search_params = ParamList(
-        Param('--debug',
-              action='store_true',
-              help='enables debug mode')
+        NonSearchParam('--debug',
+                       param_debug,
+                       action='store_true',
+                       help='enables debug mode')
     )
 
     # arguments to this scraper's parser.
@@ -46,6 +48,23 @@ class BaseCrawler(object):
         'wait_timeout': 20,
         'download_images': False
     }
+
+    def param_debug(param, self, value):
+        """
+        Override the default NonSearchParam on_eval callback for --debug,
+        so that is can change the Ghost configuration options.
+        Note the order of parameters, especially where 'self' is. This should be
+        attached as a method to the Param for --debug.
+
+        param: the NonSearchParam this will be attached to. See implementation
+        of util.Param for details of how this all works.
+
+        self: this crawler
+
+        value: the parameter value passed by the user.
+        """
+        self.debug = value
+        self.ghost_params['display'] = value
 
     # Runtime resources
     
