@@ -12,8 +12,6 @@ logging.basicConfig()
 # known crawler names, mapped to their corresponding class.
 # if you make a new crawler, add it here.
 crawlers = {
-        # TODO:
-        # change js to use caps
     'ICSD': IcsdCrawler,
     'AMCSD': AmcsdCrawler
 }
@@ -23,14 +21,6 @@ def get_crawler():
     Parse command-line arguments and return a crawler for the desired
     database, with the specified crawler arguments.
     """
-    '''
-    parser = Crawler.get_parser()
-
-    # add required crawler parameter
-    parser.add_argument('crawler',
-                        choices=crawlers.iterkeys(),
-                        help='which crawler to use')
-    '''
     parser = argparse.ArgumentParser(description='Scrape an online database.')
     subparsers = parser.add_subparsers(help='database to scrape')
 
@@ -51,16 +41,6 @@ def get_crawler():
     # remove Crawler from args so constructor doesn't get confused.
     # it was only used for our convenience.
     del args['Crawler']
-
-    '''
-    # verify crawler argument validity
-    if args.crawler not in crawlers:
-        message = 'Not a valid crawler. Valid crawler arguments are: \n\n'
-        for crawler in crawlers:
-            message += crawler + ',\n'
-
-        parser.error(message)
-    '''
 
     # verify crawler-specific argument validity.
     status = Crawler.verify_args(args)

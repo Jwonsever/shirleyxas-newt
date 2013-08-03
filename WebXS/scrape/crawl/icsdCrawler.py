@@ -1,5 +1,5 @@
 #!/usr/bin/env python
-from baseCrawler import BaseCrawler
+from baseCrawler import BaseCrawler, param_debug
 from util import *
 
 import argparse
@@ -44,13 +44,14 @@ class IcsdCrawler(BaseCrawler):
 
     # possible parameters that are not search terms.
     non_search_params = ParamList(
-        Param('--debug',
-              action='store_true',
-              help='enables debug mode'),
-        Param('--num_results',
-              default=10,
-              type=int,
-              help='desired number of results to fetch')
+        NonSearchParam('--debug',
+                       on_eval=param_debug,
+                       action='store_true',
+                       help='enables debug mode'),
+        NonSearchParam('--num_results',
+                       default=10,
+                       type=int,
+                       help='desired number of results to fetch')
     )
     
     # arguments to this scraper's parser.
@@ -243,83 +244,3 @@ class IcsdCrawler(BaseCrawler):
             return url
         else:
             return url[:index]
-        
-
-
-def parse_crawler_args():
-    """ parse command-line arguments into a dictionary of web crawler arguments. """
-    parser = argparse.ArgumentParser(description='A scraper for the ICSD at http://icsd.fiz-karlsruhe.de/')
-    parser.add_argument('--num_results',
-                        default=10,
-                        type=int,
-                        help='desired number of results to fetch')
-    parser.add_argument('--debug',
-                        action='store_true',
-                        help='enables debug mode')
-    parser.add_argument('--composition',
-                        default='',
-                        help='space-separated chemical composition e.g. "Na Cl"')
-    parser.add_argument('--num_elements',
-                        default='',
-                        help='number of elements')
-    parser.add_argument('--struct_fmla',
-                        default='',
-                        help='space-separated structural formula e.g. "Pb (W 04)"')
-    parser.add_argument('--chem_name',
-                        default='',
-                        help='chemical name')
-    parser.add_argument('--mineral_name',
-                        default='',
-                        help='mineral name')
-    parser.add_argument('--mineral_grp',
-                        default='',
-                        help='mineral group')
-    parser.add_argument('--anx_fmla',
-                        default='',
-                        help='ANX formula crystal composition')
-    parser.add_argument('--ab_fmla',
-                        default='',
-                        help='AB formula crystal composition')
-    parser.add_argument('--num_fmla_units',
-                        default='',
-                        help='number of formula units')
-
-    args = vars(parser.parse_args())
-    
-    # at least one search term must be given.
-    if not verify_search_made(args):
-        parser.error('No search made. Must provide at least one search argument.')
-
-    return args
-
-def verify_search_made(args):
-    """
-    Verify that a dict of argments constitutes a valid search.
-    """
-    search_args = [
-        args['composition'],
-        args['num_elements'],
-        args['struct_fmla'],
-        args['chem_name'],
-        args['mineral_name'],
-        args['mineral_grp'],
-        args['anx_fmla'],
-        args['ab_fmla'],
-        args['num_fmla_units']
-    ]
-
-    search_given = False
-    for arg in search_args:
-        if arg != '':
-            search_given = True
-    
-    return search_given
-
-def main():
-    spider = IcsdCrawler(**parse_crawler_args())
-    cl = spider.crawl()
-    print cl.json
-    print 'fetched {0} results.'.format(len(cl))
-
-if __name__ == "__main__":
-    main()
