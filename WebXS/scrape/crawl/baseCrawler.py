@@ -106,17 +106,12 @@ class BaseCrawler(object):
             - Failure: message required
         """
         # verify at least one search arg was given
-        #print args
         for param_name, arg_value in args.iteritems():
-            #print param_name, arg_value
-            #print cls.search_params.hasParam(param_name)
             if (arg_value != '' and
                 cls.search_params.hasParam(param_name)):
-                    #print 'SUCCESS'
                     return Status(True)
 
         m = 'No search made. Must provide at least one search argument.'
-        #print 'FAILURE'
         return Status(False, m)
 
     # Initialization methods
@@ -133,23 +128,17 @@ class BaseCrawler(object):
 
         Also configure Ghost.
         """
-        '''
-        # specified arguments will overwrite defaults
-        self.write_defaults()
-        '''
         # maps webpage form <input> names to user-supplied search terms
         self.search_terms = {}
         
         param = None
         for param_name, arg_value in terms.iteritems():
-            #print 'looking for', param_name
+            # test whether SearchParam or NonSearchParam
             if self.non_search_params.hasParam(param_name):
                 param = self.non_search_params.getParam(param_name)
-                #print 'found non_search_param'
                 setattr(self, param_name, arg_value)
             else:
                 # must be a search param
-                #print 'must be a search_param'
                 param = self.search_params.getParam(param_name)
                 input_name = self.search_params.getParam(param_name).input_name
                 self.search_terms[input_name] = arg_value
@@ -157,24 +146,6 @@ class BaseCrawler(object):
             self.visit_param(param, arg_value)
 
         self.config_ghost()
-
-    '''
-    def write_defaults(self):
-        """
-        Write default values to all instance variables:
-            - search-related: defaults to blank.
-            - non-search-related: defaults specified by self.non_search_params
-        """
-        # maps webpage form <input> names to user-supplied search terms
-        self.search_terms = {}
-        
-        # if search term was not supplied, will be an empty string
-        for searchParam in self.search_params:
-            self.search_terms[searchParam.input_name] = ''
-
-        for var, val in self.non_search_params.iteritems():
-            setattr(self, var, val)
-    '''
 
     def visit_param(self, param, value):
         """
@@ -190,7 +161,6 @@ class BaseCrawler(object):
         """
         Configure Ghost using self.ghost_params.
         """
-        # TODO: make a more flexible way to specify these options.
         self.ghost = Ghost(**self.ghost_params)
 
     # Runtime methods
