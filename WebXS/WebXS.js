@@ -1660,8 +1660,13 @@ function restQuery() {
 
 // display the result of the last search result in JSmol.
 function displaySearchResult() {
-  var script = "try{Load INLINE '" + lastSearchResult + "'}catch(e){;}";
-  Jmol.script(previewApplet, script);
+    var script = "zap;set echo top left;font echo 16;echo \"Loading and Optimizing\";";
+    Jmol.script(previewApplet, script);
+    script = "try{set useMinimizationThread false;load INLINE '" + lastSearchResult + "';minimize STEPS 300 addHydrogens;javascript readCoordsFromJmol();}catch(e){;}";
+    Jmol.script(previewApplet, script);
+    
+    //activeModel = models.length-1;
+    //drawMolInPreview();
 }
 
 // organizes scraping operations

@@ -144,19 +144,9 @@
         <p>This page is meant for the searching of chemical structures, DFT relaxations,
  crystal structure interpretations, manipulation of chemical structures, and computation
 of molecular dynamics and trajectories.  These advanced, realistic structures can then be
-sent to and accessed by other tools located in the portal.  Work in progress. </p><hr>
+sent to and accessed by other tools located in the portal.  Work in progress. </p>
 
-	<div id="jmolApp">
-	  <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
-	  <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
-	  <script>
-	    mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
-	    jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
-	  </script>
-	</div>
-
-	<div id="optionsWrapper">
-	  <ul class="optionsNavBar">
+	<ul class="optionsNavBar">
 	    <li class="optionsDivider"></li>
 	    <li><a href="#Search" onclick="CngClass($('#searchOptions'))">Search</a></li>
 	    <li class="optionsDivider"></li>
@@ -165,14 +155,28 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	    <li><a href="#Coordinates" onclick="CngClass($('#CoordinatesOptions'));readCoordsFromJmol();">Coordinates</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#Upload" onclick="CngClass($('#UploadOptions'))">Upload Files</a></li>
-	    <li class="optionsDivider"></li><br><li class="optionsDivider"></li>
+	    <li class="optionsDivider"></li>
 	    <li><a href="#Relaxations" onclick="CngClass($('#RelaxationOptions'))">Molecular Relaxations</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#MolecularDynamics" onclick="CngClass($('#DynamicsOptions'))">Molecular Dynamics</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#JmolConsole" onclick="CngClass($('#JmolConsole'))">Jmol Console</a></li>
 	    <li class="optionsDivider"></li>
-	  </ul>
+	</ul>
+
+	<hr>
+
+	<div id="jmolApp">
+	  
+	  <script>
+	    mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
+	    jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
+	  </script>
+	  <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
+	  <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
+	</div>
+
+	<div id="optionsWrapper">
 	  <div id="searchOptions" class="optionsDiv">
 	    <br>
 	    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
@@ -272,9 +276,9 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
       </div>
 
       <center>
-	  <img src="./MFLogo.png" width="300px" height="100px"/>
-	  <img src="./NERSCLogo.png" width="200px" height="100px"/>
-	  <img src="./JSmol_logo13.png" width="250px" height="100px"/><br>
+	  <img src="./images/MFLogo.png" width="300px" height="100px"/>
+	  <img src="./images/NERSCLogo.png" width="200px" height="100px"/>
+	  <img src="./images/JSmol_logo13.png" width="250px" height="100px"/><br>
       </center>
 
       <r>
