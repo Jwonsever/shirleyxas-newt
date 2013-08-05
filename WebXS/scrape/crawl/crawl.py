@@ -26,14 +26,22 @@ def get_crawler():
 
     # set up parsing for each crawler.
     for name, CrawlerClass in crawlers.iteritems():
-        # add subparser for each crawler
+        # add subparser for this crawler
         subparser = subparsers.add_parser(name, **CrawlerClass.parser_params)
+
+        # pre-argument-adding parser-configuration callback
+        CrawlerClass.parser_preconfig(subparser)
+
         # register this CrawlerClass with its subparser
         subparser.set_defaults(Crawler=CrawlerClass)
+
         # add crawler-specific search-related and non-search-related parameters
         for params in (CrawlerClass.search_params, CrawlerClass.non_search_params):
             for param in params:
                 subparser.add_argument(param.name, **param.config_pack)
+
+        # post-argument-adding parser-configuration callback
+        CrawlerClass.parser_postconfig(subparser)
 
     args = vars(parser.parse_args())
     Crawler = args['Crawler']
