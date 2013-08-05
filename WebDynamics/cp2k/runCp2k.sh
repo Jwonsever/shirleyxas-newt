@@ -2,47 +2,48 @@
 #!/bin/csh
 
 if ($#argv < 1) then
-  echo "usage: $0 cif_file|bgf_file [mol_prefix] [cell_replication=1x1x1] [MD_temp=298K] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
+  echo "usage: $0 cif_file|bgf_file [mol_prefix] [cell_size=10x10x10x90x90x90] [MD_temp=298K] [MD_press=1Bar] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
   exit(1)
 endif
 
 set cif_file = $1
 if !(-e $cif_file) then
-  echo "ERROR: Cannot locate CIF file $1"
+  echo "ERROR: Cannot locate file $1"
   exit(1)
 endif
 set prefix = `basename $cif_file`
 set prefix = $prefix:r
 if ($#argv > 1) set prefix = $2
 
-set replication = "1 1 1"
-if ($#argv > 2) set replication = `echo $3 | sed 's/[a-z]*/ /gi'`
-set rarray = ($replication)
-if ($#rarray != 3) then
-  echo $#rarray
-  echo "ERROR: Expected 'i j k' for replication. Got $replication"
+set cellsize = (10 10 10 90 90 90)
+if ($#argv > 2) set cellsize = `echo $3 | sed 's/[a-z]*/ /gi'`
+set cell = ($cellsize)
+
+if ($#cell != 6) then
+  echo $#cell
+  echo "ERROR: Expected 'a b c alpha beta gamma' for cell. Got $cellsize"
   exit(1)
 endif
-set repstr = `echo $replication | sed 's/ /x/g'`
 
 set temp = 298
-if ($#argv > 3) set temp  = `echo $4 | sed 's/[a-z]*//gi'`
+if ($#argv > 3) set temp  = `echo $4 | sed 's/[a-zA-Z]*//gi'`
+
+set pressure = 1.0
+if ($#argv > 4) set temp  = `echo $5 | sed 's/[a-zA-Z]*//gi'`
 
 set nodes = 6
-if ($#argv > 4) set nodes = $5
+if ($#argv > 5) set nodes = $5
 
 set ppn = 24
-if ($#argv > 5) set ppn = $6
+if ($#argv > 6) set ppn = $6
 
 set cp2k_template_file = ~/cp2k/webcp2k/cp2k.template.in
-if ($#argv > 6) set cp2k_template_file = $7
+if ($#argv > 7) set cp2k_template_file = $7
 
 set pbs_template_file = ~/cp2k/webcp2k/template.cp2k.pbs
-if ($#argv > 7) set pbs_template_file = $8
+if ($#argv > 8) set pbs_template_file = $8
 
-
-#make this an input
-set cell = (10 10 10 90 90 90)
+set repstr = "1x1x1"
 set tprocs=`echo "$nodes * $ppn" | bc -l`
 
 set ext = $cif_file:e
@@ -56,7 +57,6 @@ mv $cif_file.xyz $prefix.$repstr.xyz
 
 cat ${prefix}.${repstr}.xyz | awk '{if(NR>2) { printf "%-4s %6.5f %6.5f %6.5f\n",$1,$2,$3,$4} }' > ${prefix}.${repstr}.cp2k.xyz
 
-
 cp $cp2k_template_file ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/LA_HERE/$cell[1]/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/LB_HERE/$cell[2]/" ${prefix}.${repstr}.${temp}K.cp2k.in
@@ -65,6 +65,7 @@ sed -i "s/ALPHA_HERE/$cell[4]/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/BETA_HERE/$cell[5]/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/GAMMA_HERE/$cell[6]/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/TEMP_HERE/$temp/" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/PRESSURE_HERE/$pressure/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PREFIX_HERE/${prefix}.${repstr}/" ${prefix}.${repstr}.${temp}K.cp2k.in
 
 set basis_set_file = "~/cp2k/webcp2k/cp2k/tests/QS/GTH_BASIS_SETS ~/cp2k/webcp2k/cp2k/tests/QS/BASIS_MOLOPT"
