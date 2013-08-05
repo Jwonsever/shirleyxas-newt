@@ -1,6 +1,11 @@
 #!/bin/tcsh
 #!/bin/csh
 
+# Load Global Variables
+echo `pwd`
+set scriptDir = `pwd`
+/bin/bash $scriptDir/../../GlobalValues.in
+
 if ($#argv < 1) then
   echo "usage: $0 cif_file|bgf_file [mol_prefix] [cell_size=10x10x10x90x90x90] [MD_temp=298K] [MD_press=1Bar] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
   exit(1)
@@ -29,7 +34,7 @@ set temp = 298
 if ($#argv > 3) set temp  = `echo $4 | sed 's/[a-zA-Z]*//gi'`
 
 set pressure = 1.0
-if ($#argv > 4) set temp  = `echo $5 | sed 's/[a-zA-Z]*//gi'`
+if ($#argv > 4) set pressure  = `echo $5 | sed 's/[a-zA-Z]*//gi'`
 
 set nodes = 6
 if ($#argv > 5) set nodes = $5
@@ -49,11 +54,13 @@ set tprocs=`echo "$nodes * $ppn" | bc -l`
 set ext = $cif_file:e
 if ($ext == "cif") then 
   set cell = `grep -e cell_ $cif_file | awk '{print $2}' | sed 's/([^)]*)//g'`
-endif
 
 #convert to xyz coords
-echo "copy ${cif_file} .xyz" | ~/gdis-0.90/gdis >& /dev/null
-mv $cif_file.xyz $prefix.$repstr.xyz
+  echo "copy ${cif_file} .xyz" | ~/gdis-0.90/gdis >& /dev/null
+  mv $cif_file.xyz $prefix.$repstr.xyz
+else
+  cp $cif_file $prefix.$repstr.xyz
+endif
 
 cat ${prefix}.${repstr}.xyz | awk '{if(NR>2) { printf "%-4s %6.5f %6.5f %6.5f\n",$1,$2,$3,$4} }' > ${prefix}.${repstr}.cp2k.xyz
 
@@ -67,6 +74,7 @@ sed -i "s/GAMMA_HERE/$cell[6]/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/TEMP_HERE/$temp/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PRESSURE_HERE/$pressure/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PREFIX_HERE/${prefix}.${repstr}/" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/CP2KHOME_HERE/${CODE_BASE_DIR}${CP2K_LOC}/" ${prefix}.${repstr}.${temp}K.cp2k.in
 
 set basis_set_file = "~/cp2k/webcp2k/cp2k/tests/QS/GTH_BASIS_SETS ~/cp2k/webcp2k/cp2k/tests/QS/BASIS_MOLOPT"
 set pseudo_file = "~/cp2k/webcp2k/cp2k/tests/QS/GTH_POTENTIALS ~/cp2k/webcp2k/cp2k/tests/QS/POTENTIAL"
