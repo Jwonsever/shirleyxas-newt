@@ -1476,8 +1476,15 @@ function openTransferFile() {
 		url: "/file/hopper"+DATABASE_DIR+"/tmp/"+myUsername+".xyz?view=read",
 		success: function (res) {
 
-		//TODO
-		//Open the submit form and read this file in, on page load.
+		//Note, this is VERY specific parsing, from what WebDynamics outputs...
+		var passedLine = res.split("\n")[1].split(" ");
+		var passedName = passedLine[0];
+		var passedCell = passedLine[passedLine.length-1].split("x");
+		writeCellFromArray(passedCell);
+
+		//TODO?
+		//Open the submit form and read this file in, on page load, if possible
+
 		console.log(res);
 		Jmol.script(previewApplet, "LOAD INLINE '"+res+"';javascript readInTransferedFile();");
 	    },  error: function(request,testStatus,errorThrown) { 
@@ -1491,7 +1498,14 @@ function readInTransferedFile() {
     drawMolInPreview();
     makeCoordsDiv();
 }
-
+function writeCellFromArray(cArray) {
+    $("#CellA").val(cArray[0]);
+    $("#CellB").val(cArray[1]);
+    $("#CellC").val(cArray[2]);
+    $("#CellAlpha").val(cArray[3]);
+    $("#CellBeta").val(cArray[4]);
+    $("#CellGamma").val(cArray[5]);
+}
 
 function makeCoordsDiv() {
     var myHtml = '';

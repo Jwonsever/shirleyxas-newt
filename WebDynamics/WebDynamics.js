@@ -150,7 +150,7 @@ function makeXYZfromCoords(i) {
     //i could be 0
     if (i === undefined) i = activeModel;
 
-    var materialName = ${"#structureName"}.val();
+    var materialName = $("#structureName").val();
     var cell = $("#structureCell").val();
 
     var coords = sterilize(models[i]);
