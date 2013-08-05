@@ -71,7 +71,7 @@
       //disableInitialConsole: true,
       allowJavaScript: true,
       console:"none",
-      script: "load :methane;"
+      script: ";"
       };
       
       var JMEInfo = {
@@ -148,11 +148,13 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 
 	<ul class="optionsNavBar">
 	    <li class="optionsDivider"></li>
+	    <li><a href="#Basic" onclick="CngClass($('#basicOptions'))">Basic</a></li>
+	    <li class="optionsDivider"></li>
 	    <li><a href="#Search" onclick="CngClass($('#searchOptions'))">Search</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#ModelKit" onclick="CngClass($('#ModelKitOptions'))">Model Kit</a></li>
 	    <li class="optionsDivider"></li>
-	    <li><a href="#Coordinates" onclick="CngClass($('#CoordinatesOptions'));readCoordsFromJmol();">Coordinates</a></li>
+	    <li><a href="#Coordinates" onclick="CngClass($('#CoordinatesOptions'));">Coordinates</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#Upload" onclick="CngClass($('#UploadOptions'))">Upload Files</a></li>
 	    <li class="optionsDivider"></li>
@@ -177,6 +179,12 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	</div>
 
 	<div id="optionsWrapper">
+	  <div id="basicOptions" class="optionsDiv">
+	    <br>
+	    System Name<input type="text" value="Web Dynamics"><br>
+
+	  </div>
+
 	  <div id="searchOptions" class="optionsDiv">
 	    <br>
 	    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
@@ -186,8 +194,8 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	      <option value="=">RCSB(macromolecules)</option></select>
 	    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
 	    <br>
-
 	  </div>
+
 	  <div id="ModelKitOptions" class="optionsDiv">
 	    Right click on the JSMol application in model-kit mode, and options for editing the molecule will appear.
 	    <br>

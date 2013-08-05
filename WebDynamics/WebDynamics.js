@@ -2,7 +2,7 @@
 Web Dynamics Javascript Functions
 James Wonsever
 Mftheory
-6/26/2013
+6/26/2013 -> present
 */
 
 //Changing active viewing page
@@ -205,19 +205,23 @@ function runCp2k() {
     //grab all inputs
 
     //put xyz file.
-    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/cp2k";
+    var now= new Date();
+    alert(now.toString());
+    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + now.toString();
 
     writeFileToFilesystem(filePath);
 
-    var command = "cp2k/runCp2k.sh " ;
-    var args = "";
+    var command = CODE_BASE_DIR + DYN_LOC + "/cp2k/runCp2k.sh " ;
+    var args = filePath + " " + now.toString();
     //(pass unitcell)
 
     //runcp2k script for n snapshots    
+    /*
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
 		data: {"executable": command + args},
 	});
+    */
 
     //Track
     //draw progressbar based on walltime req
@@ -228,7 +232,7 @@ function runCp2k() {
     //pull into jsmol
     var scr = "try {"
 
-    scr += "}catch(e){}"
+    scr += ";}catch(e){}"
     Jmol.script("mainApplet", scr/*Do This*/)
 
 }
