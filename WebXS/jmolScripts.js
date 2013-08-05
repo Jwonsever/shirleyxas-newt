@@ -248,6 +248,7 @@ function centerCoords() {
 	out += line[0] + " " + newx + " " + newy + " " + newz+ " \n";
     }
     models[activeModel] = out;
+    readCoordsFromJmol();
     drawMolInPreview();
 }
 function readCoordsFromJmol() {
@@ -370,15 +371,13 @@ function deleteGdisOutputFile(filename) {
 
 function getUnitCell() {
     var myform = document.getElementById('inputs');
+
     var a = myform.CellA.value;
     var b = myform.CellB.value;
     var c = myform.CellC.value;
     var alp = myform.CellAlpha.value;
     var bet = myform.CellBeta.value;
     var gam = myform.CellGamma.value;
-    //a = a * Math.sin(alp*Math.PI/180);
-    //b = b * Math.sin(bet*Math.PI/180);
-    //c = c * Math.sin(gam*Math.PI/180);Not correct transform
     var vector = "{"+a+" "+b+" "+c+" "+alp+" "+bet+" "+gam+"}";
     var offset = "{"+(a/2.0)+" "+(b/2.0)+" "+(c/2.0)+"}";
     //console.log(vector);

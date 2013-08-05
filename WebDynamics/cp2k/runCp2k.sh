@@ -7,7 +7,7 @@ set scriptDir = `pwd`
 /bin/bash $scriptDir/../../GlobalValues.in
 
 if ($#argv < 1) then
-  echo "usage: $0 cif_file|bgf_file [mol_prefix] [cell_size=10x10x10x90x90x90] [MD_temp=298K] [MD_press=1Bar] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
+  echo "usage: $0 cif_file|xyz_file [mol_prefix] [cell_size=10x10x10x90x90x90] [MD_temp=298K] [MD_press=1Bar] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
   exit(1)
 endif
 

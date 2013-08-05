@@ -4,9 +4,10 @@ Lawrence Berkeley Laboratory
 Molecular Foundry
 05/2012 -> Present
 
-James Wonsever & Justin Patel
+Justin Patel
 Lawrence Berkeley Laboratory
 Molecular Foundry
+06/2013 -> Present
 
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.

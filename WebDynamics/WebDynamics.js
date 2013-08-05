@@ -149,20 +149,40 @@ function sterilize(xyzcoords) {
 function makeXYZfromCoords(i) {
     //i could be 0
     if (i === undefined) i = activeModel;
-    var materialName = "WebDynamics";
+
+    var materialName = ${"#structureName"}.val();
+    var cell = $("#structureCell").val();
+
     var coords = sterilize(models[i]);
     var numberOfAtoms = coords.split("\n").length;
-    var xyz = numberOfAtoms + "\n" + materialName + "\n" + coords;
+    var xyz = numberOfAtoms + "\n" + materialName + ", Cell " + cell + "\n" + coords;
     console.log(xyz);
     return xyz;
 }
 //Redraw the molecule according to coordinates
-function drawMol(suffix) {
+function drawMol() {
     var xyz = makeXYZfromCoords();
     var scr = "";
     if (amIMobile) {scr += unbindMobileClicks();}
-    scr += "try{\nLOAD DATA \"mod\"\n" + xyz + "\nEND \"mod\" {1, 1, 1}}catch(e){}";
+    scr += "try{LOAD INLINE \"" + xyz + "\" ";
+    scr += getUnitCell() + ";}catch(e){}";
+    console.log(scr);
     Jmol.script(mainApplet, scr);
+}
+function getUnitCell(){
+    var cell = $('#structureCell').val();
+    cell = cell.split("x");
+    var vector = "{"+cell[0]+" "+cell[1]+" "+cell[2]+" "+cell[3]+" "+cell[4]+" "+cell[5]+"}";
+    var offset = "{"+(cell[0]/2.0)+" "+(cell[1]/2.0)+" "+(cell[2]/2.0)+"}";
+    return " {1 1 1} unitcell " + vector + " offset " + offset;
+    //TODO
+    //return crystal cell on crstals.
+}
+function unbindMobileClicks() {
+    var scr = "";
+    scr += "unbind 'RIGHT';";
+    scr += "unbind 'LEFT' '_clickFrank'; ";
+    return scr;
 }
 
 function sendToWebXS() {
@@ -203,16 +223,22 @@ function writeFileToFilesystem(filename) {
 
 function runCp2k() {
     //grab all inputs
+    var press = $("#pressure").val();
+    var temp = $("#temperature").val();
+    var walltime = $("#walltime").val();
+    var nnodes = $("#nnodes").val();
+    var nsnaps = $("#snapshots").val();
 
     //put xyz file.
     var now= new Date();
-    alert(now.toString());
-    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + now.toString();
-
+    now = now.toDateString.replace(" ","") + ".xyz";
+    alert(now);
+    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + now;
     writeFileToFilesystem(filePath);
 
+
     var command = CODE_BASE_DIR + DYN_LOC + "/cp2k/runCp2k.sh " ;
-    var args = filePath + " " + now.toString();
+    var args = filePath + " " + now + " ";
     //(pass unitcell)
 
     //runcp2k script for n snapshots    
