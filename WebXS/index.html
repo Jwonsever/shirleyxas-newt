@@ -187,7 +187,7 @@
 	  <h2 align="left">MFTheory Structure Database</h2>
 
           <p align="left">
-          This page is meant for helping you find structures from prestablished structure databases.
+          This page is meant to help you find structures from prestablished structure databases.
           </p>
 
           <div align="left">
@@ -210,7 +210,7 @@
 
             <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true" style="display:none">
               Domain<br>
-              <input type="text" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug" style="display:none" disabled/>
+              <input type="hidden" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug"/>
 
               <select id="PubChem_domainChosen" data-te-forward-through="true" onchange="PubChem.chooseDomain(this.value);">
                 <option value="compound" selected>Compound</option>
@@ -220,7 +220,7 @@
 
               <div data-te-skip="true">
                 <div id="PubChem_compound" class="PubChem_domain" data-te-list-slash="true" style="padding:10px">
-                  <input  id="PubChem_compound_domain" type="text" value="compound" style="display:none" disabled/>
+                  <input type="hidden" id="PubChem_compound_domain" value="compound"/>
 
                   Namespace<br>
                   <select id="PubChem_compound_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Compound.chooseNamespace(this.value);">
@@ -235,7 +235,7 @@
 
                   <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_compound_xref_1" value="xref" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_compound_xref_1" value="xref"/>
                       <select id="PubChem_compound_xref_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -273,14 +273,14 @@
 
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_compound_op_property" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="property" style="display:none" disabled/>
+                      <input type="hidden" value="property"/>
                       <label for="PubChem_compound_op_property_2">(comma-separated list of property tags)</label>
                       <br>
                       <input type="Text" id="PubChem_compound_op_property_2" value=""/>
                     </div>
 
                     <div id="PubChem_compound_op_xrefs" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_compound_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_compound_op_xrefs_1" value="xrefs"/>
                       <select multiple id="PubChem_compound_op_xrefs_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -299,7 +299,7 @@
                 </div>
 
                 <div id="PubChem_substance" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
-                  <input  id="PubChem_substance_domain" type="text" value="substance" style="display:none" disabled/>
+                  <input type="hidden" id="PubChem_substance_domain" value="substance"/>
 
                   Namespace<br>
                   <select id="PubChem_substance_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Substance.chooseNamespace(this.value);">
@@ -312,7 +312,7 @@
 
                   <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="sourceid" style="display:none" disabled/>
+                      <input type="hidden" value="sourceid"/>
                       <!-- TODO: do this in javascipt -->
                       <label for="PubChem_substance_sourceid_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
                       <br>
@@ -320,13 +320,13 @@
                     </div>
 
                     <div id="PubChem_substance_sourceall" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="sourceall" style="display:none" disabled/>
+                      <input type="hidden" value="sourceall"/>
                       <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label> <br>
                       <input type="text" id="PubChem_substance_sourceall_2" value=""/>
                     </div>
 
                     <div id="PubChem_substance_xref" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_substance_xref_1" value="xref" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_substance_xref_1" value="xref"/>
                       <select id="PubChem_substance_xref_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -363,7 +363,7 @@
 
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_substance_op_xrefs" class="PubChem_substance_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_substance_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_substance_op_xrefs_1" value="xrefs"/>
                       <select multiple id="PubChem_substance_op_xrefs_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -382,7 +382,7 @@
                 </div>
 
                 <div id="PubChem_assay" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
-                  <input  id="PubChem_assay_domain" type="text" value="assay" style="display:none" disabled/>
+                  <input type="hidden" id="PubChem_assay_domain" value="assay"/>
 
                   Namespace<br>
                   <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
@@ -392,7 +392,7 @@
 
                   <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="sourceall" style="display:none" disabled/>
+                      <input type="hidden" value="sourceall"/>
                       <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
                       <br>
                       <input type="text" id="PubChem_assay_sourceall_2" value=""/>
@@ -421,7 +421,7 @@
 
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_targets_1" value="targets" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_assay_op_targets_1" value="targets"/>
                       <select multiple id="PubChem_assay_op_targets_2">
                         <option value="ProteinGI">ProteinGI</input>
                         <option value="ProteinName">ProteinName</input>
@@ -431,12 +431,12 @@
                     </div>
 
                     <div id="PubChem_assay_op_doseresponse" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_dosereseponse_1" value="doseresponse" style="display:none" disabled/>
-                      <input type="text" id="PubChem_assay_op_dosereseponse_2" value="sid" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_assay_op_dosereseponse_1" value="doseresponse"/>
+                      <input type="hidden" id="PubChem_assay_op_dosereseponse_2" value="sid"/>
                     </div>
 
                     <div id="PubChem_assay_op_xrefs" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_assay_op_xrefs_1" value="xrefs"/>
                       <select multiple id="PubChem_assay_op_xrefs_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>

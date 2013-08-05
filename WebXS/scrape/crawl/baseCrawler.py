@@ -8,9 +8,10 @@ from ghost import Ghost
 def param_debug(param, self, value):
     """
     Override the default NonSearchParam on_eval callback for --debug,
-    so that is can change the Ghost configuration options.
+    so that it can change the Ghost configuration options.
     Note the order of parameters, especially where 'self' is. This should be
-    attached as a method to the Param for --debug.
+    attached as a method to the Param for --debug; it is not attached to
+    the BaseCrawler. See the implementation of BaseCrawler.visit_param().
 
     param: the NonSearchParam this will be attached to. See implementation
     of util.Param for details of how this all works.
@@ -89,6 +90,17 @@ class BaseCrawler(object):
     }
 
     # Configuration methods
+    #
+    # These should all be decorated @classmethod, as they will all be called
+    # before an instance can be initialized.
+    
+    @classmethod
+    def parser_preconfig(cls, parser):
+        """
+        Configure the parser corresponding to this crawler.
+        This will be called before arguments have been automatically added.
+        """
+        pass
 
     @classmethod
     def verify_args(cls, args):
@@ -113,6 +125,14 @@ class BaseCrawler(object):
 
         m = 'No search made. Must provide at least one search argument.'
         return Status(False, m)
+    
+    @classmethod
+    def parser_postconfig(cls, parser):
+        """
+        Configure the parser corresponding to this crawler.
+        This will be called after arguments have been automatically added.
+        """
+        pass
 
     # Initialization methods
 
@@ -152,9 +172,6 @@ class BaseCrawler(object):
         Visit a param during evaluation.
         This fires its on_eval callback.
         """
-        print param.name
-        print type(param.on_eval)
-        print type(self.config_ghost)
         param.on_eval(self, value)
 
     def config_ghost(self):
