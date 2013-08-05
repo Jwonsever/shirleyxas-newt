@@ -209,6 +209,11 @@
             </div>
 
             <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true" style="display:none">
+              <div data-te-skip="true" style="padding-bottom:10px; padding-left:20px">
+                For help on what some of these drop-down items mean, click
+                <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>
+                <br>
+              </div>
               Domain<br>
               <input type="hidden" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug"/>
 
@@ -252,7 +257,6 @@
                     </div>
 
                     <label for="PubChem_compound_input">Identifier (comma-separated list of search terms)</label>
-                    <br>
                     <input type="Text" id="PubChem_compound_input" value=""/>
                   </div>
 
@@ -274,9 +278,48 @@
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_compound_op_property" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
                       <input type="hidden" value="property"/>
-                      <label for="PubChem_compound_op_property_2">(comma-separated list of property tags)</label>
-                      <br>
-                      <input type="Text" id="PubChem_compound_op_property_2" value=""/>
+                      <!-- sorry -->
+                      <select multiple id="PubChem_compound_op_property_2"/>
+                        <option value="MolecularFormula">MolecularFormula</option>
+                        <option value="MolecularWeight">MolecularWeight</option>
+                        <option value="CanonicalSMILES">CanonicalSMILES</option>
+                        <option value="IsometricSMILES">IsometricSMILES</option>
+                        <option value="InChI">InChI</option>
+                        <option value="InChiKey">InChiKey</option>
+                        <option value="IUPACName">IUPACName</option>
+                        <option value="XLogP">XLogP</option>
+                        <option value="ExactMass">ExactMass</option>
+                        <option value="MonoisotopicMass">MonoisotopicMass</option>
+                        <option value="TPSA">TPSA</option>
+                        <option value="Complexity">Complexity</option>
+                        <option value="Charge">Charge</option>
+                        <option value="HBondDonorCount">HBondDonorCount</option>
+                        <option value="HBondAcceptorCount">HBondAcceptorCount</option>
+                        <option value="RotableBondCount">RotableBondCount</option>
+                        <option value="HeavyAtomCount">HeavyAtomCount</option>
+                        <option value="IsotopeAtomCount">IsotopeAtomCount</option>
+                        <option value="AtomStereoCount">AtomStereoCount</option>
+                        <option value="DefinedAtomStereoCount">DefinedAtomStereoCount</option>
+                        <option value="UndefinedAtomStereoCount">UndefinedAtomStereoCount</option>
+                        <option value="BondStereoCount">BondStereoCount</option>
+                        <option value="DefinedBondStereoCount">DefinedBondStereoCount</option>
+                        <option value="UndefinedBondStereoCount">UndefinedBondStereoCount</option>
+                        <option value="CovalentUnitCount">CovalentUnitCount</option>
+                        <option value="Volume3D">Volume3D</option>
+                        <option value="XStericQuadrupole3D">XStericQuadrupole3D</option>
+                        <option value="YStericQuadrupole3D">YStericQuadrupole3D</option>
+                        <option value="ZStericQuadrupole3D">ZStericQuadrupole3D</option>
+                        <option value="FeatureCount3D">FeatureCount3D</option>
+                        <option value="FeatureAcceptorCount3D">FeatureAcceptorCount3D</option>
+                        <option value="FeatureDonorCount3D">FeatureDonorCount3D</option>
+                        <option value="FeatureAnionCount3D">FeatureAnionCount3D</option>
+                        <option value="FeatureCationCount3D">FeatureCationCount3D</option>
+                        <option value="FeatureRingCount3D">FeatureRingCount3D</option>
+                        <option value="FeatureHydrophobeCount3D">FeatureHydrophobeCount3D</option>
+                        <option value="ConformerModelRMSD3D">ConformerModelRMSD3D</option>
+                        <option value="EffectiveRotorCount3D">EffectiveRotorCount3D</option>
+                        <option value="ConformerCount3D">ConformerCount3D</option>
+                      </select>
                     </div>
 
                     <div id="PubChem_compound_op_xrefs" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
@@ -315,13 +358,12 @@
                       <input type="hidden" value="sourceid"/>
                       <!-- TODO: do this in javascipt -->
                       <label for="PubChem_substance_sourceid_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
-                      <br>
                       <input type="text" id="PubChem_substance_sourceid_2" value=""/>
                     </div>
 
                     <div id="PubChem_substance_sourceall" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
                       <input type="hidden" value="sourceall"/>
-                      <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label> <br>
+                      <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
                       <input type="text" id="PubChem_substance_sourceall_2" value=""/>
                     </div>
 
@@ -343,7 +385,6 @@
                     </div>
 
                     <label for="PubChem_substance_input">Identifier (comma-separated list of search terms)</label>
-                    <br>
                     <input type="Text" id="PubChem_substance_input" value=""/>
                   </div>
 
@@ -394,12 +435,10 @@
                     <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
                       <input type="hidden" value="sourceall"/>
                       <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
-                      <br>
                       <input type="text" id="PubChem_assay_sourceall_2" value=""/>
                     </div>
 
                     <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
-                    <br>
                     <input type="Text" id="PubChem_assay_input" value=""/>
                   </div>
 
