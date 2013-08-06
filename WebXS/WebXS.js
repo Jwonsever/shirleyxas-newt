@@ -552,6 +552,7 @@ function archiveJobFiles(dir, molName) {
 		url: "/command/hopper",
 		data: {"executable": command},
 		success: function(res) {switchToPrevious();},});
+
 }
 //Delete all files from this job
 function deleteJobFiles(dir, molName) {

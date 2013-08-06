@@ -9,3 +9,9 @@ This will set necessary paths and set proper computation permissions.
 GIT ON THE MASTER BRANCH
 
 All MFTheory members can use the git master branch, everyone can pull and update the code as they see fit.  HOWEVER, because of trac's setup, each person needs to set up thier own git remote (...USERNAME@trac...)  View the origin repository for an example.  Once you have set up your proper remote, you can pull up and down to whatever branch you are working on.  -James (Aug 1)
+
+GIT SUBMODULES
+-Shirley Pseudos
+-Shirley Scripts
+
+
