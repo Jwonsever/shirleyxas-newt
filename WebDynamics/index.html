@@ -184,7 +184,9 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	    <br>
 	    System Name<input type="text" id="structureName" value="WebDynamics"><br>
 	    Unit Cell<input type="text" onkeyup="drawMol()" id="structureCell" value="10x10x10x90x90x90"><br>
-	    Replication<input type="text" onkeyup="drawMol()" id="cellReplicaion" value="1x1x1"><br>
+	    Replication<input type="text" onkeyup="drawMol()" id="cellReplication" value="1x1x1"><br>
+	    <input type="button" onclick="foldWrapper()" value="Fold Structure into Unitcell"><br>
+	    <input type="button" onclick="createUnitcell()" value="Make Unitcell based on System Size"><br>
 	  </div>
 
 	  <div id="searchOptions" class="optionsDiv">

@@ -5,6 +5,9 @@ Mftheory
 6/26/2013 -> present
 */
 
+//Am i working with a crystal or a molecule?
+var crystalFlag = false;
+
 //Changing active viewing page
 var currentDiv;
 function CngClass(obj){
@@ -72,8 +75,8 @@ function addNewModel() {
     makeCoordsDiv();
     drawMol();
 }
+
 function readCoordsFromJmol() {
-    //fix to check for multiple models being uploaded
     var modelInfo = Jmol.getPropertyAsArray(mainApplet, "modelInfo", "all");
     var modelNum = modelInfo.modelCount;
     var i = 1;
@@ -100,15 +103,26 @@ function readCoordsFromJmol() {
 //upload files directly to the jmol main editor.
 function uploadCoordinates(uploadobj) {
     var file = uploadobj.files[0];
+    var filename = file.name;
+
     var reader = new FileReader();  
     if (typeof FileReader !== "undefined") {
 	try {
 	    reader.onload = function(r) {
-		var scr = "try{LOAD INLINE \"";
-		scr += String(reader.result);
-		scr +="\" {1, 1, 1};}catch(e){}";
-		//alert(scr);
+		var filedata = String(reader.result);
+		var scr = "try{\nLOAD INLINE \"";
+		scr += filedata;
+		scr +="\";}catch(e){}";
+
 		Jmol.script(mainApplet, scr);
+
+		var gotCrystal = tryToGrabCrystalData();
+		readCoordsFromJmol();
+		if (!gotCrystal) {
+		    switchToModel(models.length-1);
+		} else {
+		    runThroughGdisAndReload(filedata, filename);		    
+		}
 	    }
 	    reader.readAsText(file);	
 	} catch(err) {
@@ -116,6 +130,26 @@ function uploadCoordinates(uploadobj) {
 	}
     } else {
 	alert("Your browser does not support file uploading, please use google chrome or firefox.");
+    }
+}
+
+function tryToGrabCrystalData() {
+    //reads only from models[0] as of right now
+    var jsVar = Jmol.getPropertyAsJavaObject(mainApplet, "auxiliaryinfo.models[0].infoUnitcell", "all");
+    if(jsVar) {
+	var newUnitCell = "" + jsVar[0];
+	newUnitCell += "x" + jsVar[1];
+	newUnitCell += "x" + jsVar[2];
+	newUnitCell += "x" + jsVar[3];
+	newUnitCell += "x" + jsVar[4];
+	newUnitCell += "x" + jsVar[5];
+	$('#structureCell').val(newUnitCell);
+	crystalFlag = true;
+	return true;
+    }
+    else {
+	crystalFlag = false;
+	return false;
     }
 }
 
@@ -156,7 +190,6 @@ function makeXYZfromCoords(i) {
     var coords = sterilize(models[i]);
     var numberOfAtoms = coords.split("\n").length;
     var xyz = numberOfAtoms + "\n" + materialName + ", Cell " + cell + "\n" + coords;
-    console.log(xyz);
     return xyz;
 }
 //Redraw the molecule according to coordinates
@@ -169,15 +202,29 @@ function drawMol() {
     console.log(scr);
     Jmol.script(mainApplet, scr);
 }
+
+//Return the cell
 function getUnitCell(){
     var cell = $('#structureCell').val();
     cell = cell.split("x");
     var vector = "{"+cell[0]+" "+cell[1]+" "+cell[2]+" "+cell[3]+" "+cell[4]+" "+cell[5]+"}";
     var offset = "{"+(cell[0]/2.0)+" "+(cell[1]/2.0)+" "+(cell[2]/2.0)+"}";
-    return " {1 1 1} unitcell " + vector + " offset " + offset;
-    //TODO
-    //return crystal cell on crstals.
+    var repstr = getRepstr();
+    if (crystalFlag) {
+	return " {555 "+ repstr + " 1} unitcell " + vector;
+    }
+    else { // Adds offset to place molecules in the middle of their cell, (More intuitive to user)
+	return " {555 "+ repstr + " 1} unitcell " + vector + " offset " + offset;
+    }
 }
+//Return the number of times to replicate the cell
+function getRepstr() {
+    var rep = $('#cellReplication').val();
+    rep=rep.split("x");
+    var repnum = "" + (4 + parseInt(rep[0])) + (4 + parseInt(rep[1])) + (4 + parseInt(rep[2]));
+    return repnum;
+}
+
 function unbindMobileClicks() {
     var scr = "";
     scr += "unbind 'RIGHT';";
@@ -221,6 +268,12 @@ function writeFileToFilesystem(filename) {
 	},});    
 }
 
+
+
+
+
+
+//RUN CP2K Simulation, roughly equivalent to the submit commands in WebXS
 function runCp2k() {
     //grab all inputs
     var press = $("#pressure").val();
@@ -261,4 +314,94 @@ function runCp2k() {
     scr += ";}catch(e){}"
     Jmol.script("mainApplet", scr/*Do This*/)
 
+}
+
+
+/*Write XYZ Files
+  Convert to CIF
+  Append cifCellParams
+  rewrite to XYZ (Folding in the cell)
+*/
+function foldWrapper() {
+    //Currently only acts on active model, TODO act on all models.
+    var fdata = makeXYZfromCoords();
+    foldXYZUsingGdis(fdata);
+}
+function foldXYZUsingGdis(filedata, filename) {
+    if (!filename) filename = $("#structureName").val() + ".xyz";
+    filename=cleanDirtyChars(filename);
+
+    var unitcell = $("#structureCell").val().split("x");
+    var cifCellParams = "_cell_length_a                     "+unitcell[0]+"\n"
+	              + "_cell_length_b                     "+unitcell[1]+"\n"
+	              + "_cell_length_c                     "+unitcell[2]+"\n"
+               	      + "_cell_angle_alpha                  "+unitcell[3]+"\n"
+	              + "_cell_angle_beta                   "+unitcell[4]+"\n"
+	              + "_cell_angle_gamma                  "+unitcell[5]+"\n";
+    
+    //post XYZ file
+    $.newt_ajax({type: "PUT", 
+		url: "/file/"+"hopper" + CODE_BASE_DIR + DATA_LOC + "/tmp/" + filename,
+		data: filedata,
+		success: function(res) {foldWithGdis(filedata, filename, cifCellParams);},});
+}
+function foldWithGdis(filedata, filename, cifParams) {
+    //Note that this accesses the script in WebXS at the moment.  (TODO/TOFIX?)
+    command = SHELL_CMD_DIR + "foldUsingGdis.sh " + filename + " '"+ cifParams + "'";
+    $.newt_ajax({type: "POST",
+		url:"/command/hopper",
+		data: {"executable": command},
+		success: function(res) {console.log(res);reloadGdisOutput(filedata, filename, "");},});
+}
+
+/*Push file to server		      
+  Execute Gdis
+  return file to jmol
+  remove files
+  quit
+*/
+function runThroughGdisAndReload(filedata, filename) {
+    
+    filename=cleanDirtyChars(filename);
+
+    //post file
+    $.newt_ajax({type: "PUT", 
+		url: "/file/"+"hopper" + CODE_BASE_DIR + DATA_LOC + "/tmp/" + filename,
+		data: filedata,
+		success: function(res) {convertWithGdis(filedata, filename);},});
+}
+function convertWithGdis(filedata, filename) {
+    //Note that this accesses the script in WebXS at the moment.  (TODO/TOFIX?)
+    command = SHELL_CMD_DIR + "convertUsingGdis.sh " + filename + " .xyz";
+    $.newt_ajax({type: "POST",
+		url:"/command/hopper",
+		data: {"executable": command},
+		success: function(res) {console.log(res);reloadGdisOutput(filedata, filename, ".xyz");},});
+}
+
+//Take whatever came out of gdis, load it, erase it, and return it to the user.
+function reloadGdisOutput(filedata, filename, ext) {
+    var convertedFile = "../Shirley-data/tmp/" + filename + ext;
+    var scr = "try{load "+convertedFile+";}catch(e){};";
+    //Draw to Jmol
+    Jmol.script(mainApplet, scr);
+    //rewrite new coordinates
+    models = models.slice(0, -1);
+    readCoordsFromJmol();
+    switchToModel(models.length-1);
+    //Get rid of temporary file
+    deleteGdisOutputFile(filename, ext);
+}
+function deleteGdisOutputFile(filename, ext) {
+    command = "/bin/rm " + CODE_BASE_DIR + DATA_LOC + "/tmp/" + filename + ext;
+    $.newt_ajax({type: "POST",
+		url:"/command/hopper",
+		data: {"executable": command},
+		success: function(res) {console.log("successful delete of gdis output");},});
+}
+function cleanDirtyChars(filename){
+    //Clean dirty charcters from filename
+    filename = filename.replace(/[|&;$%@"<>()+,]/g, "");
+    //"//Emacs coloring bug
+    return filename;
 }
