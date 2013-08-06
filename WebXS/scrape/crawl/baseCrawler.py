@@ -3,6 +3,28 @@ from util import *
 
 from ghost import Ghost
 
+# this is defined outside the class so that it can be referenced
+# while the class is being interpreted.
+def param_debug(param, self, value):
+    """
+    Override the default NonSearchParam on_eval callback for --debug,
+    so that it can change the Ghost configuration options.
+    Note the order of parameters, especially where 'self' is. This should be
+    attached as a method to the Param for --debug; it is not attached to
+    the BaseCrawler. See the implementation of BaseCrawler.visit_param().
+
+    param: the NonSearchParam this will be attached to. See implementation
+    of util.Param for details of how this all works.
+
+    self: this crawler
+
+    value: the parameter value passed by the user.
+    """
+    self.debug = value
+    self.ghost_params['display'] = value
+
+
+
 class BaseCrawler(object):
     """ Base class for scrapers. """
 
@@ -14,11 +36,13 @@ class BaseCrawler(object):
     search_params = ParamList()
 
     # possible parameters that are not search terms.
-    # INHERITORS: recommend override this with ParamList of desired Param objects.
+    # INHERITORS: recommend override this with ParamList of
+    # desired NonSearchParam objects.
     non_search_params = ParamList(
-        Param('--debug',
-              action='store_true',
-              help='enables debug mode')
+        NonSearchParam('--debug',
+                       on_eval=param_debug, # INHERITORS: use 'baseCrawler.param_debug'
+                       action='store_true',
+                       help='enables debug mode')
     )
 
     # arguments to this scraper's parser.
@@ -66,6 +90,17 @@ class BaseCrawler(object):
     }
 
     # Configuration methods
+    #
+    # These should all be decorated @classmethod, as they will all be called
+    # before an instance can be initialized.
+    
+    @classmethod
+    def parser_preconfig(cls, parser):
+        """
+        Configure the parser corresponding to this crawler.
+        This will be called before arguments have been automatically added.
+        """
+        pass
 
     @classmethod
     def verify_args(cls, args):
@@ -83,18 +118,21 @@ class BaseCrawler(object):
             - Failure: message required
         """
         # verify at least one search arg was given
-        #print args
         for param_name, arg_value in args.iteritems():
-            #print param_name, arg_value
-            #print cls.search_params.hasParam(param_name)
             if (arg_value != '' and
                 cls.search_params.hasParam(param_name)):
-                    #print 'SUCCESS'
                     return Status(True)
 
         m = 'No search made. Must provide at least one search argument.'
-        #print 'FAILURE'
         return Status(False, m)
+    
+    @classmethod
+    def parser_postconfig(cls, parser):
+        """
+        Configure the parser corresponding to this crawler.
+        This will be called after arguments have been automatically added.
+        """
+        pass
 
     # Initialization methods
 
@@ -110,49 +148,36 @@ class BaseCrawler(object):
 
         Also configure Ghost.
         """
-        '''
-        # specified arguments will overwrite defaults
-        self.write_defaults()
-        '''
         # maps webpage form <input> names to user-supplied search terms
         self.search_terms = {}
         
+        param = None
         for param_name, arg_value in terms.iteritems():
-            #print 'looking for', param_name
+            # test whether SearchParam or NonSearchParam
             if self.non_search_params.hasParam(param_name):
-                #print 'found non_search_param'
+                param = self.non_search_params.getParam(param_name)
                 setattr(self, param_name, arg_value)
             else:
                 # must be a search param
-                #print 'must be a search_param'
+                param = self.search_params.getParam(param_name)
                 input_name = self.search_params.getParam(param_name).input_name
                 self.search_terms[input_name] = arg_value
 
+            self.visit_param(param, arg_value)
+
         self.config_ghost()
 
-    '''
-    def write_defaults(self):
+    def visit_param(self, param, value):
         """
-        Write default values to all instance variables:
-            - search-related: defaults to blank.
-            - non-search-related: defaults specified by self.non_search_params
+        Visit a param during evaluation.
+        This fires its on_eval callback.
         """
-        # maps webpage form <input> names to user-supplied search terms
-        self.search_terms = {}
-        
-        # if search term was not supplied, will be an empty string
-        for searchParam in self.search_params:
-            self.search_terms[searchParam.input_name] = ''
-
-        for var, val in self.non_search_params.iteritems():
-            setattr(self, var, val)
-    '''
+        param.on_eval(self, value)
 
     def config_ghost(self):
         """
         Configure Ghost using self.ghost_params.
         """
-        # TODO: make a more flexible way to specify these options.
         self.ghost = Ghost(**self.ghost_params)
 
     # Runtime methods
