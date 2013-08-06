@@ -538,6 +538,15 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     $(document).ready(makePlotWrapper(directory, jobName));
 }
   
+function ArchiveJobFiles(dir, molName) {
+    if (!molName) molName = $('#jobName').text();
+    if (!confirm('Are you sure?  Archiving will prevent the running of any future state calculations.')) return;
+    command = SHELL_CMD_DIR+"htar.sh " + dir;
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": command},
+		success: function(res) {switchToPrevious();},});
+}  
 function deleteJobFiles(dir, molName) {
     if (!molName) molName = $('#jobName').text();
     if (!confirm('Are you sure?  All files will be permanently deleted.')) return;
