@@ -29,6 +29,7 @@ var PSEUDO_DIR="/project/projectdirs/mftheory/pseudos";//IDK IF THIS HAS TO CHAN
 
 //Relative locations
 var CODE_LOC="WebXS";
+var DYN_LOC="WebDynamics";
 var DATA_LOC="Shirley-data";
 var XCH_SHIFTS="xas_input/XCHShifts.csv";
 

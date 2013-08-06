@@ -10,19 +10,14 @@ use warnings;
 
 our $VERSION = '1.00';
 use base 'Exporter';
-our @EXPORT = qw(get_scraper_path get_scraper_params);
+our @EXPORT_OK = qw(scrapers get_scraper_params);
 
 
-# all known databases mapped the path to the executable for their scraper.
-my %scraper_paths = (
-  'icsd' => './scrape_icsd.sh',
-  'amcsd' => './scrape_amcsd.sh'
-);
-
-# get scraper executable path for given database name
-sub get_scraper_path {
-  my $target_db = $_[0];
-  return $scraper_paths{$target_db};
+# all known scrapers.
+# if you make a new scraper, add its name here.
+my @scrapers_list = qw(ICSD AMCSD);
+sub scrapers {
+  return @scrapers_list;
 }
 
 
@@ -71,8 +66,8 @@ my %amcsd_params = (
 # all known databases mapped to their parameter-and-format hash.
 # (rather, a reference to the hash.)
 my %db_params = (
-  'icsd' => \%icsd_params,
-  'amcsd' => \%amcsd_params
+  'ICSD' => \%icsd_params,
+  'AMCSD' => \%amcsd_params
 );
 
 # get parameter-and-format hash for given database name

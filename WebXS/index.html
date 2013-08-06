@@ -16,11 +16,11 @@
 
 
     <!-- Als Bootstrap, etc-->
-    <script src="../jquery-latest.js"></script>    
+    <script src="../js/jquery-latest.js"></script>    
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-    <script src="../mynewt.js"></script>
-    <script src="../alsapi.js"></script>
-    <script src="../als_portal.js"></script>
+    <script src="../js/mynewt.js"></script>
+    <script src="../js/alsapi.js"></script>
+    <script src="../js/als_portal.js"></script>
 
     <!-- Major Function Values-->
     <script src="../GlobalValues.js"></script>
@@ -45,7 +45,7 @@
 
     <!-- Local JS-->
     <script src="TreeEval.js"></script>
-    <script src="ShirleyXAS.js"></script>
+    <script src="WebXS.js"></script>
     <script src="jmolScripts.js"></script>
     <Script src="jmolInit.js"></script>
     
@@ -62,7 +62,7 @@
           </a>
           <div class="nav-collapse collapse">
 	    <ul class="nav">
-              <li><img src="../mfnewlogo.png" width=105 padding=0 border=0></li>
+              <li><img src="../images/mfnewlogo.png" width=105 padding=0 border=0></li>
               <li><a href="../index.html">Home</a></li>
               <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
               <li class="dropdown active">
@@ -77,7 +77,7 @@
                 </ul>
               </li>
             </ul>
-            <div class="pull-right" id="auth-spinner"> <img src="../white-ajax-loader.gif"></div>
+            <div class="pull-right" id="auth-spinner"> <img src="../images/white-ajax-loader.gif"></div>
             <div id=login-area style='display:none;' class="pull-right">
               <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
                 <input class="span2" type="text" placeholder="Username" id="id_username">
@@ -156,6 +156,7 @@
 		  </table>
 		</div>
 	      </div>
+	      
 	      <div id ='spectrumDB' class="tab-pane">
 		<h2 align="left">MFTheory Core Excitation Spectrum Database</h2>
 		
@@ -169,15 +170,24 @@
 		<input type="Text" id="spectraSearchTerms" value=""/>
 		<button onclick="searchSpectrumDB()">Search</button>
 		<div id="searchSpectrumResults"><br></div>
-
+	
+		<!--
+		<a href="Methane.xyz" download>Click here to download</a>
+		
+		<script>  
+		uriContent = "data:application/octet-stream," + encodeURIComponent("testthisout");
+		newWindow=window.open(uriContent, 'neuesDokument');
+		</script>
+		-->
 	      </div>
+
 
 	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
 	  <h2 align="left">MFTheory Structure Database</h2>
 
           <p align="left">
-          This page is meant for helping you find structures from prestablished structure databases.
+          This page is meant to help you find structures from prestablished structure databases.
           </p>
 
           <div align="left">
@@ -199,8 +209,13 @@
             </div>
 
             <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true" style="display:none">
+              <div data-te-skip="true" style="padding-bottom:10px; padding-left:20px">
+                For help on what some of these drop-down items mean, click
+                <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>
+                <br>
+              </div>
               Domain<br>
-              <input type="text" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug" style="display:none" disabled/>
+              <input type="hidden" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug"/>
 
               <select id="PubChem_domainChosen" data-te-forward-through="true" onchange="PubChem.chooseDomain(this.value);">
                 <option value="compound" selected>Compound</option>
@@ -210,7 +225,7 @@
 
               <div data-te-skip="true">
                 <div id="PubChem_compound" class="PubChem_domain" data-te-list-slash="true" style="padding:10px">
-                  <input  id="PubChem_compound_domain" type="text" value="compound" style="display:none" disabled/>
+                  <input type="hidden" id="PubChem_compound_domain" value="compound"/>
 
                   Namespace<br>
                   <select id="PubChem_compound_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Compound.chooseNamespace(this.value);">
@@ -225,7 +240,7 @@
 
                   <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_compound_xref_1" value="xref" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_compound_xref_1" value="xref"/>
                       <select id="PubChem_compound_xref_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -242,7 +257,6 @@
                     </div>
 
                     <label for="PubChem_compound_input">Identifier (comma-separated list of search terms)</label>
-                    <br>
                     <input type="Text" id="PubChem_compound_input" value=""/>
                   </div>
 
@@ -263,14 +277,53 @@
 
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_compound_op_property" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="property" style="display:none" disabled/>
-                      <label for="PubChem_compound_op_property_2">(comma-separated list of property tags)</label>
-                      <br>
-                      <input type="Text" id="PubChem_compound_op_property_2" value=""/>
+                      <input type="hidden" value="property"/>
+                      <!-- sorry -->
+                      <select multiple id="PubChem_compound_op_property_2"/>
+                        <option value="MolecularFormula">MolecularFormula</option>
+                        <option value="MolecularWeight">MolecularWeight</option>
+                        <option value="CanonicalSMILES">CanonicalSMILES</option>
+                        <option value="IsometricSMILES">IsometricSMILES</option>
+                        <option value="InChI">InChI</option>
+                        <option value="InChiKey">InChiKey</option>
+                        <option value="IUPACName">IUPACName</option>
+                        <option value="XLogP">XLogP</option>
+                        <option value="ExactMass">ExactMass</option>
+                        <option value="MonoisotopicMass">MonoisotopicMass</option>
+                        <option value="TPSA">TPSA</option>
+                        <option value="Complexity">Complexity</option>
+                        <option value="Charge">Charge</option>
+                        <option value="HBondDonorCount">HBondDonorCount</option>
+                        <option value="HBondAcceptorCount">HBondAcceptorCount</option>
+                        <option value="RotableBondCount">RotableBondCount</option>
+                        <option value="HeavyAtomCount">HeavyAtomCount</option>
+                        <option value="IsotopeAtomCount">IsotopeAtomCount</option>
+                        <option value="AtomStereoCount">AtomStereoCount</option>
+                        <option value="DefinedAtomStereoCount">DefinedAtomStereoCount</option>
+                        <option value="UndefinedAtomStereoCount">UndefinedAtomStereoCount</option>
+                        <option value="BondStereoCount">BondStereoCount</option>
+                        <option value="DefinedBondStereoCount">DefinedBondStereoCount</option>
+                        <option value="UndefinedBondStereoCount">UndefinedBondStereoCount</option>
+                        <option value="CovalentUnitCount">CovalentUnitCount</option>
+                        <option value="Volume3D">Volume3D</option>
+                        <option value="XStericQuadrupole3D">XStericQuadrupole3D</option>
+                        <option value="YStericQuadrupole3D">YStericQuadrupole3D</option>
+                        <option value="ZStericQuadrupole3D">ZStericQuadrupole3D</option>
+                        <option value="FeatureCount3D">FeatureCount3D</option>
+                        <option value="FeatureAcceptorCount3D">FeatureAcceptorCount3D</option>
+                        <option value="FeatureDonorCount3D">FeatureDonorCount3D</option>
+                        <option value="FeatureAnionCount3D">FeatureAnionCount3D</option>
+                        <option value="FeatureCationCount3D">FeatureCationCount3D</option>
+                        <option value="FeatureRingCount3D">FeatureRingCount3D</option>
+                        <option value="FeatureHydrophobeCount3D">FeatureHydrophobeCount3D</option>
+                        <option value="ConformerModelRMSD3D">ConformerModelRMSD3D</option>
+                        <option value="EffectiveRotorCount3D">EffectiveRotorCount3D</option>
+                        <option value="ConformerCount3D">ConformerCount3D</option>
+                      </select>
                     </div>
 
                     <div id="PubChem_compound_op_xrefs" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_compound_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_compound_op_xrefs_1" value="xrefs"/>
                       <select multiple id="PubChem_compound_op_xrefs_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -289,7 +342,7 @@
                 </div>
 
                 <div id="PubChem_substance" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
-                  <input  id="PubChem_substance_domain" type="text" value="substance" style="display:none" disabled/>
+                  <input type="hidden" id="PubChem_substance_domain" value="substance"/>
 
                   Namespace<br>
                   <select id="PubChem_substance_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Substance.chooseNamespace(this.value);">
@@ -302,21 +355,20 @@
 
                   <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="sourceid" style="display:none" disabled/>
+                      <input type="hidden" value="sourceid"/>
                       <!-- TODO: do this in javascipt -->
                       <label for="PubChem_substance_sourceid_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
-                      <br>
                       <input type="text" id="PubChem_substance_sourceid_2" value=""/>
                     </div>
 
                     <div id="PubChem_substance_sourceall" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="sourceall" style="display:none" disabled/>
-                      <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label> <br>
+                      <input type="hidden" value="sourceall"/>
+                      <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
                       <input type="text" id="PubChem_substance_sourceall_2" value=""/>
                     </div>
 
                     <div id="PubChem_substance_xref" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_substance_xref_1" value="xref" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_substance_xref_1" value="xref"/>
                       <select id="PubChem_substance_xref_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -333,7 +385,6 @@
                     </div>
 
                     <label for="PubChem_substance_input">Identifier (comma-separated list of search terms)</label>
-                    <br>
                     <input type="Text" id="PubChem_substance_input" value=""/>
                   </div>
 
@@ -353,7 +404,7 @@
 
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_substance_op_xrefs" class="PubChem_substance_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_substance_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_substance_op_xrefs_1" value="xrefs"/>
                       <select multiple id="PubChem_substance_op_xrefs_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -372,7 +423,7 @@
                 </div>
 
                 <div id="PubChem_assay" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
-                  <input  id="PubChem_assay_domain" type="text" value="assay" style="display:none" disabled/>
+                  <input type="hidden" id="PubChem_assay_domain" value="assay"/>
 
                   Namespace<br>
                   <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
@@ -382,14 +433,12 @@
 
                   <div style="padding:10px;" data-te-skip="true">
                     <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
-                      <input type="text" value="sourceall" style="display:none" disabled/>
+                      <input type="hidden" value="sourceall"/>
                       <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
-                      <br>
                       <input type="text" id="PubChem_assay_sourceall_2" value=""/>
                     </div>
 
                     <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
-                    <br>
                     <input type="Text" id="PubChem_assay_input" value=""/>
                   </div>
 
@@ -411,7 +460,7 @@
 
                   <div style="padding:10px" data-te-skip="true">
                     <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_targets_1" value="targets" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_assay_op_targets_1" value="targets"/>
                       <select multiple id="PubChem_assay_op_targets_2">
                         <option value="ProteinGI">ProteinGI</input>
                         <option value="ProteinName">ProteinName</input>
@@ -421,12 +470,12 @@
                     </div>
 
                     <div id="PubChem_assay_op_doseresponse" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_dosereseponse_1" value="doseresponse" style="display:none" disabled/>
-                      <input type="text" id="PubChem_assay_op_dosereseponse_2" value="sid" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_assay_op_dosereseponse_1" value="doseresponse"/>
+                      <input type="hidden" id="PubChem_assay_op_dosereseponse_2" value="sid"/>
                     </div>
 
                     <div id="PubChem_assay_op_xrefs" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
-                      <input type="text" id="PubChem_assay_op_xrefs_1" value="xrefs" style="display:none" disabled/>
+                      <input type="hidden" id="PubChem_assay_op_xrefs_1" value="xrefs"/>
                       <select multiple id="PubChem_assay_op_xrefs_2">
                         <option value="RegistryID">RegistryID</input>
                         <option value="RN">RN</input>
@@ -497,7 +546,7 @@
                   <td> <input type="text" name="num_fmla_units"/> </td>
                 </tr>
               </table>
-              <input type="button" id="ICSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'icsd')"/>
+              <input type="button" id="ICSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'ICSD')"/>
             </form>
             <form id="AMCSD_searchTerms" class="searchTermSet" style="display:none">
               <table>
@@ -526,7 +575,7 @@
                   <td> <input type="text" name="general"/> </td>
                 </tr>
               </table>
-              <input type="button" id="AMCSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'amcsd')"/>
+              <input type="button" id="AMCSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'AMCSD')"/>
             </form>
           </div>
           <div id="searchResults"></div>
@@ -541,9 +590,9 @@ methods based on constrained density functional theory (DFT), we have developed 
 simulations on high-performance computing resources at the National Energy Research Scientific Computing Center (NERSC). Using the NERSC web toolkit 
 (NEWT), we have written a web-interface to run highly parallelized DFT calculations based on this Web2.0 API. The interface enables the user to 
 upload/build their molecule/crystal of choice, visualize it, generate its NEXAFS spectrum and interpret spectral features based on visualization of 
-electronic excited states.<br><br>This tool is not meant to work with IE.  Please use a different browser, such as Firefox or Google chrome.<br><br> 
-Currently computing K-edge spectra for Li, B, C, N, O, F, Cd, S, and Ti.  More coming soon. <br><br> Please send questions and comments regarding the 
-website to jwonsever@lbl.gov.
+electronic excited states.<br><br>This tool uses modern HTML 5 techniques, and is not buit with backwards compatibility for  IE.  Please use a
+different browser, such as the latest Firefox or Google Chrome for full functionionality.  Other browsers are not tested.<br><br> Please send 
+questions and comments regarding the website to jwonsever@lbl.gov.
   	  	    <!--Needs work-->
 		    <button valign="middle" onclick="window.open( './faq.html');">FAQ and Tutorial</button></p>
 		    <p><center>

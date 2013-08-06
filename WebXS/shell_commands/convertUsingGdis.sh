@@ -11,7 +11,7 @@ echo `pwd`
 infile=${1}
 outfile=${2}
 
-echo "copy ${infile} ${outfile}" | ../../WebXS/gdis-0.90/gdis
+echo "copy ${infile} ${outfile}" | ../../gdis-0.90/gdis
 
 #Run Cleanup
 rm $infile

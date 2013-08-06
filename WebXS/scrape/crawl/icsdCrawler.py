@@ -1,34 +1,70 @@
 #!/usr/bin/env python
-from crawl import BaseCrawler
-from jsonList import JsonList
+from baseCrawler import BaseCrawler, param_debug
+from util import *
 
 import argparse
 import HTMLParser
 
 class IcsdCrawler(BaseCrawler):
-    start_url = 'http://icsd.fiz-karlsruhe.de/'
+    """ Scraper for the ICSD. """
 
-    # possible search-related arguments mapped to their names in the form.
+    # Startup resources
+
+    # possible search-related parameters.
     # apparently CSS3 selectors need quotes for these.
-    search_params = {
-        'composition': '"chemistrySearch.sumForm"',
-        'num_elements': '"chemistrySearch.elCount"',
-        'struct_fmla': '"chemistrySearch.structForm"',
-        'chem_name': '"chemistrySearch.chemName"',
-        'mineral_name': '"chemistrySearch.mineralName"',
-        'mineral_grp': '"chemistrySearch.mineralGroup"',
-        'anx_fmla': '"chemistrySearch.anxFormula"',
-        'ab_fmla': '"chemistrySearch.abFormula"',
-        'num_fmla_units': '"chemistrySearch.z"'
+    search_params = ParamList(
+        SearchParam('--composition',
+                    '"chemistrySearch.sumForm"',
+                    help='space-separated chemical composition e.g. "Na Cl"'),
+        SearchParam('--num_elements',
+                    '"chemistrySearch.elCount"',
+                    help='number of elements'),
+        SearchParam('--struct_fmla',
+                    '"chemistrySearch.structForm"',
+                    help='space-separated structural formula e.g. "Pb (W 04)"'),
+        SearchParam('--chem_name',
+                    '"chemistrySearch.chemName"',
+                    help='chemical name'),
+        SearchParam('--mineral_name',
+                    '"chemistrySearch.mineralName"',
+                    help='mineral name'),
+        SearchParam('--mineral_grp',
+                    '"chemistrySearch.mineralGroup"',
+                    help='mineral group'),
+        SearchParam('--anx_fmla',
+                    '"chemistrySearch.anxFormula"',
+                    help='ANX formula crystal composition'),
+        SearchParam('--ab_fmla',
+                    '"chemistrySearch.abFormula"',
+                    help='AB formula crystal composition'),
+        SearchParam('--num_fmla_units',
+                    '"chemistrySearch.z"',
+                    help='number of formula units')
+    )
+
+    # possible parameters that are not search terms.
+    non_search_params = ParamList(
+        NonSearchParam('--debug',
+                       on_eval=param_debug,
+                       action='store_true',
+                       help='enables debug mode'),
+        NonSearchParam('--num_results',
+                       default=10,
+                       type=int,
+                       help='desired number of results to fetch')
+    )
+    
+    # arguments to this scraper's parser.
+    parser_params = {
+        'description': 'A scraper for the ICSD at http://icsd.fiz-karlsruhe.de/'    
     }
 
-    # possible arguments that are not search terms, and their default values.
-    non_search_params = {
-        'num_results': 10,
-        'debug': False,
-        'timeout': 20,
-        'dl_images': False
-    }
+    # Configuration Resources
+    # (default)
+
+    # Runtime Resources
+
+    start_url = 'http://icsd.fiz-karlsruhe.de/'
     
     # CSS3 selectors
     selectors = {
@@ -61,6 +97,8 @@ class IcsdCrawler(BaseCrawler):
     messages = {
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
+
+    # Runtime methods
 
     def crawl(self):
         """
@@ -151,9 +189,6 @@ class IcsdCrawler(BaseCrawler):
 
     def download_selected(self):
         """ Stage 3.4: download the selected results. """
-        # TODO: find out why dom_prop why sometimes doesn't
-        # work when extract_tag_attr does.
-
         # navigate to area where we can download concatenated .cif files.
         submitter = self.dom_prop(self.selectors['export_data'], 'href')
         colon_index = submitter.find(':')
@@ -181,6 +216,8 @@ class IcsdCrawler(BaseCrawler):
         # empty JsonList
         return JsonList()
 
+    # Utility methods
+
     def separate(self, cif):
         """
         Separate a single (string of a) CIF file containing multiple structures
@@ -207,83 +244,3 @@ class IcsdCrawler(BaseCrawler):
             return url
         else:
             return url[:index]
-        
-
-
-def parse_crawler_args():
-    """ parse command-line arguments into a dictionary of web crawler arguments. """
-    parser = argparse.ArgumentParser(description='A scraper for the ICSD at http://icsd.fiz-karlsruhe.de/')
-    parser.add_argument('--num_results',
-                        default=10,
-                        type=int,
-                        help='desired number of results to fetch')
-    parser.add_argument('--debug',
-                        action='store_true',
-                        help='enables debug mode')
-    parser.add_argument('--composition',
-                        default='',
-                        help='space-separated chemical composition e.g. "Na Cl"')
-    parser.add_argument('--num_elements',
-                        default='',
-                        help='number of elements')
-    parser.add_argument('--struct_fmla',
-                        default='',
-                        help='space-separated structural formula e.g. "Pb (W 04)"')
-    parser.add_argument('--chem_name',
-                        default='',
-                        help='chemical name')
-    parser.add_argument('--mineral_name',
-                        default='',
-                        help='mineral name')
-    parser.add_argument('--mineral_grp',
-                        default='',
-                        help='mineral group')
-    parser.add_argument('--anx_fmla',
-                        default='',
-                        help='ANX formula crystal composition')
-    parser.add_argument('--ab_fmla',
-                        default='',
-                        help='AB formula crystal composition')
-    parser.add_argument('--num_fmla_units',
-                        default='',
-                        help='number of formula units')
-
-    args = vars(parser.parse_args())
-    
-    # at least one search term must be given.
-    if not verify_search_made(args):
-        parser.error('No search made. Must provide at least one search argument.')
-
-    return args
-
-def verify_search_made(args):
-    """
-    Verify that a dict of argments constitutes a valid search.
-    """
-    search_args = [
-        args['composition'],
-        args['num_elements'],
-        args['struct_fmla'],
-        args['chem_name'],
-        args['mineral_name'],
-        args['mineral_grp'],
-        args['anx_fmla'],
-        args['ab_fmla'],
-        args['num_fmla_units']
-    ]
-
-    search_given = False
-    for arg in search_args:
-        if arg != '':
-            search_given = True
-    
-    return search_given
-
-def main():
-    spider = IcsdCrawler(**parse_crawler_args())
-    cl = spider.crawl()
-    print cl.json
-    print 'fetched {0} results.'.format(len(cl))
-
-if __name__ == "__main__":
-    main()

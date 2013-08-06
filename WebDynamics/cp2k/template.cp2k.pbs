@@ -27,5 +27,5 @@ cp ${prefix}.* /global/scratch/sd/${USER}/${prefix}.geopt/
 cd /global/scratch/sd/${USER}/${prefix}.geopt
 
 echo "Total Processors: "$totprocs
-aprun -n ${totprocs} $cp2kpath/cp2k.popt < ${fprefix}.cp2k.in >> ${fprefix}.cp2k.geopt.screen.out
+aprun -n ${totprocs} $cp2kpath/cp2k.popt ${fprefix}.cp2k.in >> ${fprefix}.cp2k.geopt.screen.out
 cp ${prefix}.*xyz ${prefix}.*.restart ${prefix}.*.mulliken ${prefix}.*.screen.out ${PBS_O_WORKDIR}/results/

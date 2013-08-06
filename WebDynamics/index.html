@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ALS Data and Simulation Portal</title>
+    <title>Web Dynamics</title>
     <!-- Bootstrap -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
@@ -14,11 +14,11 @@
     <link href="wd.css" rel="stylesheet" type="text/css" />
 
     <!-- <script src="http://code.jquery.com/jquery-latest.js"></script> -->
-    <script src="../jquery-latest.js"></script>
+    <script src="../js/jquery-latest.js"></script>
     <script src="../bootstrap/js/bootstrap.min.js"></script>
-    <script src="../mynewt.js"></script>
-    <script src="../alsapi.js"></script>
-    <script src="../als_portal.js"></script>
+    <script src="../js/mynewt.js"></script>
+    <script src="../js/alsapi.js"></script>
+    <script src="../js/als_portal.js"></script>
 
     
     <!--Scripts required for JME injection-->
@@ -50,6 +50,7 @@
       Jmol.debugCode = (s.indexOf("debugcode") >= 0);
 
 
+      var JmolLoadScript = "load :methane;javascript readCoordsFromJmol();javascript drawMol();"
       var JmolInfo = {
       width: 500,
       height: 500,
@@ -71,7 +72,7 @@
       //disableInitialConsole: true,
       allowJavaScript: true,
       console:"none",
-      script: "load :methane;"
+      script: JmolLoadScript
       };
       
       var JMEInfo = {
@@ -103,7 +104,7 @@
           </a>
           <div class="nav-collapse collapse">
 	    <ul class="nav">
-              <li><img src="../mfnewlogo.png" width=105 padding=0 border=0></li>
+              <li><img src="../images/mfnewlogo.png" width=105 padding=0 border=0></li>
               <li><a href="../index.html">Home</a></li>
               <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
               <li class="dropdown active">
@@ -119,7 +120,7 @@
             </ul>
 
 
-            <div class="pull-right" id="auth-spinner"> <img src="white-ajax-loader.gif"></div>
+            <div class="pull-right" id="auth-spinner"> <img src="../images/white-ajax-loader.gif"></div>
             <div id=login-area style='display:none;' class="pull-right">
               <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
                 <input class="span2" type="text" placeholder="Username" id="id_username">
@@ -144,35 +145,48 @@
         <p>This page is meant for the searching of chemical structures, DFT relaxations,
  crystal structure interpretations, manipulation of chemical structures, and computation
 of molecular dynamics and trajectories.  These advanced, realistic structures can then be
-sent to and accessed by other tools located in the portal.  Work in progress. </p><hr>
+sent to and accessed by other tools located in the portal.  Work in progress. </p>
 
-	<div id="jmolApp">
-	  <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
-	  <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
-	  <script>
-	    mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
-	    jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
-	  </script>
-	</div>
-
-	<div id="optionsWrapper">
-	  <ul class="optionsNavBar">
+	<ul class="optionsNavBar">
+	    <li class="optionsDivider"></li>
+	    <li><a href="#Basic" onclick="CngClass($('#basicOptions'))">Basic</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#Search" onclick="CngClass($('#searchOptions'))">Search</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#ModelKit" onclick="CngClass($('#ModelKitOptions'))">Model Kit</a></li>
 	    <li class="optionsDivider"></li>
-	    <li><a href="#Coordinates" onclick="CngClass($('#CoordinatesOptions'));readCoordsFromJmol();">Coordinates</a></li>
+	    <li><a href="#Coordinates" onclick="CngClass($('#CoordinatesOptions'));">Coordinates</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#Upload" onclick="CngClass($('#UploadOptions'))">Upload Files</a></li>
-	    <li class="optionsDivider"></li><br><li class="optionsDivider"></li>
+	    <li class="optionsDivider"></li>
 	    <li><a href="#Relaxations" onclick="CngClass($('#RelaxationOptions'))">Molecular Relaxations</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#MolecularDynamics" onclick="CngClass($('#DynamicsOptions'))">Molecular Dynamics</a></li>
 	    <li class="optionsDivider"></li>
 	    <li><a href="#JmolConsole" onclick="CngClass($('#JmolConsole'))">Jmol Console</a></li>
 	    <li class="optionsDivider"></li>
-	  </ul>
+	</ul>
+
+	<hr>
+
+	<div id="jmolApp">
+	  
+	  <script>
+	    mainApplet = Jmol.getApplet(mainApplet, JmolInfo);
+	    jmeApplet = Jmol.getJMEApplet(jmeApplet, JMEInfo, mainApplet);
+	  </script>
+	  <a href="javascript:Jmol.showInfo(mainApplet, true);">2D</a>
+	  <a href="javascript:Jmol.showInfo(mainApplet, false);">3D</a>
+	</div>
+
+	<div id="optionsWrapper">
+	  <div id="basicOptions" class="optionsDiv">
+	    <br>
+	    System Name<input type="text" id="structureName" value="WebDynamics"><br>
+	    Unit Cell<input type="text" onkeyup="drawMol()" id="structureCell" value="10x10x10x90x90x90"><br>
+	    Replication<input type="text" onkeyup="drawMol()" id="cellReplicaion" value="1x1x1"><br>
+	  </div>
+
 	  <div id="searchOptions" class="optionsDiv">
 	    <br>
 	    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
@@ -182,8 +196,8 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	      <option value="=">RCSB(macromolecules)</option></select>
 	    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
 	    <br>
-
 	  </div>
+
 	  <div id="ModelKitOptions" class="optionsDiv">
 	    Right click on the JSMol application in model-kit mode, and options for editing the molecule will appear.
 	    <br>
@@ -228,25 +242,12 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	    <br>
 	    Change this in the other tabs.
 	    <hr>
-	    Temperature<input type="text" value="298">K<br>
-	    Pressure<input type="text" value="760">Pa<br>
-	    <span>&nbsp&nbsp<b> Supercell:</b> X
-	      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px">
-		<option value="1">1</option><option value="2">2</option>
-		<option value="3">3</option><option value="4">4</option>
-	      </select> Y
-              <select id='SupercellY' onChange="supercellPreview()" style="width: 50px">
-                <option value="1">1</option><option value="2">2</option>
-		<option value="3">3</option><option value="4">4</option>
-	      </select> Z
-	      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px">
-		<option value="1">1</option><option value="2">2</option>
-		<option value="3">3</option><option value="4">4</option>
-	      </select>
-	    </span><br>
-	    WallTime<input type="text" value="00:30:00"> (do n^2 on atoms?)<br>
-	    Cores<input type="text" value="1"> (do [n_atoms/24]?)<br>
-	    Snapshots<input type="text" value="10"> To return, funct time/step<br>
+	    Temperature<input type="text" id="temperature" value="298">K<br>
+	    Pressure<input type="text" id="pressure" value="1.0">Bar<br>
+	    WallTime<input type="text" id="walltime" value="00:30:00"> (do n^2 on atoms?)<br>
+	    Nodes<input type="text" id="nnodes" value="1"> (do [n_atoms/24]?)<br>
+	    Snapshots<input type="text" id="snapshots" value="10"> To return, funct time/step<br>
+	    <button onClick="runCp2k()">Run</button>
 
 	    <div id="completedCP2K">
 	      Here will be shown completed calculations
@@ -272,9 +273,9 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
       </div>
 
       <center>
-	  <img src="./MFLogo.png" width="300px" height="100px"/>
-	  <img src="./NERSCLogo.png" width="200px" height="100px"/>
-	  <img src="./JSmol_logo13.png" width="250px" height="100px"/><br>
+	  <img src="./images/MFLogo.png" width="300px" height="100px"/>
+	  <img src="./images/NERSCLogo.png" width="200px" height="100px"/>
+	  <img src="./images/JSmol_logo13.png" width="250px" height="100px"/><br>
       </center>
 
       <r>

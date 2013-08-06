@@ -1,23 +1,49 @@
 #!/usr/bin/env python
-from crawl import BaseCrawler
-from jsonList import JsonList
+from baseCrawler import BaseCrawler
+from util import *
 
 import argparse
 import time
 
 class AmcsdCrawler(BaseCrawler):
-    start_url = 'http://rruff.geo.arizona.edu/AMS/amcsd.php'
+    """ Scraper for the AMCSD. """
 
-    # possible search-related arguments mapped to their names in the form.
+    # Startup resources
+
+    # possible search-related parameters.
     # apparently CSS3 selectors need quotes for these.
-    search_params = {
-        'mineral': '"Mineral"',
-        'author': '"Author"',
-        'chemistry': '"Periodic"',
-        'cellParam': '"CellParam"',
-        'diffraction': '"diff"',
-        'general': '"Key"',
+    search_params = ParamList(
+        SearchParam('--mineral',
+                    '"Mineral"',
+                    help='name of a mineral'),
+        SearchParam('--author',
+                    '"Author"',
+                    help='name of an author'),
+        SearchParam('--chemistry',
+                    '"Periodic"',
+                    help='comma-separated elements, all inside parentheses. See website for details.'),
+        SearchParam('--cellParam',
+                    '"CellParam"',
+                    help='cell parameters and symmetry. See website for details'),
+        SearchParam('--diffraction',
+                    '"diff"',
+                    help='diffraction pattern. See website for detials.'),
+        SearchParam('--general',
+                    '"Key"',
+                    help='general, keyword-based search. See website for details.')
+    )
+    
+    # arguments to this scraper's parser.
+    parser_params = {
+        'description': 'A scraper for the AMCSD at http://rruff.geo.arizona.edu/AMS/amcsd.php'    
     }
+
+    # Configuration Resources
+    # (default)
+
+    # Runtime Resources
+
+    start_url = 'http://rruff.geo.arizona.edu/AMS/amcsd.php'
     
     # CSS3 selectors
     selectors = {
@@ -42,6 +68,8 @@ class AmcsdCrawler(BaseCrawler):
         'no_matches': 'No matches were found for the search',
         'default_search_error': 'An unknown error occurred with the search. Try narrowing or widening your search.'
     }
+
+    # Runtime methods
 
     def crawl(self):
         """
@@ -122,66 +150,5 @@ class AmcsdCrawler(BaseCrawler):
         # empty JsonList
         return JsonList()
         
-
-
-def parse_crawler_args():
-    """ parse command-line arguments into a dictionary of web crawler arguments. """
-    parser = argparse.ArgumentParser(description='A scraper for the AMCSD at http://rruff.geo.arizona.edu/AMS/amcsd.php')
-    parser.add_argument('--debug',
-                        action='store_true',
-                        help='enables debug mode')
-    parser.add_argument('--mineral',
-                        default='',
-                        help='name of a mineral')
-    parser.add_argument('--author',
-                        default='',
-                        help='name of an author')
-    parser.add_argument('--chemistry',
-                        default='',
-                        help='comma-separated elements, all inside parentheses. See website for details.')
-    parser.add_argument('--cellParam',
-                        default='',
-                        help='cell parameters and symmetry. See website for details')
-    parser.add_argument('--diffraction',
-                        default='',
-                        help='diffraction pattern. See website for detials.')
-    parser.add_argument('--general',
-                        default='',
-                        help='general, keyword-based search. See website for details.')
-
-    args = vars(parser.parse_args())
-    
-    # at least one search term must be given.
-    if not verify_search_made(args):
-        parser.error('No search made. Must provide at least one search argument.')
-
-    return args
-
-def verify_search_made(args):
-    """
-    Verify that a dict of argments constitutes a valid search.
-    """
-    search_args = [
-        args['mineral'],
-        args['author'],
-        args['chemistry'],
-        args['cellParam'],
-        args['diffraction'],
-        args['general']
-    ]
-
-    search_given = False
-    for arg in search_args:
-        if arg != '':
-            search_given = True
-    
-    return search_given
-
-def main():
-    spider = AmcsdCrawler(**parse_crawler_args())
-    cl = spider.crawl()
-    print cl.json
-    print 'fetched {0} results.'.format(len(cl))
-
-if __name__ == "__main__":
-    main()
+    # Utility methods
+    # (default)

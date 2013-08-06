@@ -6,11 +6,11 @@
   <link href="../bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
   <link href="../als_portal.css" rel="stylesheet" type="text/css" />
 
-  <script src="../jquery-latest.js"></script>    
+  <script src="../js/jquery-latest.js"></script>    
   <script src="../bootstrap/js/bootstrap.min.js"></script>
-  <script src="../mynewt.js"></script>
-  <script src="../alsapi.js"></script>
-  <script src="../als_portal.js"></script>
+  <script src="../js/mynewt.js"></script>
+  <script src="../js/alsapi.js"></script>
+  <script src="../js/als_portal.js"></script>
   <script> 
     function checkAuthCallback() {;}    
     myCheckAuth();
@@ -22,7 +22,8 @@
 
 <BODY>
 
-<div class="navbar navbar-inverse navbar-fixed-top">
+
+    <div class="navbar navbar-inverse navbar-fixed-top">
       <div class="navbar-inner">
         <div class="container">
           <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -31,30 +32,23 @@
             <span class="icon-bar"></span>
           </a>
           <div class="nav-collapse collapse">
-            <ul class="nav">
-              <li><img src="../alslogo.png" width=56 padding=0 border=0></li>
+	    <ul class="nav">
+              <li><img src="../images/mfnewlogo.png" width=105 padding=0 border=0></li>
               <li><a href="../index.html">Home</a></li>
-              <li><a href="../about.html">About</a></li>
-              <li><a href="../status.html">Status</a></li>
-              <li><a href="../data.html">Data Browser</a></li>
-              <li class="dropdown">
+              <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
+              <li class="dropdown active">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
                 <ul class="dropdown-menu">
-                  <li class="nav-header">X-Ray Scattering</li>
-                  <li><a href="#">GISAXS Code 1</a></li>
-                  <li><a href="#">GISAXS Code 2</a></li>
-                  <li class="divider"></li>
                   <li class="nav-header">X-Ray Absorption</li>
                   <li class="active"><a href="#">WebXS</a></li>
 		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
-                  <li><a href="#">FEFF</a></li>
+                  <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
-                  <li class="nav-header">Photoemission</li>
-                  <li><a href="#">BerkeleyGW</a></li>
+
                 </ul>
               </li>
             </ul>
-            <div class="pull-right" id="auth-spinner"> <img src="../white-ajax-loader.gif"></div>
+            <div class="pull-right" id="auth-spinner"> <img src="../images/white-ajax-loader.gif"></div>
             <div id=login-area style='display:none;' class="pull-right">
               <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
                 <input class="span2" type="text" placeholder="Username" id="id_username">
@@ -72,6 +66,7 @@
         </div>
       </div>
     </div>
+
 
 <div class="container">
   <br>
