@@ -184,7 +184,7 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	    <br>
 	    System Name<input type="text" id="structureName" value="WebDynamics"><br>
 	    Unit Cell<input type="text" onkeyup="drawMol()" id="structureCell" value="10x10x10x90x90x90"><br>
-
+	    Replication<input type="text" onkeyup="drawMol()" id="cellReplicaion" value="1x1x1"><br>
 	  </div>
 
 	  <div id="searchOptions" class="optionsDiv">
@@ -244,20 +244,6 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	    <hr>
 	    Temperature<input type="text" id="temperature" value="298">K<br>
 	    Pressure<input type="text" id="pressure" value="1.0">Bar<br>
-	    <span>Replication in X
-	      <select id='SupercellX' onChange="supercellPreview()" style="width: 50px">
-		<option value="1">1</option><option value="2">2</option>
-		<option value="3">3</option><option value="4">4</option>
-	      </select> Y
-              <select id='SupercellY' onChange="supercellPreview()" style="width: 50px">
-                <option value="1">1</option><option value="2">2</option>
-		<option value="3">3</option><option value="4">4</option>
-	      </select> Z
-	      <select id='SupercellZ' onChange="supercellPreview()" style="width: 50px">
-		<option value="1">1</option><option value="2">2</option>
-		<option value="3">3</option><option value="4">4</option>
-	      </select>
-	    </span><br>
 	    WallTime<input type="text" id="walltime" value="00:30:00"> (do n^2 on atoms?)<br>
 	    Nodes<input type="text" id="nnodes" value="1"> (do [n_atoms/24]?)<br>
 	    Snapshots<input type="text" id="snapshots" value="10"> To return, funct time/step<br>
