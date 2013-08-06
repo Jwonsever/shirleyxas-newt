@@ -182,7 +182,7 @@ function previousJobs() {
 				url: "/command/hopper",
 				data: {"executable": command},
 				success: function(res){
-			 	 unfText = "<h3>Unfinished Calcualtions Available for Resubmission</h3>"; 
+			 	 unfText = "<h3>Unfinished Calculations Available for Resubmission</h3>"; 
 				 unfText += "<button onclick='previousJobs()'>Update</button><br>"
 				 unfText += "<table width=100\%><tr><th width=50\% align=center>Job Name</th><th width=15\% align=center>Hours</th><th width=120></th></tr></table>";
 				 unfText += "<table width=100\% cellpadding=5 class='table table-bordered'>";
@@ -1364,7 +1364,7 @@ function executeJob(form, materialName) {
     var machine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
-    var useCustomBlock = ( $('#customInputBlock').val() == "DEFAULT" );
+    var useCustomBlock = ( $('#customInputBlock').val() != "DEFAULT" );
 
     //TODO Make this custom block absolute or something.  too many different things merging together here.
 
