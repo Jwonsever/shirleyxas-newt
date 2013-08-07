@@ -81,7 +81,7 @@ def main(argv = None):
                     continue
             
                 l.insert(0, model)
-                l.insert(0, atom)
+                l.insert(0, longatom)
                 l.pop()
                 l.pop()
                 l.pop()

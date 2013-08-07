@@ -29,6 +29,8 @@ def main(argv = None):
     #Rest not used...
     #flags = argv[3]
 
+
+    #todo (start and end ev based on redline)
     startEv=0
     endEv=0
 

@@ -638,19 +638,27 @@ function roundNumber(num, dec) {
 	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
 	return result;
 }
-//Postprocessing functions
+
+//Postprocessing funcions
+//Turn C2 into C002
 function longAtom(atomNo) {
     var type = atomNo.replace(/\d/g,'');
     if ($('#totalAtoms').text().length <= atomNo.replace(type, '').length) return atomNo;
     return longAtom(type + "0" + atomNo.replace(type, ''));
 }
+//Turn C002 into C2
+function shortAtom(atomNo) {
+    var type = atomNo.replace(/\d/g,'');
+    return  type + atomNo.replace(type, '').replace(/^[0]+/g,"");
+}
+
 //post Postprocessing state job
 function postProcessing(atomNo, activeMo, state) {
     activeMo = Number(activeMo);
     
     //Check all of the inputs
     var xasAtoms = $('#xasAtoms').text();
-    if (!(atomNo.match(/[A-Z][a-z]?\d+/) && xasAtoms.match(atomNo))) {
+    if (!(atomNo.match(/[A-Z][a-z]?\d+/) && xasAtoms.match(shortAtom(atomNo)))) {
 	alert("Atom must be one of the calculated atoms.  For example 'C1'.");
 	return;
     }
