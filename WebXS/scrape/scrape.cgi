@@ -4,15 +4,16 @@
 # Parameter scrubbing will be done there.
 # TODO: look into what could go wrong by not scrubbing parameters here.
 
-print "Content-Type: text/plain"
-print ""
+#print "Content-Type: text/plain"
+#print ""
 
 import cgi
 import cgitb
 import urllib
 import urllib2
 
-cgitb.enable()
+# uncomment to allow in-browser debugging
+#cgitb.enable()
 
 form = cgi.FieldStorage()
 
