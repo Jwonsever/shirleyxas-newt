@@ -1,94 +1,71 @@
-#!/bin/sh
+#!/bin/csh
 
 #TODO switch from jwonsever home paths to web paths
 
 # Load Global Variables
-scriptDir=`dirname $0`/../../GlobalValues.in
+set scriptDir = `pwd`/../../GlobalValues.in
 echo $scriptDir
 /bin/bash $scriptDir
 
-if [[ $# < 1 ]]; then
+if ($#argv < 1) then
   echo "usage: $0 cif_file|xyz_file [mol_prefix] [cell_size=10x10x10x90x90x90] [MD_temp=298K] [MD_press=1Bar] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
-  exit 1
-fi
+  exit(1)
+endif
 
 
-outputPath=`dirname $1`
-cd $outputPath
+set outputPath = `dirname $1`
+cd outputPath
     
-cif_file=$1
-if [ ! -f $cif_file ]; then
+set cif_file = $1
+if !(-e $cif_file) then
   echo "ERROR: Cannot locate file $1"
-  exit 1
-fi
+  exit(1)
+endif
+set prefix = `basename $cif_file`
+set prefix = $prefix:r
+if ($#argv > 1) set prefix = $2
 
-prefix=`basename $cif_file`
-prefix=$prefix:r
-if [[ $# > 1 ]]; then
-    prefix=$2
-fi
+set cellsize = (10 10 10 90 90 90)
+if ($#argv > 2) set cellsize = `echo $3 | sed 's/[a-z]*/ /gi'`
+set cell = ($cellsize)
 
-cellsize=(10 10 10 90 90 90)
-if [[ $# > 2 ]]; then
-    cellsize=`echo $3 | sed 's/[a-z]/ /g'`
-fi
-
-cell=($cellsize)
-
-if [ ${#cell[@]} != 6 ]; then
-  echo ${#cell[@]}
+if ($#cell != 6) then
+  echo $#cell
   echo "ERROR: Expected 'a b c alpha beta gamma' for cell. Got $cellsize"
-  exit 1
-fi
+  exit(1)
+endif
 
-temp=298
-if [[ $# > 3 ]]; then 
-    temp=`echo $4 | sed 's/[a-zA-Z]//gi'`
-fi
-echo $temp
+set temp = 298
+if ($#argv > 3) set temp  = `echo $4 | sed 's/[a-zA-Z]*//gi'`
 
-pressure=1.0
-if [[ $# > 4 ]]; then
-    pressure=`echo $5 | sed 's/[a-zA-Z]//gi'`
-fi
-echo $pressure
+set pressure = 1.0
+if ($#argv > 4) set pressure  = `echo $5 | sed 's/[a-zA-Z]*//gi'`
 
-nodes=6
-if [[ $# > 5 ]]; then 
-    nodes=$5
-fi
+set nodes = 6
+if ($#argv > 5) set nodes = $5
 
-ppn=24
-if [[ $# > 6 ]]; then
-    ppn=$6
-fi
+set ppn = 24
+if ($#argv > 6) set ppn = $6
 
-cp2k_template_file=/global/u2/w/wonsever/cp2k/webcp2k/cp2k.template.in
-if [[ $# > 7 ]]; then 
-    cp2k_template_file=$7
-fi
+set cp2k_template_file = ~/cp2k/webcp2k/cp2k.template.in
+if ($#argv > 7) set cp2k_template_file = $7
 
-pbs_template_file=/global/u2/w/wonsever/cp2k/webcp2k/template.cp2k.pbs
-if [[ $# > 8 ]]; then 
-    pbs_template_file=$8
-fi
+set pbs_template_file = ~/cp2k/webcp2k/template.cp2k.pbs
+if ($#argv > 8) set pbs_template_file = $8
 
-repstr="1x1x1"
-tprocs==${`echo "$nodes * $ppn" | bc -l`/\.*}
+set repstr = "1x1x1"
+set tprocs=`echo "$nodes * $ppn" | bc -l`
 
-
-filename=$(basename "$cif_file")
-ext="${filename##*.}"
-echo ext
-if [ $ext == "cif" ]; then 
-  cell=`grep -e cell_ $cif_file | awk '{print $2}' | sed 's/([^)]*)//g'`
+set ext = $cif_file:e
+if ($ext == "cif") then 
+  set cell = `grep -e cell_ $cif_file | awk '{print $2}' | sed 's/([^)]*)//g'`
 
 #convert to xyz coords
-  echo "copy ${cif_file} .xyz" | /global/u2/w/wonsever/gdis-0.90/gdis 2>&1 > /dev/null
+  echo "copy ${cif_file} .xyz" | ~/gdis-0.90/gdis >& /dev/null
   mv $cif_file.xyz $prefix.$repstr.xyz
 else
   cp $cif_file $prefix.$repstr.xyz
-fi
+endif
 
 cat ${prefix}.${repstr}.xyz | awk '{if(NR>2) { printf "%-4s %6.5f %6.5f %6.5f\n",$1,$2,$3,$4} }' > ${prefix}.${repstr}.cp2k.xyz
 
@@ -104,33 +81,24 @@ sed -i "s/PRESSURE_HERE/$pressure/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PREFIX_HERE/${prefix}.${repstr}/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/CP2KHOME_HERE/${CODE_BASE_DIR}${CP2K_LOC}/" ${prefix}.${repstr}.${temp}K.cp2k.in
 
-basis_set_file="/global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/GTH_BASIS_SETS /global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/BASIS_MOLOPT"
-pseudo_file="/global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/GTH_POTENTIALS /global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/POTENTIAL"
+set basis_set_file = "~/cp2k/webcp2k/cp2k/tests/QS/GTH_BASIS_SETS ~/cp2k/webcp2k/cp2k/tests/QS/BASIS_MOLOPT"
+set pseudo_file = "~/cp2k/webcp2k/cp2k/tests/QS/GTH_POTENTIALS ~/cp2k/webcp2k/cp2k/tests/QS/POTENTIAL"
 
 echo "" > ${prefix}.kind.dat
 rm -fr __tmp.dat
-
-atomList=( `cat ${prefix}.${repstr}.cp2k.xyz | awk '{print $1}'` ) 
-for i in "${atomList[@]}"
-do
-  
-  echo $i
-
-  if [ -e ${prefix}.kind.${i}.dat ]; then
-      continue
-  fi
-
-  list=(`grep -c ${i} $basis_set_file | grep GTH | sed 's/.*://'`)
-  if [ ${#list[@]} == 0 ]; then
+foreach i (`cat ${prefix}.${repstr}.cp2k.xyz | awk '{print $1}'`)
+  if (-e ${prefix}.kind.${i}.dat) continue
+  set list = (`grep -c ${i} $basis_set_file | grep GTH | sed 's/.*://'`)
+  if ($#list == 0) then
     echo "ERROR: Cannot find DZVP-GTH entry for $i in $basis_set_file"
-    exit 1
-  fi
-  list=(`grep -c ${i} $pseudo_file | grep GTH | sed 's/.*://'`)
-  if [ ${#list[@]} == 0 ]; then
+    exit(1)
+  endif
+  set list = (`grep -c ${i} $pseudo_file | grep GTH | sed 's/.*://'`)
+  if ($#list == 0) then
     echo "ERROR: Cannot finf GTH-PBE entry for $i in $pseudo_file"
-    exit 1 
-  fi
-  pseudo_str=`grep "${i} GTH-PBE-" $pseudo_file | head -1 | awk '{print $2}'`
+    exit(1)
+  endif
+  set pseudo_str = `grep "${i} GTH-PBE-" $pseudo_file | head -1 | awk '{print $2}'`
   cat > ${prefix}.kind.${i}.dat <<DATA;
 
   &KIND $i
@@ -141,8 +109,7 @@ DATA
 
   cat ${prefix}.kind.dat ${prefix}.kind.${i}.dat > __tmp.dat
   mv __tmp.dat ${prefix}.kind.dat
-done
-
+end
 sed -i "/KIND_HERE/r ${prefix}.kind.dat" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i '/KIND_HERE/d' ${prefix}.${repstr}.${temp}K.cp2k.in
 
@@ -152,12 +119,13 @@ sed -i "s/nodes_here/$nodes/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/ppn_here/$ppn/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/procs_here/$tprocs/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/prefix_here/${prefix}/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
-#todo: wallhours from tool, smartly calculated
-sed -i "s/wallhours_here/04/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
-#also todo, selective number of snapshots
 sed -i "s/fprefix_here/${prefix}.${repstr}.${temp}K/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/cell_p_here/$repstr/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 rm -fr __tmp.dat ${prefix}.kind*.dat 
 
-#Start the calculation
-qsub *.pbs
+exit:
+exit(0)
+
+error:
+echo "ERROR occurred"
+exit(1)

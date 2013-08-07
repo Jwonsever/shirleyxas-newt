@@ -1,12 +1,8 @@
 #!/bin/bash
 #PBS -q regular
-
 #PBS -l mppnppn=ppn_here
-
-ototprocs=`echo "ppn_here * nodes_here" | bc -l`
 #PBS -l mppwidth=procs_here
-#PBS -l walltime=12:00:00
-
+#PBS -l walltime=wallhours_here:00:00
 #PBS -e cp2k.err
 #PBS -o cp2k.out
 
@@ -26,6 +22,6 @@ mkdir -p /global/scratch/sd/${USER}/${prefix}.geopt ./results/
 cp ${prefix}.* /global/scratch/sd/${USER}/${prefix}.geopt/
 cd /global/scratch/sd/${USER}/${prefix}.geopt
 
-echo "Total Processors: "$totprocs
-aprun -n ${totprocs} $cp2kpath/cp2k.popt ${fprefix}.cp2k.in >> ${fprefix}.cp2k.geopt.screen.out
+echo "Total Processors: " + "procs_here"
+aprun -n procs_here $cp2kpath/cp2k.popt ${fprefix}.cp2k.in >> ${fprefix}.cp2k.geopt.screen.out
 cp ${prefix}.*xyz ${prefix}.*.restart ${prefix}.*.mulliken ${prefix}.*.screen.out ${PBS_O_WORKDIR}/results/

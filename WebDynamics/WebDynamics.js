@@ -239,7 +239,8 @@ function sendToWebXS() {
 }
 
 function saveFile() {	
-    var fname = prompt("Save file as?", GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics.xyz");
+    var sysname = $("#structureName").val();
+    var fname = prompt("Save file as?", GLOBAL_SCRATCH_DIR + myUsername + "/"+ sysname +".xyz");
 
     //put on Hopper
     writeFileToFilesystem(fname);
@@ -276,39 +277,68 @@ function writeFileToFilesystem(filename) {
 //RUN CP2K Simulation, roughly equivalent to the submit commands in WebXS
 function runCp2k() {
     //grab all inputs
-    var press = $("#pressure").val();
-    var temp = $("#temperature").val();
-    var walltime = $("#walltime").val();
-    var nnodes = $("#nnodes").val();
-    var nsnaps = $("#snapshots").val();
+    var sysname = $("#structureName").val();
+
 
     //put xyz file.
     var now= new Date();
-    now = now.toDateString.replace(" ","") + ".xyz";
-    alert(now);
-    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + now;
-    writeFileToFilesystem(filePath);
-
-
+    now = now.toDateString().replace(/ /g,"");
+    var fullname = sysname + now;
+    //alert(fullname);
+    var basePath=GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + fullname + "/"
+    var filePath=GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + fullname + "/" + sysname + ".xyz";
+    
+    //Make Output Directory
+    var mkd = SHELL_CMD_DIR+"makeFileDir.sh "+basePath;
+    $.newt_ajax({type: "POST",
+		url: "/command/hopper",
+		data: {"executable": mkd},
+		success: function(res) {writeFileToFilesystem(filePath);
+		executeCp2kScript(filePath);},
+    });
+}
+function executeCp2kScript(filePath) {   
     var command = CODE_BASE_DIR + DYN_LOC + "/cp2k/runCp2k.sh " ;
-    var args = filePath + " " + now + " ";
-    //(pass unitcell)
+    
+    var args = filePath + " ";
+
+    var sysname = $("#structureName").val();
+    args += sysname + " ";
+
+    var unitcell = $("#structureCell").val();
+    args += unitcell + " ";
+
+    var temp = $("#temperature").val();
+    args += temp + " ";
+
+    var press = $("#pressure").val();
+    args += press + " ";
+
+
+    var nnodes = $("#nnodes").val();
+    args += nnodes + " ";
+
+    //todo
+    var walltime = $("#walltime").val();
+    var nsnaps = $("#snapshots").val();
 
     //runcp2k script for n snapshots    
-    /*
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
 		data: {"executable": command + args},
+		success: function (res) {console.log("Started CP2K");updateCp2kTracker()}
 	});
-    */
-
+}
+function updateCp2kTracker() {
     //Track
     //draw progressbar based on walltime req
 
     //load in at bottom (from gscratch location)
     //Same interface as ABOVE
 
-    //pull into jsmol
+}
+function openFinishedCp2k() {
+    //pull into jsmol onclick
     var scr = "try {"
 
     scr += ";}catch(e){}"
