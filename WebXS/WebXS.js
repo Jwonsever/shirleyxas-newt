@@ -209,9 +209,9 @@ function previousJobs() {
 					 + jname + "\', \'" + "hopper"
 					 + "\')\" type=\"button\">View Files</button></td>";
 				     unfText += "<td><img onClick=archiveJobFiles('"+shortDir+"','"+jname+"')";
-				     unfText += " width='28px' src='images/archivesymbol.png'/></td>";
+				     unfText += " width='28px' src='images/archivesymbol.png' alt='Archive' title='Archive'/></td>";
 				     unfText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
-				     unfText += " width='28px' src='images/trash.png'/></td>";
+				     unfText += " width='28px' src='images/trash.png' alt='Delete' title='Delete'/></td>";
 				     unfText += "</tr>";
 				 }
 				 unfText += "</table><br>";
@@ -284,9 +284,9 @@ function previousJobs() {
 					    + jname + "\', \'" + res[i].hostname
 					    + "\')\" type=\"button\">View Files</button></td>";
 					myText += "<td><img onClick=archiveJobFiles('"+shortDir+"','"+jname+"')";
-					myText += " width='28px' src='images/archivesymbol.png'/></td>";
+					myText += " width='28px' src='images/archivesymbol.png' alt='Archive' title='Archive'/></td>";
 					myText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
-					myText += " width='28px' src='images/trash.png'/></td>";
+					myText += " width='28px' src='images/trash.png' alt='Delete' title='Delete'/></td>";
 					myText += "</tr>";
 				    }
 				    myText += "</table><br>";
