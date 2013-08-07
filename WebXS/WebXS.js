@@ -1666,8 +1666,7 @@ function displaySearchResult() {
 
 // organizes scraping operations
 Scrape = {}
-//Scrape.scraperPath = 'scrape/scrape.cgi';
-Scrape.scraperPath = 'scrape/test.cgi';
+Scrape.scraperPath = 'scrape/scrape.cgi';
 Scrape.getInputs = function(form) {
   var selector = '#' + form.id + ' table input';
   return $(selector);
