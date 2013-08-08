@@ -25,3 +25,6 @@ cd /global/scratch/sd/${USER}/${prefix}.geopt
 echo "Total Processors: " + "procs_here"
 aprun -n procs_here $cp2kpath/cp2k.popt ${fprefix}.cp2k.in >> ${fprefix}.cp2k.geopt.screen.out
 cp ${prefix}.*xyz ${prefix}.*.restart ${prefix}.*.mulliken ${prefix}.*.screen.out ${PBS_O_WORKDIR}/results/
+
+#Write to easily reachable standart output file
+cp ${PBS_O_WORKDIR}/results/*pos*xyz ${PBS_O_WORKDIR}/results/snapshots.xyz

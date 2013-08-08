@@ -336,19 +336,30 @@ function updateCp2kTracker() {
     //load in at bottom (from gscratch location)
     //Same interface as ABOVE
 
-    //Final file is
-    //$GSCRATCH/WebDynamics/cp2k/name.*.pos-1.xyz
+   
 
 }
-function openFinishedCp2k() {
-    //pull into jsmol onclick
-    var scr = "try {"
+function openFinishedCp2k(structure) {
+    //Jmol Show Loading
+    var scr = "zap;set echo top left;font echo 16;echo \"loading...\";refresh;";
+    Jmol.script(mainApplet, scr);
+    
 
-    scr += ";}catch(e){}"
-    Jmol.script("mainApplet", scr/*Do This*/)
+    file = GLOBAL_SCRATCH_DIR + myUsername + "/WebDynamics/cp2k/" + structure + "/results/snapshots.xyz";
 
+     $.newt_ajax({type: "GET",
+		url: file + "?view=read",
+		success: function(res){
+		 res = res + ""; 
+		 res = res.replace(/\r\n|\r|\n/g, "\n");
+	 
+		 if (amIMobile) {scr = unbindMobileClicks();}
+		 scr += "try{load INLINE '" + res + "';}catch(e){}";   
+		 Jmol.script("mainApplet", scr/*Do This*/);
+    
+	     },});
+    //TODO: update cell
 }
-
 
 /*Write XYZ Files
   Convert to CIF
