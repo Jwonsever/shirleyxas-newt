@@ -7,7 +7,8 @@ SERVER_URL="TMP_ADDR/WebXS"
 #Relative locations
 CODE_LOC="WebXS"
 DYN_LOC="WebDynamics"
-CP2K_LOC="WebDynamics/cp2k/cp2k"
+CP2K_LOC="WebDynamics/cp2k"
+CP2K_PATH=$CODE_BASE_DIR$CP2K_LOC
 DATA_LOC="Shirley-data"
 TEMPORARY_FILES="Shirley-data/tmp"
 XCH_SHIFTS="xas_input/XCHShifts.csv"

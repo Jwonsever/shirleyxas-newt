@@ -336,6 +336,9 @@ function updateCp2kTracker() {
     //load in at bottom (from gscratch location)
     //Same interface as ABOVE
 
+    //Final file is
+    //$GSCRATCH/WebDynamics/cp2k/name.*.pos-1.xyz
+
 }
 function openFinishedCp2k() {
     //pull into jsmol onclick

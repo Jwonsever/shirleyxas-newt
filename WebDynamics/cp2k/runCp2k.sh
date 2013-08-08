@@ -63,12 +63,12 @@ if [[ $# > 6 ]]; then
     ppn=$6
 fi
 
-cp2k_template_file=/global/u2/w/wonsever/cp2k/webcp2k/cp2k.template.in
+cp2k_template_file=$CP2K_PATH/cp2k.template.in
 if [[ $# > 7 ]]; then 
     cp2k_template_file=$7
 fi
 
-pbs_template_file=/global/u2/w/wonsever/cp2k/webcp2k/template.cp2k.pbs
+pbs_template_file=$CP2K_PATH/template.cp2k.pbs
 if [[ $# > 8 ]]; then 
     pbs_template_file=$8
 fi
@@ -102,10 +102,10 @@ sed -i "s/GAMMA_HERE/$cell[6]/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/TEMP_HERE/$temp/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PRESSURE_HERE/$pressure/" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PREFIX_HERE/${prefix}.${repstr}/" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/CP2KHOME_HERE/${CODE_BASE_DIR}${CP2K_LOC}/" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/CP2KHOME_HERE/${CP2K_PATH}/" ${prefix}.${repstr}.${temp}K.cp2k.in
 
-basis_set_file="/global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/GTH_BASIS_SETS /global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/BASIS_MOLOPT"
-pseudo_file="/global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/GTH_POTENTIALS /global/u2/w/wonsever/cp2k/webcp2k/cp2k/tests/QS/POTENTIAL"
+basis_set_file="$CP2K_PATH/cp2k/tests/QS/GTH_BASIS_SETS $CP2K_PATH/cp2k/tests/QS/BASIS_MOLOPT"
+pseudo_file="$CP2K_PATH/cp2k/tests/QS/GTH_POTENTIALS $CP2K_PATH/cp2k/tests/QS/POTENTIAL"
 
 echo "" > ${prefix}.kind.dat
 rm -fr __tmp.dat
