@@ -2,7 +2,20 @@
 
 MOLNAME="$2"
 
-echo MOLNAME
+echo $MOLNAME
 
 dir="${1}/${MOLNAME}"
-mkdir $dir
+
+function recMkdir {
+    echo $1
+
+    if ( mkdir $1 ); then
+	return
+    else 
+	recMkdir `dirname $1`
+	mkdir $1
+	return
+    fi
+}
+
+recMkdir $dir
