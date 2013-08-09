@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>TreeEval Tutorial</title>
+  </head>
+  <body>
+    <h1>Using TreeEval for REST APIs</h1>
+    <p>TreeEval.js is a JavaScript API that defines tree evaluation in a given
+    context. It comes with a pre-defined HTML context for trees, as well as a
+    tree evaluator for string building. Using these, we can easily describe a
+    flow-controlled string builder in HTML, and have TreeEval.js interpret it.
+    </p>
+
+    <h2>What is a REST API?</h2>
+    <p>A REST API is an API defined by a website that allows access to it via
+    well-formed url requests. For example, an online chemical database might
+    have a regular search page that allows users to search for chemicals with
+    their web browser. However, they might want to make it easier for people to
+    access their content programmatically. Of course, one could just scrape the
+    site, but writing a scraper is a tedious and fragile process, and scraping
+    may put unnecessary strain on the web servers. As an alternative that
+    benefits both parties, the website can define a REST API. This would allow
+    users to query the database by submitting a request to a specially-formatted
+    url and receive in return data from the database.</p>
+
+    <h2>Why TreeEval?</h2>
+    <p>REST APIs, such as
+    <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html">PUG
+    REST</a>, can often be described in terms of symbolic and literal values.
+    The symbols can in turn be defined by more symbolic and literal values,
+    <a href="https://en.wikipedia.org/wiki/Context-free_grammar">and so on</a>
+    until the whole thing can be viewed as a well-defined way to format
+    pre-defined string values. One can visualize this in terms of a tree.
+    In fact, it can be seen as a tree in two ways:</p>
+    <ul>
+      <li><b>Required Inputs:</b> Using PUG REST as an example, we can see that
+      its requests must contain 4 elements: a literal url element, a symbolic
+      input element, a symbolic operation element, and a symbolic output
+      element Furthermore, an input specification contains 3 elements: a
+      symbolic domain element, a symbolic namespace element, and a symbolic
+      identifier element. Each of the other top-level symbolic elements have
+      their own specifications as well. One can see that the format of a PUG
+      REST request can be described as a tree of symbols.</li>
+      <li><b>Possible Inputs:</b> Some elements are defined to take on one of
+      many possible inputs. In PUG REST, a compound domain namespace element
+      is defined to take on one of many values. One such possibility is an
+      xref element. In turn, an xref element is made up of one specific literal
+      element and one of many other literal elements. When considering all the
+      possible inputs to the query, one can visualize a tree that holds all the
+      possibilities.</li>
+  </body>
