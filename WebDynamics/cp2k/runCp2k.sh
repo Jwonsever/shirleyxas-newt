@@ -3,9 +3,11 @@
 #TODO switch from jwonsever home paths to web paths
 
 # Load Global Variables
-scriptDir=`dirname $0`/../../GlobalValues.in
-echo $scriptDir
-/bin/bash $scriptDir
+scriptDir=`dirname $0`
+. $scriptDir/../../GlobalValues.in
+
+echo $CP2K_LOC
+echo $CK2K_PATH
 
 if [[ $# < 1 ]]; then
   echo "usage: $0 cif_file|xyz_file [mol_prefix] [cell_size=10x10x10x90x90x90] [MD_temp=298K] [MD_press=1Bar] [nodes=6] [ppn=24] [cp2k_template_file] [pbs_template_file]"
@@ -74,8 +76,8 @@ if [[ $# > 8 ]]; then
 fi
 
 repstr="1x1x1"
-tprocs==${`echo "$nodes * $ppn" | bc -l`/\.*}
-
+tprocs=$(`echo "$nodes * $ppn" | bc -l`/.*)
+#tprocs=$( printf "%.0f" $myduration )
 
 filename=$(basename "$cif_file")
 ext="${filename##*.}"
@@ -151,11 +153,11 @@ cp $pbs_template_file ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/nodes_here/$nodes/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/ppn_here/$ppn/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/procs_here/$tprocs/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
-sed -i "s/prefix_here/${prefix}/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 #todo: wallhours from tool, smartly calculated
 sed -i "s/wallhours_here/04/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 #also todo, selective number of snapshots
 sed -i "s/fprefix_here/${prefix}.${repstr}.${temp}K/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
+sed -i "s/prefix_here/${prefix}/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/cell_p_here/$repstr/" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 rm -fr __tmp.dat ${prefix}.kind*.dat 
 
