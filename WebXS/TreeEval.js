@@ -8,6 +8,8 @@ API/Library for performing contextual tree evaluation.
 
 Implemented for string-building via evaluation of symbolic document elements.
 Essentially a text-replacement engine in an HTML context.
+
+For a tutorial, see TreeEval-tutorial.html
  */
 
 TreeEval = {};
@@ -499,6 +501,11 @@ TreeEval.Evaluators['base']._Assemblers['list_concat'] = function(values) {
   return this_evaluator._sepAssemble(values, '');
 }
 TreeEval.Evaluators['base']._Assemblers['list_query'] = function(values) {
+  // In order to construct the actual field-value pairs, an EqualsList
+  // should be used. Then, assemble them with a QueryList.
+  // Thus, QueryLists should usually contain only EqualsLists.
+  // Also, the EqualsLists should have only 2 elements:
+  // the first being the field name, the second being its value.
   var this_evaluator = TreeEval.Evaluators['base'];
   var ret = '?';
   ret +=  this_evaluator._sepAssemble(values, '&');
