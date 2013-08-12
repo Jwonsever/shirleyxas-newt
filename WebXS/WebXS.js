@@ -1329,6 +1329,9 @@ function newJobSubmission(form) {
 		//Announce failure
 		 form.Submit.disabled=false;
 	 	 $('#subStatus').html("<table width=100\%><th align=left>Failed!\n"+testStatus+":\n" + errorThrown+"</th></table>");
+		 if (errorThrown == "FORBIDDEN") {
+		     alert("Please log in first.");
+		 }
 	    },});
 }
 
@@ -1689,6 +1692,7 @@ function displaySearchResult() {
     script = "try{set useMinimizationThread false;load INLINE '" + lastSearchResult + "';minimize STEPS 300 addHydrogens;javascript readCoordsFromJmol();}catch(e){;}";
     Jmol.script(previewApplet, script);
     
+    readCoordsFromJmol()
     //activeModel = models.length-1;
     //drawMolInPreview();
 }

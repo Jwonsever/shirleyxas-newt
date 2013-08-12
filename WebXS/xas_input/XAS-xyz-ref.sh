@@ -9,8 +9,9 @@ fi
 # Load user variables
 . ./Input_Block.in
 
-#Reset NJOB (7/8/13)
+#Reset NJOB & TOT_CHG
 NJOB=1
+tot_charge=0
 
 # number of processors
 if [[ -n $PBS_NODEFILE ]]; then
