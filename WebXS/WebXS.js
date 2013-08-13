@@ -38,6 +38,10 @@ function getUserInfo() {
 var models = ["C -0.00025 -0.00025 -0.00025\nH 0.64018 0.64018 0.64018\nH -0.64075 -0.64075 0.64049\nH -0.64075 0.64049 -0.64075\nH 0.64049 -0.64075 -0.64075"];
 activeModel = 0;
 
+//Which machine to use when running scripts.
+//Always Hopper, unless hopper is down in which case the tool will ATTEMPT to use carver.  Carver may not work correctly in MANY situations.
+var machine = "hopper";
+
 //Lists all of the jobs currently running on Hopper, by ajax qstat.
 var machines=["hopper"]; //var machines=["hopper", "carver", "dirac"];
 var autoInterval = 0;
@@ -48,7 +52,7 @@ function runningJobs() {
 
     myText+="<div id='runningTable'>";
     myText+="<div id='ajaxLoader'><center><img src=\"ajax-loader-2.gif\" width=40></center></div>";
-    myText+="<br></div><div id='errorLog' style='background-color:#8994b0;display:none;'>Error Log:<br></div>";
+    myText+="<br></div><div id='errorLog' style='max-height:300px;background-color:#e1e1e1;display:none;'>Error Log:<br></div>";
     myText+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
     myText+="As of: <span id='lastDate'> ";
     myText+=" </span> &nbsp;&nbsp;<button onClick='cumulativeRunningJobs()'>Update</button>";

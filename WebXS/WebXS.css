@@ -22,6 +22,10 @@ James Wonsever
     width: 400px; height: 280px;
 }
 
+#alarm-bar {
+    background-color:#EE4545;
+}
+
 .blueBackground {
         background-color:#69779a;	
         border-radius: 15px;

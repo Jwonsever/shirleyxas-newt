@@ -48,7 +48,16 @@
     <script src="WebXS.js"></script>
     <script src="jmolScripts.js"></script>
     <Script src="jmolInit.js"></script>
-    
+    <script>
+      $.newt_ajax({type: "GET",
+      url:newt_base_url + "/status/",
+      success:function(res) {
+      if (res[0].status != "up") {
+      $("#alarm-bar").html("<b>The NERSC Hopper machine is down!  Carver will be used, Job Submission will not work.</b>");
+      }
+
+      },});
+    </script>
   </head>
   <body>
 
@@ -97,6 +106,8 @@
     </div>
 
     <div class="container">
+
+      <div id="alarm-bar"></div>
 
       <div class="row">
 
