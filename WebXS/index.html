@@ -3,7 +3,7 @@
   <head>
     <title>Web XS</title>
 
-    <!-- Bootstrap -->
+    <!-- Bootstrap & CSS -->
     <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <style>
       body {
@@ -15,7 +15,7 @@
     <link rel="stylesheet" href="WebXS.css">
 
 
-    <!-- Als Bootstrap, etc-->
+    <!-- Als Bootstrap, JQuery, etc-->
     <script src="../js/jquery-latest.js"></script>    
     <script src="../bootstrap/js/bootstrap.min.js"></script>
     <script src="../js/mynewt.js"></script>
@@ -48,6 +48,8 @@
     <script src="WebXS.js"></script>
     <script src="jmolScripts.js"></script>
     <Script src="jmolInit.js"></script>
+
+    <!-- Notice Hopper Downtime, and alert the user. -->
     <script>
       $.newt_ajax({type: "GET",
       url:newt_base_url + "/status/",
@@ -58,6 +60,7 @@
 
       },});
     </script>
+
   </head>
   <body>
 

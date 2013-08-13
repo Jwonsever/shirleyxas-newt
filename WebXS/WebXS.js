@@ -1657,6 +1657,7 @@ function restQuery() {
   var result = '';
   switch(end) {
     case 'SDF':
+	url += "?record_type=3d"; // Grab 3d 
       $.get(url, function(data, status) {
         lastSearchResult = data;
         result = '<p id="searchResult" ';
@@ -1693,7 +1694,7 @@ function restQuery() {
 function displaySearchResult() {
     var script = "zap;set echo top left;font echo 16;echo \"Loading and Optimizing\";";
     Jmol.script(previewApplet, script);
-    script = "try{set useMinimizationThread false;load INLINE '" + lastSearchResult + "';minimize STEPS 300 addHydrogens;"
+    script = "try{set useMinimizationThread true;load INLINE '" + lastSearchResult + "'; " //Fom before 3d records: minimize STEPS 300 addHydrogens;"
 	+ "}catch(e){;}";
     Jmol.script(previewApplet, script);
     Jmol.script(previewApplet, "javascript DSRhelper()");
