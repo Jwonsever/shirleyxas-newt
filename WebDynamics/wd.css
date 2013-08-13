@@ -9,6 +9,7 @@ James Wonsever - Mftheory
     width: 500px;
 }
 
+
 #optionsWrapper {
     position: relative;
     margin-right:500px;
@@ -45,4 +46,15 @@ James Wonsever - Mftheory
    bottom: 0;
    left: 0;
    height: 30px;
+}
+
+/* Hack to keep min size */
+.navbar {
+    min-width: 1120px;
+    width: 1120px;
+}
+/* Hack to override Bootstrap containter width */
+.hero-unit {
+    min-width: 1000px;
+    width: 1000px;
 }

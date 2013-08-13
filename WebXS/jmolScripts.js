@@ -248,7 +248,6 @@ function centerCoords() {
 	out += line[0] + " " + newx + " " + newy + " " + newz+ " \n";
     }
     models[activeModel] = out;
-    readCoordsFromJmol();
     drawMolInPreview();
 }
 function readCoordsFromJmol() {

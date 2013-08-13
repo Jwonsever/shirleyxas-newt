@@ -649,7 +649,7 @@ function longAtom(atomNo) {
 //Turn C002 into C2
 function shortAtom(atomNo) {
     var type = atomNo.replace(/\d/g,'');
-    return  type + atomNo.replace(type, '').replace(/^[0]+/g,"");
+    return type + atomNo.replace(type, '').replace(/^[0]+/g,"");
 }
 
 //post Postprocessing state job
@@ -1689,12 +1689,15 @@ function restQuery() {
 function displaySearchResult() {
     var script = "zap;set echo top left;font echo 16;echo \"Loading and Optimizing\";";
     Jmol.script(previewApplet, script);
-    script = "try{set useMinimizationThread false;load INLINE '" + lastSearchResult + "';minimize STEPS 300 addHydrogens;javascript readCoordsFromJmol();}catch(e){;}";
+    script = "try{set useMinimizationThread false;load INLINE '" + lastSearchResult + "';minimize STEPS 300 addHydrogens;"
+	+ "}catch(e){;}";
     Jmol.script(previewApplet, script);
-    
-    readCoordsFromJmol()
-    //activeModel = models.length-1;
-    //drawMolInPreview();
+    Jmol.script(previewApplet, "javascript DSRhelper()");
+}
+function DSRhelper() {
+    readCoordsFromJmol();
+    activeModel = models.length-1;
+    centerCoords();
 }
 
 // organizes scraping operations

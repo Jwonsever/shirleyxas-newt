@@ -8,6 +8,9 @@ Mftheory
 //Am i working with a crystal or a molecule?
 var crystalFlag = false;
 
+//On authentication:
+function checkAuthCallback() {;}
+
 //Changing active viewing page
 var currentDiv;
 function CngClass(obj){
