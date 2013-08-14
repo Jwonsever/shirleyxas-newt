@@ -683,7 +683,7 @@ function postProcessing(atomNo, activeMo, state) {
     }
 
     var jobName = $('#jobName').text();
-    var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+atomNo+"/";
+    var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+shortAtom(atomNo)+"/";
     var prefix = jobName + '.' + longAtom(atomNo) + "-XCH";
     var command = SHELL_CMD_DIR+"pp.sh " + activeDir + " " + prefix + " 24 24 " + state + " " + state; //todo (advanced procs)
     $.newt_ajax({type: "POST",
