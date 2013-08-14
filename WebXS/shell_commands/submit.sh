@@ -126,7 +126,7 @@ cat $CODE_BASE_DIR/$CODE_LOC/$XAS_INPUTS/XASAnalyse-xyz.sh >> ./anal.qscript
 
 ## Submit xas-analyse, dependent on successful completion of xas.sh
 #/usr/common/nsg/bin/qsub anal.qscript (Previous version)
-anal_id=`qsub -W depend=afterok:${xas_id}@hopper11 anal.qscript`
+anal_id=`qsub -W depend=afterok:${xas_id} anal.qscript`
 
 if [ $xstateflag == 1 ]; then
     statePBS+="cd ${dir}\n"
@@ -138,7 +138,7 @@ if [ $xstateflag == 1 ]; then
     echo -e "scriptDir=${scriptDir}" >> ./state.qscript
 
     cat $CODE_BASE_DIR/$CODE_LOC/$SERVER_SCRIPTS/runExcitedStates.sh >> ./state.qscript
-    state_id=`qsub -W depend=afterok:${anal_id}@hopper11 state.qscript`
+    state_id=`qsub -W depend=afterok:${anal_id} state.qscript`
 fi
 
 exit

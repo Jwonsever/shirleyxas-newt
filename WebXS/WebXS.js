@@ -136,7 +136,7 @@ function runningCalcs(res) {
     }
 }
 function killJob(job) {
-    var jobid = job.replace(".hopper11",""); // was .sdb
+    var jobid = job.replace(".hopque01",""); // was .sdb, then was .hopper11, now this.
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
 		data: {"executable":"/opt/torque/4.2.3.1/bin/qdel "+jobid},
