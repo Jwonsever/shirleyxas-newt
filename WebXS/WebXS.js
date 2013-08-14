@@ -670,7 +670,7 @@ function postProcessing(atomNo, activeMo, state) {
     }
     var myOpts = document.getElementById('currModel').options;
     console.log(myOpts.length);
-    var optsVals = [];
+    var optsVals = [];	
     for (i in myOpts) optsVals.push(myOpts[i].value);
     console.log(optsVals);
     if ((Number(activeMo)+1) < myOpts.length && Number(activeMo) > 0) {
