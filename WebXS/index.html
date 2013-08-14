@@ -55,7 +55,8 @@
       url:newt_base_url + "/status/",
       success:function(res) {
       if (res[0].status != "up") {
-      $("#alarm-bar").html("<b>The NERSC Hopper machine is down!  Carver will be used, Job Submission will not work.</b>");
+      $("#alarm-bar").html("<b>The NERSC Hopper machine is down!  Carver will be used, job submission will not work.</b>");
+      mymachine="carver";
       }
 
       },});

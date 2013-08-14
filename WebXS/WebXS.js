@@ -40,10 +40,11 @@ activeModel = 0;
 
 //Which machine to use when running scripts.
 //Always Hopper, unless hopper is down in which case the tool will ATTEMPT to use carver.  Carver may not work correctly in MANY situations.
+//Note KillJob, PostProcessing, and Resubmit still force hopper usage, running either on Carver will just leave extra failed qsub jobs, wasting users allocations.
 var machine = "hopper";
 
 //Lists all of the jobs currently running on Hopper, by ajax qstat.
-var machines=["hopper"]; //var machines=["hopper", "carver", "dirac"];
+var machines=["hopper"]; //var machines=["hopper", "carver", "dirac", "edison"];
 var autoInterval = 0;
 function runningJobs() {
 
@@ -168,7 +169,7 @@ function previousJobs() {
 				+ "<center><img src=\"ajax-loader-2.gif\" width=40></center></div>");
 
     $.newt_ajax({type: "GET",
-		url: "/file/hopper"+shortDir,
+		url: "/file/" + machine + shortDir,
 		success: function(res){
 		if (res != null && res.length > 0) {
 		    var myText = "<h3>Finished Calculations</h3>";
@@ -183,7 +184,7 @@ function previousJobs() {
 
 		    var command = SHELL_CMD_DIR+"/exceededWalltimeWrapper.sh " + shortDir;
 		    $.newt_ajax({type: "POST",
-				url: "/command/hopper",
+				url: "/command/" + machine,
 				data: {"executable": command},
 				success: function(res){
 			 	 unfText = "<h3>Unfinished Calculations Available for Resubmission</h3>"; 
@@ -207,11 +208,10 @@ function previousJobs() {
 				     unfText += "<td width=50\%>" + jname
 					 + "</td><td class=\"statusnone\" width=15\% align=center>"
 					 + "Unfinished</td><td><button onClick=\""
-					 + "resubmit(\'" + jname + "\', \'hopper\');"
+					 + "resubmit(\'" + jname + "\');"
 					 + "$(this).attr('disabled','disabled');\" type=\"button\">Resubmit</button></td><td>"
 					 + "<button onClick=\"viewJobFiles(\'" 
-					 + jname + "\', \'" + "hopper"
-					 + "\')\" type=\"button\">View Files</button></td>";
+					 + jname + "\')\" type=\"button\">View Files</button></td>";
 				     unfText += "<td><img onClick=archiveJobFiles('"+shortDir+"','"+jname+"')";
 				     unfText += " width='28px' src='images/archivesymbol.png' alt='Archive' title='Archive'/></td>";
 				     unfText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
@@ -322,7 +322,7 @@ function previousJobs() {
 }
 
 //Rubmission function
-function resubmit(jobName, machine) {
+function resubmit(jobName) {
     var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
     var command = SHELL_CMD_DIR+"resubmit.sh " + shortDir;
     //Post job.
@@ -338,8 +338,10 @@ function resubmit(jobName, machine) {
 }
 
 //view results function
-function individualJobOutput(jobName, machine) {
+function individualJobOutput(jobName) {
+     //Force file operations to hopper if not specified
      if (!machine) machine = "hopper";
+
      $('#jobHeader').html("<h3>Results for " + jobName + "</h3><center><img src=\"ajax-loader-2.gif\" width=40 ></center>");
      //Show Ajax Loader as it writes the html
 
@@ -362,7 +364,7 @@ function individualJobOutput(jobName, machine) {
 		 var myTime = new Date(parseInt(webdata[1]));
 		 myHtml += "<table><tr><td align=left>Run "+myTime.toLocaleString()+"</td>";
 		 myHtml += "<td width=5></td><td align=right><button onClick=switchToPrevious()>Other Calculations</button>&nbsp;&nbsp;";
-		 myHtml += "<button onClick=individualJobWrapper('"+jobName+"','"+machine+"')>View Files</button>&nbsp;&nbsp;	";
+		 myHtml += "<button onClick=individualJobWrapper('"+jobName+"')>View Files</button>&nbsp;&nbsp;	";
 		 myHtml += "<button onClick=deleteJobFiles('"+shortDir+"')>Delete Job</button></td></tr>";
 		 myHtml += "</table>";
 
@@ -371,7 +373,7 @@ function individualJobOutput(jobName, machine) {
 	     },
 		 error: function(request,testStatus,errorThrown) {
 		 //This caters to old or possibly maunally run jobs (as best as possible)
-		 myHtml += "<h3>Results for " + jobName + "</h3><table><tr><td align=right><button onClick=switchToPrevious()>Other Calculations</button><button onClick=individualJob('"+jobName+"','"+machine+"')>View Files</button></td></tr></table><br>";
+		 myHtml += "<h3>Results for " + jobName + "</h3><table><tr><td align=right><button onClick=switchToPrevious()>Other Calculations</button><button onClick=individualJob('"+jobName+"')>View Files</button></td></tr></table><br>";
 		 $('#jobHeader').html(myHtml);
 		 alert("no webdata, cannot view this job.");
 		 ;}//findJobOutputs(myHtml, directory, jobName);}
@@ -484,7 +486,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
     var findCrash = "/usr/bin/find " + shortDir + " -type f -name 'CRASH'";
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": findCrash},
 		success: function(res){
 		console.log(res);
@@ -502,7 +504,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     //Find Missing Pseudos
     var findMissingPseudos = SHELL_CMD_DIR + "missingPseudos.sh " + shortDir;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": findMissingPseudos},
 		success: function(res){
 		console.log(res);
@@ -517,7 +519,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     //Find MPI Errors
     var findMPI = SHELL_CMD_DIR + "mpiErrors.sh " + shortDir;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": findMPI},
 		success: function(res){
 		console.log(res);
@@ -553,7 +555,7 @@ function archiveJobFiles(dir, molName) {
     if (!confirm('Are you sure you want to archive this?  This disables future state calculations.')) return;
     command = SHELL_CMD_DIR+"htarAndClean.sh " + dirToArchive;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res) {switchToPrevious();},});
 
@@ -564,7 +566,7 @@ function deleteJobFiles(dir, molName) {
     if (!confirm('Are you sure?  All files will be permanently deleted.')) return;
     command = SHELL_CMD_DIR+"rmFileDir.sh " + dir + " " + molName;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res) {switchToPrevious();},});
 }
@@ -604,7 +606,7 @@ function getStates(cmnd, ev) {
     }
     cmnd += " " + ev;
     $.newt_ajax({type: "POST",
-			 url: "/command/hopper",
+			 url: "/command/" + machine,
 			 data: {"executable": cmnd},
 			 success: function(res){
 		         $("#topStates").text(res.output);
@@ -703,7 +705,7 @@ function drawState(atomNo, activeMo, state) {
     Jmol.script(resultsApplet, scr);
 
     $.newt_ajax({type: "POST",
-		    url: "/command/hopper",
+		    url: "/command/" + machine,
 		    data: {"executable": command},
 		    success: function(res) {
 		     console.log("fetched");
@@ -736,7 +738,7 @@ function deleteStateFileFromServer() {
     var jobName = $('#jobName').text();
     var command = SHELL_CMD_DIR + "wipeState.sh " + jobName;
     $.newt_ajax({type: "POST",
-		    url: "/command/hopper",
+		    url: "/command/" + machine,
 		    data: {"executable": command},
 		    success: function(res) {
 		console.log("successful delete");
@@ -755,7 +757,7 @@ function getXCHShift(elem) {
 	else return 0;
     } else {
 	 $.newt_ajax({type: "GET",
-		url: "/file/hopper" + DATABASE_DIR + "/XCHShifts.csv?view=read",
+		url: "/file/" + machine + DATABASE_DIR + "/XCHShifts.csv?view=read",
 		success: function(res){
 		     res = res.split("\n");
 		     cachedShifts.pulled=true;
@@ -796,7 +798,7 @@ function saveOutput(dir, jobName) {
 	    + file + " " + name + " " + dt + " " + elem + " " + XCH + " " + myUsername + " " + dir.slice(12);
 
 	$.newt_ajax({type: "POST",
-		    url: "/command/hopper",
+		    url: "/command/" + machine,
 		    data: {"executable": command},
 		    success: function(res){
 		    console.log("Success!");
@@ -907,7 +909,7 @@ function makePlotWrapper(dir, jobName, elems, dataset) {
 
     var command = "/usr/bin/python " + SHELL_CMD_DIR + "ShirleyEndValue.py " + dir.substr(12);
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res){
 		//console.log(res.output);
@@ -1020,7 +1022,7 @@ function makePlot(dir, jobName, elems, dataset, lim) {
 
 //View Files
 //READ FILES PIECES
-function individualJob(jobName, machine) {
+function individualJob(jobName) {
     $('#previousjobsfiles').html("<table width=100\%><th align=left>Output files for "+jobName
 			     + "</th><tr><button onclick='previousJobsWrapper()'>Return to list</button>"
 			     + "</tr></table><center><img src=\"ajax-loader-2.gif\" width=40></center>");
@@ -1137,11 +1139,11 @@ function changeDir(directory, jobName) {
 }
 
 //Check machine status
-function updateStatus(machine) {
+function updateStatus(mymachine) {
     $.newt_ajax({type: "GET",
-		url: "/status/"+machine,
+		url: "/status/"+mymachine,
 		success: function(res) {
-		var myText = machine + " is " + res.status + "<br>";
+		var myText = mymachine + " is " + res.status + "<br>";
 		$('#clusterStatus').html(myText);
 		$('#clusterStatus').trigger('create');
 	    },
@@ -1317,7 +1319,7 @@ function newJobSubmission(form) {
     var command = SHELL_CMD_DIR+"makeFileDir.sh "+$('#outputDir').val()+" ";
     var materialName = form.material.value.replace(/^\s+/g,"").replace(/\s+$/g,"").replace(/\s+/g," ").replace(" ","_");
    
-    var machine = form.machine.value;
+    var submissionMachine = form.machine.value;
 
     var d = new Date();
     var dateStr = d.toUTCString();//Wed, 06 Jun 2012 17:30:05 GMT
@@ -1326,7 +1328,7 @@ function newJobSubmission(form) {
 
     //Make the directory for this job, then, upon completion, upload coordinates.
     $.newt_ajax({type: "POST",
-		url: "/command/" + machine,
+		url: "/command/" + subissionMachine,
 		data: {"executable": command},
                 success: function(res) {pushFile(form, machine, materialName);},
     	        error: function(request,testStatus,errorThrown) {
@@ -1340,12 +1342,12 @@ function newJobSubmission(form) {
 }
 
 //upload the coordinates file to the correct machine
-function pushFile(form, machine, molName) {
+function pushFile(form, submissionMachine, molName) {
     var count = 1;
     for (var m = 0; m <models.length; m++) {
 	var xyzcoords = makeXYZfromCoords(m);
 	$.newt_ajax({type: "PUT", 
-		    url: "/file/"+machine+$('#outputDir').val()+"/"+molName+"/"+molName+"_"+m+".xyz",
+		    url: "/file/"+submissionMachine+$('#outputDir').val()+"/"+molName+"/"+molName+"_"+m+".xyz",
 		    data: xyzcoords,
 		    success: function(res) {
 		    if (count == models.length)
@@ -1356,7 +1358,7 @@ function pushFile(form, machine, molName) {
 		    error: function(request,testStatus,errorThrown) {
 		    var command = SHELL_CMD_DIR + "rmFileDir.sh "+ $('#outputDir').val() + " " + molName;
 		    $.newt_ajax({type: "POST",
-				url: "/command/" + machine,
+				url: "/command/" + submissionMachine,
 				data: {"executable": command},});
 		    form.Submit.disabled=false;
 		    $('#subStatus').html("<table width=100\%><th align=left>Failed!\n"+testStatus+":\n" + errorThrown + "</th></table>");},});
@@ -1377,7 +1379,7 @@ function executeJob(form, materialName) {
     var NTG = form.NTG.value;
     var PPN = form.PPN.value;
     var nodes = form.NEXCITED.value * form.NPERATOM.value;
-    var machine = form.machine.value;
+    var submissionMachine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
     var useCustomBlock = ( $('#customInputBlock').val() != "DEFAULT" );
@@ -1411,7 +1413,7 @@ function executeJob(form, materialName) {
     command += inputs + " ";
     command += nodes + " ";
     command += PPN + " ";
-    command += machine + " ";
+    command += submissionMachine + " ";
     command += form.Queue.value + " ";
     command += form.wallTime.value + " ";
     command += form.acctHours.value + " ";
@@ -1438,7 +1440,7 @@ function executeJob(form, materialName) {
     
     //post webdata
     $.newt_ajax({type: "PUT", 
-		url: "/file/"+machine+dir+"/"+materialName+"/"+ "webdata.in",
+		url: "/file/"+submissionMachine+dir+"/"+materialName+"/"+ "webdata.in",
 		data: webdata,
 		success: function(res) {;},});
 
@@ -1446,7 +1448,7 @@ function executeJob(form, materialName) {
 
     //Post job.
     $.newt_ajax({type: "POST",
-		url: "/command/" + machine,
+		url: "/command/" + submissionMachine,
 		data: {"executable": command},
 		success: function(res){
 		form.Submit.disabled=false;
@@ -1456,7 +1458,7 @@ function executeJob(form, materialName) {
 		error: function(request,testStatus,errorThrown) {
 		 command = SHELL_CMD_DIR + "rmFileDir.sh "+dir+ " " + molName;
 		 $.newt_ajax({type: "POST",
-			     url: "/command/" + machine,
+			     url: "/command/" + submissionMachine,
 			     data: {"executable": command},});
 		 form.Submit.disabled=false;
 	  	 $('#subStatus').html("<table width=100\%><th align=left>Failed!\n"+testStatus+":\n" + errorThrown + "</th></table>");},
@@ -1489,7 +1491,7 @@ function expandXAS(XAS, form) {
 //Opening a transfered file from webDynamics
 function openTransferFile() {
     $.newt_ajax({type: "GET",
-		url: "/file/hopper"+DATABASE_DIR+"/tmp/"+myUsername+".xyz?view=read",
+		url: "/file/" + machine +DATABASE_DIR+"/tmp/"+myUsername+".xyz?view=read",
 		success: function (res) {
 
 		//Note, this is VERY specific parsing, from what WebDynamics outputs...
@@ -1572,7 +1574,7 @@ function searchSpectrumDB() {
     var command = "/usr/bin/python " + DATABASE_DIR + "/spectraDB/search.py " + term;
 
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res){
 		console.log(res);
@@ -1620,7 +1622,7 @@ function dbSpectrumJob(elem, XCHShift, path) {
         pan: {interactive:true}
     };
 
-    var file = "/file/hopper" + fullPath;
+    var file = "/file/" + machine + fullPath;
     $.newt_ajax({type: "GET",
 		url: file + "?view=read",
 		success: function(res){
@@ -1778,24 +1780,24 @@ function runningJobsWrapper() {
     }
 }
 
-function individualJobWrapper(myJobId, machine) {
+function individualJobWrapper(myJobId) {
     if (myUsername.indexOf("invalid") != -1) {
         //
     } else {
 	$('#previousjobslist').hide();
 	$('#previousjobsfiles').show();	
 	$('#previousjobresults').hide();
-        individualJob(myJobId, machine);
+        individualJob(myJobId);
     }
 }
-function viewJobOutputWrapper(myJobId, machine) {
+function viewJobOutputWrapper(myJobId) {
     if (myUsername.indexOf("invalid") != -1) {
         //
     } else {
 	$('#previousjobslist').hide();
 	$('#previousjobsfiles').hide();	
 	$('#previousjobresults').show();
-        individualJobOutput(myJobId, machine);
+        individualJobOutput(myJobId);
     }
 }
 function editMoleculeWrapper() {
@@ -1810,13 +1812,13 @@ function searchWrapper() {
 }
 
 //Div Functions.  Formats webpage.
-function viewJobFiles(myJobId, machine) {
-    individualJobWrapper(myJobId, machine);
+function viewJobFiles(myJobId) {
+    individualJobWrapper(myJobId);
 }
 
-function viewJob(myJobId, machine) {
+function viewJob(myJobId) {
     resultsAppReady = false; //app needs to load, put everywhere?? dunno how to structure this test
-    viewJobOutputWrapper(myJobId, machine);
+    viewJobOutputWrapper(myJobId);
 }
 
 function switchToSubmitForm() {
