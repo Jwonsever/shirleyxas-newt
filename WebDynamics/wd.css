@@ -51,10 +51,8 @@ James Wonsever - Mftheory
 /* Hack to keep min size */
 .navbar {
     min-width: 1120px;
-    width: 1120px;
 }
 /* Hack to override Bootstrap containter width */
 .hero-unit {
     min-width: 1000px;
-    width: 1000px;
 }
