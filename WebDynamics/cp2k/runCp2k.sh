@@ -31,7 +31,7 @@ fi
 
 cellsize=(10 10 10 90 90 90)
 if [[ $# > 2 ]]; then
-    cellsize=`echo $3 | sed 's/[a-z]/ /g'`
+    cellsize=`echo $3 | sed 's/[a-zA-Z]*/ /g'`
 fi
 
 cell=($cellsize)
@@ -145,7 +145,7 @@ DATA
 done
 
 sed -i "/KIND_HERE/r ${prefix}.kind.dat" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i '/KIND_HERE/d' ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "/KIND_HERE/d" ${prefix}.${repstr}.${temp}K.cp2k.in
 
 
 cp $pbs_template_file ${prefix}.${repstr}.${temp}K.cp2k.pbs
@@ -161,4 +161,4 @@ sed -i "s/cell_p_here/$repstr/g" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 rm -fr __tmp.dat ${prefix}.kind*.dat 
 
 #Start the calculation
-/opt/torque/4.2.3.1/bin/qsub *.pbs
+qsub *.pbs

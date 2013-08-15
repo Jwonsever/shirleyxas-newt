@@ -241,9 +241,10 @@ function sendToWebXS() {
     window.open("../WebXS/index.html");
 }
 
-function saveFile() {	
+function SaveFile() {	
     var sysname = $("#structureName").val();
-    var fname = prompt("Save file as?", GLOBAL_SCRATCH_DIR + myUsername + "/"+ sysname +".xyz");
+    var spcext = "                                                                            ";//Force Textbox Width
+    var fname = prompt("Save file as? " + spcext, GLOBAL_SCRATCH_DIR + myUsername + "/"+ sysname +".xyz");
 
     //put on Hopper
     writeFileToFilesystem(fname);

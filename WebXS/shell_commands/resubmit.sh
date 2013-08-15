@@ -9,7 +9,7 @@ echo `pwd`
 
 #Is this a rerun? Save the preveious xas.out. 
 if [[ -f ./xas.out ]]; then
-    cat ./xas.out >> xas.out.old
+    mv ./xas.out >> xas.out.old
 fi
 
 xas_id=`qsub xas.qscript `

@@ -139,7 +139,7 @@ function killJob(job) {
     var jobid = job.replace(".hopque01",""); // was .sdb, then was .hopper11, now this.
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
-		data: {"executable":"/opt/torque/4.2.3.1/bin/qdel "+jobid},
+		data: {"executable":"/opt/torque/4.2.3.h5/bin/qdel "+jobid},
 		success: function(res){
 		console.log("Job deleted. It may take a few minutes for status to update.");
 	    },
