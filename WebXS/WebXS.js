@@ -1328,7 +1328,7 @@ function newJobSubmission(form) {
 
     //Make the directory for this job, then, upon completion, upload coordinates.
     $.newt_ajax({type: "POST",
-		url: "/command/" + subissionMachine,
+		url: "/command/" + submissionMachine,
 		data: {"executable": command},
                 success: function(res) {pushFile(form, machine, materialName);},
     	        error: function(request,testStatus,errorThrown) {
@@ -1403,8 +1403,6 @@ function executeJob(form, materialName) {
     inputs+="tot_charge="+totChg+"\\n";
     inputs+='PW_POSTFIX=\\"-ntg '+ NTG +'\\"\\n';
     inputs+='K_POINTS=\\\"K_POINTS automatic \\n'+form.KPOINTS.value+' 0 0 0\\\"\\n\"';
-
-    console.log(inputs);
     
 
     var command = SHELL_CMD_DIR+"submit.sh ";
@@ -1444,7 +1442,6 @@ function executeJob(form, materialName) {
 		data: webdata,
 		success: function(res) {;},});
 
-    console.log("Command "+command)
 
     //Post job.
     $.newt_ajax({type: "POST",
