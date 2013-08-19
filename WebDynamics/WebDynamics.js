@@ -11,6 +11,12 @@ var crystalFlag = false;
 //On authentication:
 function checkAuthCallback() {;}
 
+//On DSR
+function DSRcallback() {
+    readCoordsFromJmol();
+    switchToModel(models.length-1);
+}
+
 //Changing active viewing page
 var currentDiv;
 function CngClass(obj){

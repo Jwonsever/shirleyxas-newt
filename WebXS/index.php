@@ -194,9 +194,14 @@
 	      <!--
 		 Search previously run spectra for a result, note this template accesses a bunch of js preloaded in < head >
 		 This is done so the same code doesn't need to be repeated here and webdynamics -->
-		<?php
-		   include("../templates/search.html.template")
-		   ?>
+	      <div id='searchDB' class="tab-pane">
+		<div id='searchWrapper'>   
+	          <h2 align="left">MFTheory Structure Database</h2>
+		  <?php
+		     include("../templates/search.html.template")
+		     ?>
+		</div>
+	      </div>
 	      <!--End-->
 	      
  	      <!--What is ShirleyXAS and what does it do?-->

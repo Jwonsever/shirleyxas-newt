@@ -194,14 +194,10 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	  </div>
 
 	  <div id="searchOptions" class="optionsDiv">
-	    <br>
-	    <input type="text" id="mainApplet_query" onkeypress="13==event.which&amp;&amp;Jmol._applets['mainApplet']._search()" size="32" value="">
-	    <select id="mainApplet_select">
-	      <option value="$" selected>NCI(small molecules)</option>
-	      <option value=":">PubChem(small molecules)</option>
-	      <option value="=">RCSB(macromolecules)</option></select>
-	    <button id="mainApplet_submit" onclick="Jmol._applets['mainApplet']._search()">Search</button>
-	    <br>
+	    <?php
+	       include("../templates/search.html.template");
+	       ?>
+	    <span><input id="DisplaySearchQuery" type="button" value="Display from Search Query" onclick="displaySearchResult(mainApplet)"/></span><br>
 	  </div>
 
 	  <div id="ModelKitOptions" class="optionsDiv">
@@ -268,11 +264,13 @@ sent to and accessed by other tools located in the portal.  Work in progress. </
 	  </div>
 
 	  <span id="optionsBottomBar">
-	    <button onClick="sendToWebXS()">NEXAFS</button>
+	    <button onClick="sendToWebXS()">Send To WebXS</button>
 	    <button onClick="SaveFile()">Save on Hopper:</button>
 	    <span><object id="downloadify"></object></span>
-	    <button onClick="">Undo</button>
-	    <button onClick="">Redo</button>
+
+	    <!-- This would make sense with a structure class, if that ever gets done.
+	    <button onClick="">Undo</button-->
+
 	  </span>
 	</div>
 	

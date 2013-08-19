@@ -21,7 +21,7 @@ function restQuery() {
         lastSearchResult = data;
         result = '<p id="searchResult" ';
         result += ' style="display:none">';
-        result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
+        result += 'The structure is now available for display.</p>';
         dest.html(result);
         $('#searchResult').fadeIn();
       }).fail(function(xhr, textStatus, errorThrown) {

@@ -1,11 +1,7 @@
 <script src="../js/TreeEval.js"></script>
 <script src="../js/search.js"></script>
 
-<!--Search previously run spectra for a result-->
-<div id='searchDB' class="tab-pane">
-  <div id='searchWrapper'>
-    <h2 align="left">MFTheory Structure Database</h2>
-    
+<!--Search previously run spectra for a result-->  
     <p align="left">
       This page is meant to help you find structures from prestablished structure databases.
     </p>
@@ -24,8 +20,8 @@
       
       <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true">
         <div data-te-skip="true" style="padding-bottom:10px; padding-left:20px">
-          For help on what some of these drop-down items mean, click
-          <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>
+          For help on these drop-down items, click
+          <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>.
           <br>
         </div>
         Domain<br>
@@ -398,5 +394,4 @@
             </form>
 </div>
 <div id="searchResults"></div>
-</div>
-</div>
+
