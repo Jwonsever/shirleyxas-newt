@@ -86,7 +86,9 @@
 		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
                   <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
-
+                  <li class="nav-header">Web Scraping</li>
+		  <li><a href="http://matzo.lbl.gov">Matzo</a></li>
+                  <li class="divider"></li>
                 </ul>
               </li>
             </ul>
@@ -191,6 +193,7 @@
 
 	      <!--Search previously run spectra for a result-->
 	      <div id='searchDB' class="tab-pane">
+		<div id ='wrapper1'>
 	  <h2 align="left">MFTheory Structure Database</h2>
 
           <p align="left">
@@ -508,6 +511,8 @@
               <br>
               <button onclick="restQuery()">Query</button>
             </div>
+
+            <!--ICSD Search -->
             <form id="ICSD_searchTerms" class="searchTermSet" style="display:none">
               <table>
                 <tr>
@@ -549,6 +554,9 @@
               </table>
               <input type="button" id="ICSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'ICSD')"/>
             </form>
+
+
+	    <!-- AMCSD Search -->
             <form id="AMCSD_searchTerms" class="searchTermSet" style="display:none">
               <table>
                 <tr>
@@ -580,6 +588,7 @@
             </form>
           </div>
           <div id="searchResults"></div>
+	  </div>
         </div>
 	      <!-- End -->
 	      
@@ -635,6 +644,9 @@ questions and comments regarding the website to jwonsever@lbl.gov.
 
 	      <!-- Submitting a job form. -->
 	      <div id='submitjobs' align=left class="tab-pane">
+
+		<!-- These wrappers allow us to block on failed authentication -->
+		<div id='wrapper2'>
 		    <h3>Submit Calculation</h3>
                     <table valign=top><tr><td valign=top>
 		    <form id='inputs' name='inputs' METHOD="GET">
@@ -759,6 +771,7 @@ questions and comments regarding the website to jwonsever@lbl.gov.
 		      <span><input type='button' value='Center Atoms' onClick="centerCoords();"></span><br>
 		      
 		      </td></tr></table>
+		</div>
 	       </div>
 	    </div>
           </div>

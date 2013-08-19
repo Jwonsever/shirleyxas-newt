@@ -47,7 +47,7 @@ do
    model=`echo "$model - 1" | bc`
 
    #Because of the fname difference between [ex. c002 and c2]
-   shortatom=echo $atom | sed 's/\(^[a-zA-Z]*\)[0]*/\1/'
+   shortatom=`echo "${atom}" | sed 's/\(^[a-zA-Z]*\)[0]*/\1/'`
    dirext="./XAS/"$JOB_NAME"_"$model"/"$shortatom
    cd $dirext
 

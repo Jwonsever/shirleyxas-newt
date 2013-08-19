@@ -77,10 +77,12 @@ fi
 repstr="1x1x1"
 tprocsflt=`echo "$nodes * $ppn" | bc -l`
 tprocs="${tprocs##*.}"
+echo "Total Processors: "tprocs
 
 filename=$(basename "$cif_file")
 ext="${filename##*.}"
-echo ext
+echo "FileExt: "ext
+
 if [ $ext == "cif" ]; then 
   cell=`grep -e cell_ $cif_file | awk '{print $2}' | sed 's/([^)]*)//g'`
 

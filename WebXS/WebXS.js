@@ -7,7 +7,7 @@ Molecular Foundry
 Justin Patel
 Lawrence Berkeley Laboratory
 Molecular Foundry
-06/2013 -> Present
+06/2013 -> 08/2013
 
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
@@ -1757,10 +1757,24 @@ Scrape.handleResult = function(data, status) {
   $('#searchResults').html('<pre>' + data + '</pre>');
 }
 
+
 //Div Wrapper functions.  For Organization. Checks Login Status.
+function submitJobsWrapper() {
+    if (myUsername.indexOf("invalid") != -1) {
+	$("#wrapper2").hide();
+        alert("Please log in to continue.");
+    } else {
+	$("#wrapper2").show();
+	document.inputs.Submit.disabled=false;
+	updateStatus(document.inputs.machine.value);
+	makeCoordsDiv();
+	initPreviewApp();
+    }
+
+}
 function previousJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
 	$('#previousjobslist').show();
 	$('#previousjobsfiles').hide();
@@ -1771,7 +1785,7 @@ function previousJobsWrapper() {
 
 function runningJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
         runningJobs();
     }
@@ -1779,7 +1793,7 @@ function runningJobsWrapper() {
 
 function individualJobWrapper(myJobId) {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
 	$('#previousjobslist').hide();
 	$('#previousjobsfiles').show();	
@@ -1789,7 +1803,7 @@ function individualJobWrapper(myJobId) {
 }
 function viewJobOutputWrapper(myJobId) {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
 	$('#previousjobslist').hide();
 	$('#previousjobsfiles').hide();	
@@ -1802,9 +1816,11 @@ function editMoleculeWrapper() {
 }
 function searchWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
-	//
+	//Not MFTheory users do not have rights to use these freely.
+	$("#wrapper1").hide();
+	alert("Please log in to continue.");
     } else {
-        //
+        $("#wrapper1").show();
     }
 }
 
@@ -1819,11 +1835,8 @@ function viewJob(myJobId) {
 }
 
 function switchToSubmitForm() {
-    document.inputs.Submit.disabled=false;
-    updateStatus(document.inputs.machine.value);
-    makeCoordsDiv();
-    initPreviewApp();
     window.clearInterval(autoInterval);
+    submitJobsWrapper();
 }
 function switchToPrevious() {
     window.clearInterval(autoInterval);

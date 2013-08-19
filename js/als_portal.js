@@ -15,10 +15,10 @@ function myCheckAuth() {
         }
     },
     error: function(request,testStatus,errorThrown) {
-        console.log("Error "+errorThrown)
-        $('#auth-spinner').hide();
-        $("#logout-area").hide();
-        $("#login-area").show();
+		console.log("Error "+errorThrown);
+		$('#auth-spinner').hide();
+		$("#logout-area").hide();
+		$("#login-area").show();
     },
     });
 }
@@ -47,10 +47,11 @@ function myCheckAuthALS() {
         }
     },
     error: function(request,testStatus,errorThrown) {
-        console.log("Error "+errorThrown)
-        $('#auth-spinner').hide();
-        $("#logout-area").hide();
-        $("#login-area").show();
+		console.log("Error "+errorThrown);
+
+		$("#auth-spinner").hide();
+		$("#logout-area").hide();
+		$("#login-area").show();
     },
     });
 }
@@ -97,8 +98,13 @@ var submission = function(){
         data:{'username':username, 'password':password},
         success:function(res, textStatus, jXHR) {
             //alert("Logged in Once")
-            submissionALS()
-        }
+	    submissionALS();
+	},
+	error:function() {
+		console.log("Error:");
+		$('#auth-spinner').hide();
+		$('#login-area').show();
+	    },
     });
 }
 
@@ -112,8 +118,13 @@ var submissionALS = function(){
         data:{'username':username, 'password':password},
         success:function(res, textStatus, jXHR) {
             //alert("Logged in Twice")
-            myCheckAuth()
-        }
+	    myCheckAuth();
+	},
+	error:function() {
+		console.log("Error:");
+		$('#auth-spinner').hide();
+		$('#login-area').show();
+	    },
     });
 }
 

@@ -44,7 +44,9 @@
 		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
                   <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
-
+		  <li class="nav-header">Web Scraping</li>
+		  <li><a href="http://matzo.lbl.gov">Matzo</a></li>
+                  <li class="divider"></li>
                 </ul>
               </li>
             </ul>

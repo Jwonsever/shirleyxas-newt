@@ -258,7 +258,7 @@ function readCoordsFromJmol() {
     while (i <= modelNum) {
 	var coords = "";
 	var atoms = Jmol.getPropertyAsArray(previewApplet, "atomInfo", "1." + i);
-	//console.log(atoms);
+	console.log(atoms);
 	for (atom = 0; atom < atoms.length; atom++) {
 	    coords += atoms[atom].sym + " ";
 	    coords += atoms[atom].x + " ";
