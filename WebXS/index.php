@@ -22,6 +22,7 @@
     <script src="../js/alsapi.js"></script>
     <script src="../js/als_portal.js"></script>
 
+
     <!-- Major Function Values-->
     <script src="../GlobalValues.js"></script>
 
@@ -44,7 +45,6 @@
     <script src="ajaxfileupload.js"></script>
 
     <!-- Local JS-->
-    <script src="TreeEval.js"></script>
     <script src="WebXS.js"></script>
     <script src="jmolScripts.js"></script>
     <Script src="jmolInit.js"></script>
@@ -83,7 +83,7 @@
                 <ul class="dropdown-menu">
                   <li class="nav-header">X-Ray Absorption</li>
                   <li class="active"><a href="#">WebXS</a></li>
-		  <li><a href="../WebDynamics/index.html">WebDynamics</a></li>
+		  <li><a href="../WebDynamics/index.php">WebDynamics</a></li>
                   <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
                   <li class="divider"></li>
                   <li class="nav-header">Web Scraping</li>
@@ -191,10 +191,12 @@
 	      </div>
 
 
-	      <!--Search previously run spectra for a result-->
-	      <?php
-		 include("search.html")
-		 ?>
+	      <!--
+		 Search previously run spectra for a result, note this template accesses a bunch of js preloaded in < head >
+		 This is done so the same code doesn't need to be repeated here and webdynamics -->
+		<?php
+		   include("../templates/search.html.template")
+		   ?>
 	      <!--End-->
 	      
  	      <!--What is ShirleyXAS and what does it do?-->
@@ -371,7 +373,7 @@ questions and comments regarding the website to jwonsever@lbl.gov.
 			  Note: Can get BIG.
                       </span>
 		      <br>
-		      <span><input id="DisplaySearchQuery" type="button" value="Display from Search Query" onclick="displaySearchResult()"/></span><br>
+		      <span><input id="DisplaySearchQuery" type="button" value="Display from Search Query" onclick="displaySearchResult(previewApplet)"/></span><br>
 		      <span><input type='button' value='OpenWebDynamicsFile' onClick="openTransferFile();"></span><br>		      
 		      <span><input type='button' value='Center Atoms' onClick="centerCoords();"></span><br>
 		      
