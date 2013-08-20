@@ -89,7 +89,6 @@ do
   for atom in $Atoms ; do 
 
     cd $MyDir
-    ls
 
     echo "Reference atom calculations from directory:
   XAS/$REF/${ATOM_SYMBOL[$atom]}"

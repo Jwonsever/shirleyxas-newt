@@ -9,6 +9,10 @@ dir="${1}/${MOLNAME}"
 function recMkdir {
     echo $1
 
+    if [[ `echo $1` == "/" ]]; then
+	return
+    fi
+
     if ( mkdir $1 ); then
 	return
     else 

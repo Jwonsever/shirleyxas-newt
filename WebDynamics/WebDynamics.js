@@ -8,6 +8,15 @@ Mftheory
 //Am i working with a crystal or a molecule?
 var crystalFlag = false;
 
+//On authentication:
+function checkAuthCallback() {;}
+
+//On DSR
+function DSRcallback() {
+    readCoordsFromJmol();
+    switchToModel(models.length-1);
+}
+
 //Changing active viewing page
 var currentDiv;
 function CngClass(obj){
@@ -238,9 +247,11 @@ function sendToWebXS() {
     window.open("../WebXS/index.html");
 }
 
-function saveFile() {	
+
+function SaveFile() {	
     var sysname = $("#structureName").val();
-    var fname = prompt("Save file as?", GLOBAL_SCRATCH_DIR + myUsername + "/"+ sysname +".xyz");
+    var spcext = "                                                                            ";//Force Textbox Width
+    var fname = prompt("Save file as? " + spcext, GLOBAL_SCRATCH_DIR + myUsername + "/"+ sysname +".xyz");
 
     //put on Hopper
     writeFileToFilesystem(fname);

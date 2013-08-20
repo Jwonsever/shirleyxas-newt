@@ -7,11 +7,12 @@ cd $dir
 echo `pwd`
 
 
-#Is this a rerun? Save the preveious xas.out. 
+#Is this a rerun? Save the preveious xas.out, and write resub flag. 
 if [[ -f ./xas.out ]]; then
-    cat ./xas.out >> xas.out.old
+    cp ./xas.out >> xas.out.old
+    echo "Resubmitted" >> xas.out
 fi
 
 xas_id=`qsub xas.qscript `
-anal_id=`qsub -W depend=afterok:${xas_id}@hopper11 anal.qscript`
-state_id=`qsub -W depend=afterok:${anal_id}@hopper11 state.qscript`
+anal_id=`qsub -W depend=afterok:${xas_id} anal.qscript`
+state_id=`qsub -W depend=afterok:${anal_id} state.qscript`

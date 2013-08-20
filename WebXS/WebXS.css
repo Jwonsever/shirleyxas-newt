@@ -1,0 +1,39 @@
+/* Specific CSS specifications for WebXS, overriding bootstrap settings.
+
+James Wonsever
+
+*/
+
+#searchResults {
+    text-align:left;
+}
+#menu {
+        min-height:400px;
+}
+
+#flotwrapper {
+    /*background-color:white;*/
+}
+#topStates {
+    background-color:white;
+}
+
+#placeholder {
+    width: 400px; height: 280px;
+}
+
+#alarm-bar {
+    background-color:#EE4545;
+}
+
+
+.statusup {color: #509c2d;
+           text-align: center;
+         }
+
+.statusdown {color: #a42510;
+           text-align: center;
+         }
+
+.statusnone {text-align: center;
+         }

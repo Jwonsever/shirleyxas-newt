@@ -7,12 +7,14 @@ Molecular Foundry
 Justin Patel
 Lawrence Berkeley Laboratory
 Molecular Foundry
-06/2013 -> Present
+06/2013 -> 08/2013
 
 All Ajax and functionality scripts for the WebXS interface.
 These scripts generally are used to send and retrieve data from NERSC computers.
  */
 
+
+//Callback function for the NERSC login toolbar.
 function checkAuthCallback() {
     //where to output files to for run jobs
     $('#outputDir').val(GLOBAL_SCRATCH_DIR + myUsername);
@@ -34,12 +36,27 @@ function getUserInfo() {
 	},});
 }
 
+
+//Essentially a callback from display search results.
+//Extends functionality in search.js
+function DSRcallback() {
+    readCoordsFromJmol();
+    activeModel = models.length-1;
+    centerCoords();
+}
+
+
 //Globals for multiple models and related functions, to control jmol and submission of multiple files...
 var models = ["C -0.00025 -0.00025 -0.00025\nH 0.64018 0.64018 0.64018\nH -0.64075 -0.64075 0.64049\nH -0.64075 0.64049 -0.64075\nH 0.64049 -0.64075 -0.64075"];
 activeModel = 0;
 
+//Which machine to use when running scripts.
+//Always Hopper, unless hopper is down in which case the tool will ATTEMPT to use carver.  Carver may not work correctly in MANY situations.
+//Note KillJob, PostProcessing, and Resubmit still force hopper usage, running either on Carver will just leave extra failed qsub jobs, wasting users allocations.
+var machine = "hopper";
+
 //Lists all of the jobs currently running on Hopper, by ajax qstat.
-var machines=["hopper"]; //var machines=["hopper", "carver", "dirac"];
+var machines=["hopper"]; //var machines=["hopper", "carver", "dirac", "edison"];
 var autoInterval = 0;
 function runningJobs() {
 
@@ -48,7 +65,7 @@ function runningJobs() {
 
     myText+="<div id='runningTable'>";
     myText+="<div id='ajaxLoader'><center><img src=\"ajax-loader-2.gif\" width=40></center></div>";
-    myText+="<br></div><div id='errorLog' style='background-color:#8994b0;display:none;'>Error Log:<br></div>";
+    myText+="<br></div><div id='errorLog' style='max-height:300px;background-color:#e1e1e1;display:none;'>Error Log:<br></div>";
     myText+="<br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;";
     myText+="As of: <span id='lastDate'> ";
     myText+=" </span> &nbsp;&nbsp;<button onClick='cumulativeRunningJobs()'>Update</button>";
@@ -131,10 +148,11 @@ function runningCalcs(res) {
     }
 }
 function killJob(job) {
-    var jobid = job.replace(".hopper11",""); // was .sdb
+
+    var jobid = job.replace(".hopque01",""); // was .sdb, then was .hopper11, now this.
     $.newt_ajax({type: "POST",
 		url: "/command/hopper",
-		data: {"executable":"/opt/torque/4.2.3.1/bin/qdel "+jobid},
+		data: {"executable":"/opt/torque/4.2.3.h5/bin/qdel "+jobid},
 		success: function(res){
 		console.log("Job deleted. It may take a few minutes for status to update.");
 	    },
@@ -164,7 +182,7 @@ function previousJobs() {
 				+ "<center><img src=\"ajax-loader-2.gif\" width=40></center></div>");
 
     $.newt_ajax({type: "GET",
-		url: "/file/hopper"+shortDir,
+		url: "/file/" + machine + shortDir,
 		success: function(res){
 		if (res != null && res.length > 0) {
 		    var myText = "<h3>Finished Calculations</h3>";
@@ -179,7 +197,7 @@ function previousJobs() {
 
 		    var command = SHELL_CMD_DIR+"/exceededWalltimeWrapper.sh " + shortDir;
 		    $.newt_ajax({type: "POST",
-				url: "/command/hopper",
+				url: "/command/" + machine,
 				data: {"executable": command},
 				success: function(res){
 			 	 unfText = "<h3>Unfinished Calculations Available for Resubmission</h3>"; 
@@ -203,11 +221,11 @@ function previousJobs() {
 				     unfText += "<td width=50\%>" + jname
 					 + "</td><td class=\"statusnone\" width=15\% align=center>"
 					 + "Unfinished</td><td><button onClick=\""
-					 + "resubmit(\'" + jname + "\', \'hopper\');"
+
+					 + "resubmit(\'" + jname + "\');"
 					 + "$(this).attr('disabled','disabled');\" type=\"button\">Resubmit</button></td><td>"
 					 + "<button onClick=\"viewJobFiles(\'" 
-					 + jname + "\', \'" + "hopper"
-					 + "\')\" type=\"button\">View Files</button></td>";
+					 + jname + "\')\" type=\"button\">View Files</button></td>";
 				     unfText += "<td><img onClick=archiveJobFiles('"+shortDir+"','"+jname+"')";
 				     unfText += " width='28px' src='images/archivesymbol.png' alt='Archive' title='Archive'/></td>";
 				     unfText += "<td><img onClick=deleteJobFiles('"+shortDir+"','"+jname+"')";
@@ -318,7 +336,7 @@ function previousJobs() {
 }
 
 //Rubmission function
-function resubmit(jobName, machine) {
+function resubmit(jobName) {
     var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
     var command = SHELL_CMD_DIR+"resubmit.sh " + shortDir;
     //Post job.
@@ -334,8 +352,10 @@ function resubmit(jobName, machine) {
 }
 
 //view results function
-function individualJobOutput(jobName, machine) {
+function individualJobOutput(jobName) {
+     //Force file operations to hopper if not specified
      if (!machine) machine = "hopper";
+
      $('#jobHeader').html("<h3>Results for " + jobName + "</h3><center><img src=\"ajax-loader-2.gif\" width=40 ></center>");
      //Show Ajax Loader as it writes the html
 
@@ -358,7 +378,7 @@ function individualJobOutput(jobName, machine) {
 		 var myTime = new Date(parseInt(webdata[1]));
 		 myHtml += "<table><tr><td align=left>Run "+myTime.toLocaleString()+"</td>";
 		 myHtml += "<td width=5></td><td align=right><button onClick=switchToPrevious()>Other Calculations</button>&nbsp;&nbsp;";
-		 myHtml += "<button onClick=individualJobWrapper('"+jobName+"','"+machine+"')>View Files</button>&nbsp;&nbsp;	";
+		 myHtml += "<button onClick=individualJobWrapper('"+jobName+"')>View Files</button>&nbsp;&nbsp;	";
 		 myHtml += "<button onClick=deleteJobFiles('"+shortDir+"')>Delete Job</button></td></tr>";
 		 myHtml += "</table>";
 
@@ -367,7 +387,7 @@ function individualJobOutput(jobName, machine) {
 	     },
 		 error: function(request,testStatus,errorThrown) {
 		 //This caters to old or possibly maunally run jobs (as best as possible)
-		 myHtml += "<h3>Results for " + jobName + "</h3><table><tr><td align=right><button onClick=switchToPrevious()>Other Calculations</button><button onClick=individualJob('"+jobName+"','"+machine+"')>View Files</button></td></tr></table><br>";
+		 myHtml += "<h3>Results for " + jobName + "</h3><table><tr><td align=right><button onClick=switchToPrevious()>Other Calculations</button><button onClick=individualJob('"+jobName+"')>View Files</button></td></tr></table><br>";
 		 $('#jobHeader').html(myHtml);
 		 alert("no webdata, cannot view this job.");
 		 ;}//findJobOutputs(myHtml, directory, jobName);}
@@ -480,7 +500,8 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
     var findCrash = "/usr/bin/find " + shortDir + " -type f -name 'CRASH'";
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": findCrash},
 		success: function(res){
 		console.log(res);
@@ -498,7 +519,8 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     //Find Missing Pseudos
     var findMissingPseudos = SHELL_CMD_DIR + "missingPseudos.sh " + shortDir;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": findMissingPseudos},
 		success: function(res){
 		console.log(res);
@@ -513,7 +535,8 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     //Find MPI Errors
     var findMPI = SHELL_CMD_DIR + "mpiErrors.sh " + shortDir;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": findMPI},
 		success: function(res){
 		console.log(res);
@@ -549,7 +572,8 @@ function archiveJobFiles(dir, molName) {
     if (!confirm('Are you sure you want to archive this?  This disables future state calculations.')) return;
     command = SHELL_CMD_DIR+"htarAndClean.sh " + dirToArchive;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res) {switchToPrevious();},});
 
@@ -560,7 +584,8 @@ function deleteJobFiles(dir, molName) {
     if (!confirm('Are you sure?  All files will be permanently deleted.')) return;
     command = SHELL_CMD_DIR+"rmFileDir.sh " + dir + " " + molName;
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res) {switchToPrevious();},});
 }
@@ -600,7 +625,8 @@ function getStates(cmnd, ev) {
     }
     cmnd += " " + ev;
     $.newt_ajax({type: "POST",
-			 url: "/command/hopper",
+
+			 url: "/command/" + machine,
 			 data: {"executable": cmnd},
 			 success: function(res){
 		         $("#topStates").text(res.output);
@@ -649,7 +675,7 @@ function longAtom(atomNo) {
 //Turn C002 into C2
 function shortAtom(atomNo) {
     var type = atomNo.replace(/\d/g,'');
-    return  type + atomNo.replace(type, '').replace(/^[0]+/g,"");
+    return type + atomNo.replace(type, '').replace(/^[0]+/g,"");
 }
 
 //post Postprocessing state job
@@ -664,7 +690,8 @@ function postProcessing(atomNo, activeMo, state) {
     }
     var myOpts = document.getElementById('currModel').options;
     console.log(myOpts.length);
-    var optsVals = [];
+
+    var optsVals = [];	
     for (i in myOpts) optsVals.push(myOpts[i].value);
     console.log(optsVals);
     if ((Number(activeMo)+1) < myOpts.length && Number(activeMo) > 0) {
@@ -677,7 +704,7 @@ function postProcessing(atomNo, activeMo, state) {
     }
 
     var jobName = $('#jobName').text();
-    var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+atomNo+"/";
+    var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+shortAtom(atomNo)+"/";
     var prefix = jobName + '.' + longAtom(atomNo) + "-XCH";
     var command = SHELL_CMD_DIR+"pp.sh " + activeDir + " " + prefix + " 24 24 " + state + " " + state; //todo (advanced procs)
     $.newt_ajax({type: "POST",
@@ -699,7 +726,7 @@ function drawState(atomNo, activeMo, state) {
     Jmol.script(resultsApplet, scr);
 
     $.newt_ajax({type: "POST",
-		    url: "/command/hopper",
+		    url: "/command/" + machine,
 		    data: {"executable": command},
 		    success: function(res) {
 		     console.log("fetched");
@@ -732,7 +759,8 @@ function deleteStateFileFromServer() {
     var jobName = $('#jobName').text();
     var command = SHELL_CMD_DIR + "wipeState.sh " + jobName;
     $.newt_ajax({type: "POST",
-		    url: "/command/hopper",
+
+		    url: "/command/" + machine,
 		    data: {"executable": command},
 		    success: function(res) {
 		console.log("successful delete");
@@ -751,7 +779,8 @@ function getXCHShift(elem) {
 	else return 0;
     } else {
 	 $.newt_ajax({type: "GET",
-		url: "/file/hopper" + DATABASE_DIR + "/XCHShifts.csv?view=read",
+
+		url: "/file/" + machine + DATABASE_DIR + "/XCHShifts.csv?view=read",
 		success: function(res){
 		     res = res.split("\n");
 		     cachedShifts.pulled=true;
@@ -792,7 +821,7 @@ function saveOutput(dir, jobName) {
 	    + file + " " + name + " " + dt + " " + elem + " " + XCH + " " + myUsername + " " + dir.slice(12);
 
 	$.newt_ajax({type: "POST",
-		    url: "/command/hopper",
+		    url: "/command/" + machine,
 		    data: {"executable": command},
 		    success: function(res){
 		    console.log("Success!");
@@ -903,7 +932,8 @@ function makePlotWrapper(dir, jobName, elems, dataset) {
 
     var command = "/usr/bin/python " + SHELL_CMD_DIR + "ShirleyEndValue.py " + dir.substr(12);
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res){
 		//console.log(res.output);
@@ -1016,7 +1046,8 @@ function makePlot(dir, jobName, elems, dataset, lim) {
 
 //View Files
 //READ FILES PIECES
-function individualJob(jobName, machine) {
+
+function individualJob(jobName) {
     $('#previousjobsfiles').html("<table width=100\%><th align=left>Output files for "+jobName
 			     + "</th><tr><button onclick='previousJobsWrapper()'>Return to list</button>"
 			     + "</tr></table><center><img src=\"ajax-loader-2.gif\" width=40></center>");
@@ -1133,11 +1164,12 @@ function changeDir(directory, jobName) {
 }
 
 //Check machine status
-function updateStatus(machine) {
+
+function updateStatus(mymachine) {
     $.newt_ajax({type: "GET",
-		url: "/status/"+machine,
+		url: "/status/"+mymachine,
 		success: function(res) {
-		var myText = machine + " is " + res.status + "<br>";
+		var myText = mymachine + " is " + res.status + "<br>";
 		$('#clusterStatus').html(myText);
 		$('#clusterStatus').trigger('create');
 	    },
@@ -1313,7 +1345,8 @@ function newJobSubmission(form) {
     var command = SHELL_CMD_DIR+"makeFileDir.sh "+$('#outputDir').val()+" ";
     var materialName = form.material.value.replace(/^\s+/g,"").replace(/\s+$/g,"").replace(/\s+/g," ").replace(" ","_");
    
-    var machine = form.machine.value;
+
+    var submissionMachine = form.machine.value;
 
     var d = new Date();
     var dateStr = d.toUTCString();//Wed, 06 Jun 2012 17:30:05 GMT
@@ -1322,7 +1355,8 @@ function newJobSubmission(form) {
 
     //Make the directory for this job, then, upon completion, upload coordinates.
     $.newt_ajax({type: "POST",
-		url: "/command/" + machine,
+
+		url: "/command/" + submissionMachine,
 		data: {"executable": command},
                 success: function(res) {pushFile(form, machine, materialName);},
     	        error: function(request,testStatus,errorThrown) {
@@ -1336,12 +1370,14 @@ function newJobSubmission(form) {
 }
 
 //upload the coordinates file to the correct machine
-function pushFile(form, machine, molName) {
+
+function pushFile(form, submissionMachine, molName) {
     var count = 1;
     for (var m = 0; m <models.length; m++) {
 	var xyzcoords = makeXYZfromCoords(m);
 	$.newt_ajax({type: "PUT", 
-		    url: "/file/"+machine+$('#outputDir').val()+"/"+molName+"/"+molName+"_"+m+".xyz",
+
+		    url: "/file/"+submissionMachine+$('#outputDir').val()+"/"+molName+"/"+molName+"_"+m+".xyz",
 		    data: xyzcoords,
 		    success: function(res) {
 		    if (count == models.length)
@@ -1352,7 +1388,8 @@ function pushFile(form, machine, molName) {
 		    error: function(request,testStatus,errorThrown) {
 		    var command = SHELL_CMD_DIR + "rmFileDir.sh "+ $('#outputDir').val() + " " + molName;
 		    $.newt_ajax({type: "POST",
-				url: "/command/" + machine,
+
+				url: "/command/" + submissionMachine,
 				data: {"executable": command},});
 		    form.Submit.disabled=false;
 		    $('#subStatus').html("<table width=100\%><th align=left>Failed!\n"+testStatus+":\n" + errorThrown + "</th></table>");},});
@@ -1373,7 +1410,8 @@ function executeJob(form, materialName) {
     var NTG = form.NTG.value;
     var PPN = form.PPN.value;
     var nodes = form.NEXCITED.value * form.NPERATOM.value;
-    var machine = form.machine.value;
+
+    var submissionMachine = form.machine.value;
     var brv =  form.IBRAV.value;
     var totChg = form.TOTCHG.value;
     var useCustomBlock = ( $('#customInputBlock').val() != "DEFAULT" );
@@ -1398,8 +1436,6 @@ function executeJob(form, materialName) {
     inputs+='PW_POSTFIX=\\"-ntg '+ NTG +'\\"\\n';
     inputs+='K_POINTS=\\\"K_POINTS automatic \\n'+form.KPOINTS.value+' 0 0 0\\\"\\n\"';
 
-    console.log(inputs);
-    
 
     var command = SHELL_CMD_DIR+"submit.sh ";
     command += dir + " ";
@@ -1407,7 +1443,7 @@ function executeJob(form, materialName) {
     command += inputs + " ";
     command += nodes + " ";
     command += PPN + " ";
-    command += machine + " ";
+    command += submissionMachine + " ";
     command += form.Queue.value + " ";
     command += form.wallTime.value + " ";
     command += form.acctHours.value + " ";
@@ -1434,15 +1470,14 @@ function executeJob(form, materialName) {
     
     //post webdata
     $.newt_ajax({type: "PUT", 
-		url: "/file/"+machine+dir+"/"+materialName+"/"+ "webdata.in",
+		url: "/file/"+submissionMachine+dir+"/"+materialName+"/"+ "webdata.in",
 		data: webdata,
 		success: function(res) {;},});
 
-    console.log("Command "+command)
 
     //Post job.
     $.newt_ajax({type: "POST",
-		url: "/command/" + machine,
+		url: "/command/" + submissionMachine,
 		data: {"executable": command},
 		success: function(res){
 		form.Submit.disabled=false;
@@ -1452,7 +1487,7 @@ function executeJob(form, materialName) {
 		error: function(request,testStatus,errorThrown) {
 		 command = SHELL_CMD_DIR + "rmFileDir.sh "+dir+ " " + molName;
 		 $.newt_ajax({type: "POST",
-			     url: "/command/" + machine,
+			     url: "/command/" + submissionMachine,
 			     data: {"executable": command},});
 		 form.Submit.disabled=false;
 	  	 $('#subStatus').html("<table width=100\%><th align=left>Failed!\n"+testStatus+":\n" + errorThrown + "</th></table>");},
@@ -1485,7 +1520,7 @@ function expandXAS(XAS, form) {
 //Opening a transfered file from webDynamics
 function openTransferFile() {
     $.newt_ajax({type: "GET",
-		url: "/file/hopper"+DATABASE_DIR+"/tmp/"+myUsername+".xyz?view=read",
+		url: "/file/" + machine +DATABASE_DIR+"/tmp/"+myUsername+".xyz?view=read",
 		success: function (res) {
 
 		//Note, this is VERY specific parsing, from what WebDynamics outputs...
@@ -1568,7 +1603,8 @@ function searchSpectrumDB() {
     var command = "/usr/bin/python " + DATABASE_DIR + "/spectraDB/search.py " + term;
 
     $.newt_ajax({type: "POST",
-		url: "/command/hopper",
+
+		url: "/command/" + machine,
 		data: {"executable": command},
 		success: function(res){
 		console.log(res);
@@ -1616,7 +1652,8 @@ function dbSpectrumJob(elem, XCHShift, path) {
         pan: {interactive:true}
     };
 
-    var file = "/file/hopper" + fullPath;
+
+    var file = "/file/" + machine + fullPath;
     $.newt_ajax({type: "GET",
 		url: file + "?view=read",
 		success: function(res){
@@ -1637,123 +1674,24 @@ function dbSpectrumJob(elem, XCHShift, path) {
 	    },});
 }
 
-// query the selected REST API.
-var lastSearchResult = '';
-function restQuery() {
-  var dest = $('#searchResults');
-
-  dest.html('working...');
-  var root = $('#searchLocationChosen');
-  var url = TreeEval.treeValue(root);
-
-  var end = url.substring(url.lastIndexOf('/') + 1,
-                          url.length);
-
-  // only send SDFs to JSmol.
-  var result = '';
-  switch(end) {
-    case 'SDF':
-      $.get(url, function(data, status) {
-        lastSearchResult = data;
-        result = '<p id="searchResult" ';
-        result += ' style="display:none">';
-        result += 'Finished. Click "Submit Calculations" on the left to display results.</p>';
-        dest.html(result);
-        $('#searchResult').fadeIn();
-      }).fail(function(xhr, textStatus, errorThrown) {
-        result = 'An error occurred with the request:<br><pre>';
-        result += errorThrown;
-        result += '<br><br>';
-        result += xhr.responseText;
-        result += '</pre>';
-        dest.html(result);
-      });
-      break;
-    default:
-      result = '<a id="searchResult" ';
-      result += 'style="display:none" ';
-      result += 'target="_blank" href="';
-      result += url;
-      if (end == 'PNG') {
-        result += '">View Image</a><br>';
-      } else {
-        result += '">Open Result</a><br>';
-      }
-      dest.html(result);
-      $('#searchResult').fadeIn();
-      break;
-  }
-}
-
-// display the result of the last search result in JSmol.
-function displaySearchResult() {
-    var script = "zap;set echo top left;font echo 16;echo \"Loading and Optimizing\";";
-    Jmol.script(previewApplet, script);
-    script = "try{set useMinimizationThread false;load INLINE '" + lastSearchResult + "';minimize STEPS 300 addHydrogens;javascript readCoordsFromJmol();}catch(e){;}";
-    Jmol.script(previewApplet, script);
-    
-    readCoordsFromJmol()
-    //activeModel = models.length-1;
-    //drawMolInPreview();
-}
-
-// organizes scraping operations
-Scrape = {}
-Scrape.scraperPath = 'scrape/scrape.cgi';
-Scrape.getInputs = function(form) {
-  var selector = '#' + form.id + ' table input';
-  return $(selector);
-}
-Scrape.validateInputs = function(form, db_name) {
-  var inputs = Scrape.getInputs(form);
-
-  var valid = true;
-  var message = '';
-
-  // must provide at least one search term
-  var termGiven = false;
-  for (var i = 0; i < inputs.length; i++) {
-    if (inputs[i].value.length > 0) {
-      termGiven = true;
-    }
-  }
-  if (!termGiven) {
-    message = 'Please enter at least one search term.';
-    valid = false;
-  }
-
-  if (valid) {
-    Scrape.scrape(form, db_name);
-  } else {
-    alert(message);
-  }
-}
-Scrape.scrape = function(form, db_name) {
-  var url = Scrape.scraperPath + '?';
-  url += 'db=' + db_name;
-  
-  var inputs = Scrape.getInputs(form);
-  var input = null;
-  for (var i = 0; i < inputs.length; i++) {
-    input = inputs[i];
-    if (input.value.length > 0) {
-      url += '&';
-      url += input.name + '=' + input.value;
-    }
-  }
-
-  $.get(url,
-        Scrape.handleResult);
-  $('#searchResults').html('working... (could take up to 30 seconds)');
-}
-Scrape.handleResult = function(data, status) {
-  $('#searchResults').html('<pre>' + data + '</pre>');
-}
 
 //Div Wrapper functions.  For Organization. Checks Login Status.
+function submitJobsWrapper() {
+    if (myUsername.indexOf("invalid") != -1) {
+	$("#wrapper2").hide();
+        alert("Please log in to continue.");
+    } else {
+	$("#wrapper2").show();
+	document.inputs.Submit.disabled=false;
+	updateStatus(document.inputs.machine.value);
+	makeCoordsDiv();
+	initPreviewApp();
+    }
+
+}
 function previousJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
 	$('#previousjobslist').show();
 	$('#previousjobsfiles').hide();
@@ -1764,59 +1702,65 @@ function previousJobsWrapper() {
 
 function runningJobsWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+
+        alert("Please log in to continue.");
     } else {
         runningJobs();
     }
 }
 
-function individualJobWrapper(myJobId, machine) {
+
+function individualJobWrapper(myJobId) {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
 	$('#previousjobslist').hide();
 	$('#previousjobsfiles').show();	
 	$('#previousjobresults').hide();
-        individualJob(myJobId, machine);
+
+        individualJob(myJobId);
     }
 }
-function viewJobOutputWrapper(myJobId, machine) {
+function viewJobOutputWrapper(myJobId) {
     if (myUsername.indexOf("invalid") != -1) {
-        //
+        alert("Please log in to continue.");
     } else {
 	$('#previousjobslist').hide();
 	$('#previousjobsfiles').hide();	
 	$('#previousjobresults').show();
-        individualJobOutput(myJobId, machine);
+        individualJobOutput(myJobId);
     }
 }
 function editMoleculeWrapper() {
     initMainApp();
 }
+
+
+//Again note, this reaches into search.html.template.  I know its ugly.  I know its bad practice.  I don't have time to fix it.
 function searchWrapper() {
     if (myUsername.indexOf("invalid") != -1) {
-	//
+	//Not MFTheory users do not have rights to use these freely.
+	$("#searchWrapper").hide();
+	alert("Please log in to continue.");
     } else {
-        //
+        $("#searchWrapper").show();
     }
 }
 
 //Div Functions.  Formats webpage.
-function viewJobFiles(myJobId, machine) {
-    individualJobWrapper(myJobId, machine);
+
+function viewJobFiles(myJobId) {
+    individualJobWrapper(myJobId);
 }
 
-function viewJob(myJobId, machine) {
+function viewJob(myJobId) {
     resultsAppReady = false; //app needs to load, put everywhere?? dunno how to structure this test
-    viewJobOutputWrapper(myJobId, machine);
+    viewJobOutputWrapper(myJobId);
 }
 
 function switchToSubmitForm() {
-    document.inputs.Submit.disabled=false;
-    updateStatus(document.inputs.machine.value);
-    makeCoordsDiv();
-    initPreviewApp();
     window.clearInterval(autoInterval);
+    submitJobsWrapper();
 }
 function switchToPrevious() {
     window.clearInterval(autoInterval);
@@ -1840,54 +1784,4 @@ function switchToSearchDB() {
 function switchToSpectrumDB() {
     window.clearInterval(autoInterval);
     searchWrapper();
-}
-
-// Search area switching functions.
-function mutexShow(shownId, mutexClass) {
-    // if nothing to show, no errors will be thrown. Thanks jquery!
-    $('.' + mutexClass).hide();
-    $('#' + shownId).show();
-}
-
-function switchToSearchLocation(loc) {
-    mutexShow(loc, 'searchTermSet');
-}
-
-// organizes PubChem switching
-// TODO: make this less hideous
-PubChem = {
-    Compound: {},
-    Substance: {},
-    Assay: {},
-}
-PubChem.chooseDomain = function(dom) {
-  dom = 'PubChem_' + dom; 
-  mutexShow(dom, 'PubChem_domain');
-}
-PubChem._chooseNamespace = function(namespace, domain) {
-  // some namespaces don't have anything to show. This is okay.
-  namespace = 'PubChem_' + domain + '_' + namespace;
-  mutexShow(namespace, 'PubChem_' + domain + '_namespace');
-}
-PubChem._chooseOperation = function(op, domain) {
-  op = 'PubChem_' + domain + '_op_' + op;
-  mutexShow(op, 'PubChem_' + domain + '_op');
-}
-PubChem.Compound.chooseNamespace = function(namespace) {
-  PubChem._chooseNamespace(namespace, 'compound');
-}
-PubChem.Compound.chooseOperation = function(op) {
-  PubChem._chooseOperation(op, 'compound');
-}
-PubChem.Substance.chooseNamespace = function(namespace) {
-  PubChem._chooseNamespace(namespace, 'substance');
-}
-PubChem.Substance.chooseOperation = function(op) {
-  PubChem._chooseOperation(op, 'substance');
-}
-PubChem.Assay.chooseNamespace = function(namespace) {
-  PubChem._chooseNamespace(namespace, 'assay');
-}
-PubChem.Assay.chooseOperation = function(op) {
-  PubChem._chooseOperation(op, 'assay');
 }

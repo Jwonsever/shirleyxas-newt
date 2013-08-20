@@ -1,0 +1,397 @@
+<script src="../js/TreeEval.js"></script>
+<script src="../js/search.js"></script>
+
+<!--Search previously run spectra for a result-->  
+    <p align="left">
+      This page is meant to help you find structures from prestablished structure databases.
+    </p>
+    
+    <div align="left">
+      Select a search location<br>
+      <select id="searchLocationChosen" data-te-forward-through="true" onchange="switchToSearchLocation(this.value);">
+        <!-- make a data-te-forward-with-after-val attribute or something to append after value has been added -->
+        <option value="PubChem_searchTerms" selected>PubChem</option>
+        <option value="ICSD_searchTerms">ICSD (~30s)</option>
+        <option value="AMCSD_searchTerms">AMCSD (~2s)</option>
+      </select>
+    </div>
+    
+    <div id="searchTerms" align="left" style="padding:10px">
+      
+      <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true">
+        <div data-te-skip="true" style="padding-bottom:10px; padding-left:20px">
+          For help on these drop-down items, click
+          <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>.
+          <br>
+        </div>
+        Domain<br>
+        <input type="hidden" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug"/>
+	
+        <select id="PubChem_domainChosen" data-te-forward-through="true" onchange="PubChem.chooseDomain(this.value);">
+          <option value="compound" selected>Compound</option>
+          <option value="substance">Substance</option>
+          <option value="assay">BioAssay</option>
+        </select>
+	
+        <div data-te-skip="true">
+          <div id="PubChem_compound" class="PubChem_domain" data-te-list-slash="true" style="padding:10px">
+            <input type="hidden" id="PubChem_compound_domain" value="compound"/>
+	    
+            Namespace<br>
+            <select id="PubChem_compound_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Compound.chooseNamespace(this.value);">
+              <option value="name" selected>name</option>
+              <option value="cid">cid</option>
+              <option value="smiles">smiles</option>
+              <option value="inchi">inchi</option>
+              <option value="sdf">sdf</option>
+              <option value="inchikey">inchikey</option>
+              <option value="xref">xref</option>
+            </select>
+	    
+            <div style="padding:10px;" data-te-skip="true">
+              <div id="PubChem_compound_xref" class="PubChem_compound_namespace" data-te-list-slash="true" style="display:none">
+                <input type="hidden" id="PubChem_compound_xref_1" value="xref"/>
+                <select id="PubChem_compound_xref_2">
+                  <option value="RegistryID">RegistryID</input>
+                  <option value="RN">RN</input>
+                  <option value="PubMedID">PubMedID</input>
+                  <option value="MMDBID">MMDBID</input>
+                  <option value="ProteinGI">ProteinGI</input>
+                  <option value="NucleotideGI">NucleotideGI</input>
+                  <option value="TaxonomyID">TaxonomyID</input>
+                  <option value="MIMID">MIMID</input>
+                  <option value="GeneID">GeneID</input>
+                  <option value="ProbeID">ProbeID</input>
+                  <option value="PatentID">PatentID</input>
+                </select>
+                    </div>
+		    
+                    <label for="PubChem_compound_input">Identifier (comma-separated list of search terms)</label>
+                    <input type="Text" id="PubChem_compound_input" value=""/>
+                  </div>
+		  
+                  <div id="PubChem_compound_input_ptr" data-te-forward-to="PubChem_compound_input"></div>
+		  
+                  Operation<br>
+                  <select id="PubChem_compound_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Compound.chooseOperation(this.value);">
+                    <option value="record" selected>record (openable in JSmol)</option>
+                    <option value="property">property</option>
+                    <option value="synonyms">synonyms</option>
+                    <option value="sids">sids</option>
+                    <option value="cids">cids</option>
+                    <option value="aids">aids</option>
+                    <option value="assaysummary">assaysummary</option>
+                    <option value="classification">classification</option>
+                    <option value="xrefs">xrefs</option>
+                  </select>
+
+                  <div style="padding:10px" data-te-skip="true">
+                    <div id="PubChem_compound_op_property" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
+                      <input type="hidden" value="property"/>
+                      <!-- sorry -->
+                      <select multiple id="PubChem_compound_op_property_2"/>
+                      <option value="MolecularFormula">MolecularFormula</option>
+                      <option value="MolecularWeight">MolecularWeight</option>
+                      <option value="CanonicalSMILES">CanonicalSMILES</option>
+                      <option value="IsometricSMILES">IsometricSMILES</option>
+                      <option value="InChI">InChI</option>
+                      <option value="InChiKey">InChiKey</option>
+                      <option value="IUPACName">IUPACName</option>
+                      <option value="XLogP">XLogP</option>
+                      <option value="ExactMass">ExactMass</option>
+                      <option value="MonoisotopicMass">MonoisotopicMass</option>
+                        <option value="TPSA">TPSA</option>
+                      <option value="Complexity">Complexity</option>
+                      <option value="Charge">Charge</option>
+                      <option value="HBondDonorCount">HBondDonorCount</option>
+                      <option value="HBondAcceptorCount">HBondAcceptorCount</option>
+                      <option value="RotableBondCount">RotableBondCount</option>
+                      <option value="HeavyAtomCount">HeavyAtomCount</option>
+                      <option value="IsotopeAtomCount">IsotopeAtomCount</option>
+                      <option value="AtomStereoCount">AtomStereoCount</option>
+                      <option value="DefinedAtomStereoCount">DefinedAtomStereoCount</option>
+                      <option value="UndefinedAtomStereoCount">UndefinedAtomStereoCount</option>
+                      <option value="BondStereoCount">BondStereoCount</option>
+                      <option value="DefinedBondStereoCount">DefinedBondStereoCount</option>
+                      <option value="UndefinedBondStereoCount">UndefinedBondStereoCount</option>
+                      <option value="CovalentUnitCount">CovalentUnitCount</option>
+                      <option value="Volume3D">Volume3D</option>
+                      <option value="XStericQuadrupole3D">XStericQuadrupole3D</option>
+                      <option value="YStericQuadrupole3D">YStericQuadrupole3D</option>
+                      <option value="ZStericQuadrupole3D">ZStericQuadrupole3D</option>
+                      <option value="FeatureCount3D">FeatureCount3D</option>
+                      <option value="FeatureAcceptorCount3D">FeatureAcceptorCount3D</option>
+                      <option value="FeatureDonorCount3D">FeatureDonorCount3D</option>
+                      <option value="FeatureAnionCount3D">FeatureAnionCount3D</option>
+                      <option value="FeatureCationCount3D">FeatureCationCount3D</option>
+                      <option value="FeatureRingCount3D">FeatureRingCount3D</option>
+                      <option value="FeatureHydrophobeCount3D">FeatureHydrophobeCount3D</option>
+                      <option value="ConformerModelRMSD3D">ConformerModelRMSD3D</option>
+                      <option value="EffectiveRotorCount3D">EffectiveRotorCount3D</option>
+                      <option value="ConformerCount3D">ConformerCount3D</option>
+</select>
+</div>
+
+<div id="PubChem_compound_op_xrefs" class="PubChem_compound_op" data-te-list-slash="true" style="display:none">
+  <input type="hidden" id="PubChem_compound_op_xrefs_1" value="xrefs"/>
+  <select multiple id="PubChem_compound_op_xrefs_2">
+    <option value="RegistryID">RegistryID</input>
+    <option value="RN">RN</input>
+    <option value="PubMedID">PubMedID</input>
+    <option value="MMDBID">MMDBID</input>
+    <option value="ProteinGI">ProteinGI</input>
+    <option value="NucleotideGI">NucleotideGI</input>
+    <option value="TaxonomyID">TaxonomyID</input>
+    <option value="MIMID">MIMID</input>
+    <option value="GeneID">GeneID</input>
+    <option value="ProbeID">ProbeID</input>
+    <option value="PatentID">PatentID</input>
+  </select>
+</div>
+</div>
+</div>
+
+<div id="PubChem_substance" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
+  <input type="hidden" id="PubChem_substance_domain" value="substance"/>
+  
+  Namespace<br>
+  <select id="PubChem_substance_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Substance.chooseNamespace(this.value);">
+    <option value="sid" selected>sid</option>
+    <option value="sourceid">sourceid</option>
+    <option value="sourceall">sourceall</option>
+    <option value="name">name</option>
+    <option value="xref">xref</option>
+  </select>
+  
+  <div style="padding:10px;" data-te-skip="true">
+    <div id="PubChem_substance_sourceid" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
+      <input type="hidden" value="sourceid"/>
+      <!-- TODO: do this in javascipt -->
+      <label for="PubChem_substance_sourceid_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
+      <input type="text" id="PubChem_substance_sourceid_2" value=""/>
+    </div>
+    
+    <div id="PubChem_substance_sourceall" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
+      <input type="hidden" value="sourceall"/>
+      <label for="PubChem_substance_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
+      <input type="text" id="PubChem_substance_sourceall_2" value=""/>
+    </div>
+    
+    <div id="PubChem_substance_xref" class="PubChem_substance_namespace" data-te-list-slash="true" style="display:none">
+      <input type="hidden" id="PubChem_substance_xref_1" value="xref"/>
+      <select id="PubChem_substance_xref_2">
+        <option value="RegistryID">RegistryID</input>
+        <option value="RN">RN</input>
+        <option value="PubMedID">PubMedID</input>
+        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
+                    </div>
+
+                    <label for="PubChem_substance_input">Identifier (comma-separated list of search terms)</label>
+                    <input type="Text" id="PubChem_substance_input" value=""/>
+                  </div>
+
+                  <div id="Pubchem_substance_input_ptr" data-te-forward-to="PubChem_substance_input"></div>
+
+                  Operation<br>
+                  <select id="PubChem_substance_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Substance.chooseOperation(this.value);">
+                    <option value="record" selected>record (openable in JSmol)</option>
+                    <option value="synonyms">synonyms</option>
+                    <option value="sids">sids</option>
+                    <option value="cids">cids</option>
+                    <option value="aids">aids</option>
+                    <option value="assaysummary">assaysummary</option>
+                    <option value="classification">classification</option>
+                    <option value="xrefs">xrefs</option>
+                  </select>
+
+                  <div style="padding:10px" data-te-skip="true">
+                    <div id="PubChem_substance_op_xrefs" class="PubChem_substance_op" data-te-list-slash="true" style="display:none">
+                      <input type="hidden" id="PubChem_substance_op_xrefs_1" value="xrefs"/>
+                      <select multiple id="PubChem_substance_op_xrefs_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+
+                <div id="PubChem_assay" class="PubChem_domain" data-te-list-slash="true" style="display:none;padding:10px">
+                  <input type="hidden" id="PubChem_assay_domain" value="assay"/>
+
+                  Namespace<br>
+                  <select id="PubChem_assay_namespaceChosen" data-te-forward-through="true" onchange="PubChem.Assay.chooseNamespace(this.value);">
+                    <option value="aid" selected>aid</option>
+                    <option value="sourceall">sourceall</option>
+                  </select>
+
+                  <div style="padding:10px;" data-te-skip="true">
+                    <div id="PubChem_assay_sourceall" class="PubChem_assay_namespace" data-te-list-slash="true" style="display:none">
+                      <input type="hidden" value="sourceall"/>
+                      <label for="PubChem_assay_sourceall_2">(any valid PubChem depositor name, with any slashes replaced by periods)</label>
+                      <input type="text" id="PubChem_assay_sourceall_2" value=""/>
+                    </div>
+
+                    <label for="PubChem_assay_input">Identifier (comma-separated list of search terms)</label>
+                    <input type="Text" id="PubChem_assay_input" value=""/>
+                  </div>
+
+                  <div id="Pubchem_assay_input_ptr" data-te-forward-to="PubChem_assay_input"></div>
+
+                  Operation<br>
+                  <select id="PubChem_assay_opChosen" data-te-forward-through="true" data-te-forward-with="_op" onchange="PubChem.Assay.chooseOperation(this.value);">
+                    <option value="record" selected>record (openable in JSmol)</option>
+                    <option value="sids">sids</option>
+                    <option value="cids">cids</option>
+                    <option value="aids">aids</option>
+                    <option value="description">description</option>
+                    <option value="targets">targets</option>
+                    <option value="doseresponse">doseresponse</option>
+                    <option value="summary">summary</option>
+                    <option value="classification">classification</option>
+                    <option value="xrefs">xrefs</option>
+                  </select>
+
+                  <div style="padding:10px" data-te-skip="true">
+                    <div id="PubChem_assay_op_targets" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
+                      <input type="hidden" id="PubChem_assay_op_targets_1" value="targets"/>
+                      <select multiple id="PubChem_assay_op_targets_2">
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="ProteinName">ProteinName</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="GeneSymbol">GeneSymbol</input>
+                      </select>
+                    </div>
+
+                    <div id="PubChem_assay_op_doseresponse" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
+                      <input type="hidden" id="PubChem_assay_op_dosereseponse_1" value="doseresponse"/>
+                      <input type="hidden" id="PubChem_assay_op_dosereseponse_2" value="sid"/>
+                    </div>
+
+                    <div id="PubChem_assay_op_xrefs" class="PubChem_assay_op" data-te-list-slash="true" style="display:none">
+                      <input type="hidden" id="PubChem_assay_op_xrefs_1" value="xrefs"/>
+                      <select multiple id="PubChem_assay_op_xrefs_2">
+                        <option value="RegistryID">RegistryID</input>
+                        <option value="RN">RN</input>
+                        <option value="PubMedID">PubMedID</input>
+                        <option value="MMDBID">MMDBID</input>
+                        <option value="ProteinGI">ProteinGI</input>
+                        <option value="NucleotideGI">NucleotideGI</input>
+                        <option value="TaxonomyID">TaxonomyID</input>
+                        <option value="MIMID">MIMID</input>
+                        <option value="GeneID">GeneID</input>
+                        <option value="ProbeID">ProbeID</input>
+                        <option value="PatentID">PatentID</input>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              Output format<br>
+              <select id="PubChem_output">
+                <option value="SDF" selected>SDF (openable in JSmol)</option>
+                <option value="PNG">PNG</option>
+                <option value="XML">XML</option>
+                <option value="JSON">JSON</option>
+                <option value="ASNT">ASNT</option>
+                <option value="ASNB">ASNB</option>
+              </select>
+              <br>
+              <br>
+              <button onclick="restQuery()">Query</button>
+            </div>
+
+            <!--ICSD Search -->
+            <form id="ICSD_searchTerms" class="searchTermSet" style="display:none">
+              <table>
+                <tr>
+                  <td>Composition (e.g. Na Cl)</td>
+                  <td> <input type="text" name="composition"/> </td>
+                </tr>
+                <tr>
+                  <td>Number of Elements</td>
+                  <td> <input type="text" name="num_elements"/> </td>
+                </tr>
+                <tr>
+                  <td>Structural Formula (e.g. Pb (W 04))</td>
+                  <td> <input type="text" name="struct_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td>Chemical Name</td>
+                  <td> <input type="text" name="chem_name"/> </td>
+                </tr>
+                <tr>
+                  <td>Mineral Name (e.g. Adamite)</td>
+                  <td> <input type="text" name="mineral_name"/> </td>
+                </tr>
+                <tr>
+                  <td>Mineral Group (e.g. Pyroxene)</td>
+                  <td> <input type="text" name="mineral_grp"/> </td>
+                </tr>
+                <tr>
+                  <td>ANX Formula Crystal Composition</td>
+                  <td> <input type="text" name="anx_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td>AB Formula Crystal Composition</td>
+                  <td> <input type="text" name="ab_fmla"/> </td>
+                </tr>
+                <tr>
+                  <td>Number of Formula Units</td>
+                  <td> <input type="text" name="num_fmla_units"/> </td>
+                </tr>
+              </table>
+              <input type="button" id="ICSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'ICSD')"/>
+            </form>
+
+
+	    <!-- AMCSD Search -->
+            <form id="AMCSD_searchTerms" class="searchTermSet" style="display:none">
+              <table>
+                <tr>
+                  <td>Mineral</td>
+                  <td> <input type="text" name="mineral"/> </td>
+                </tr>
+                <tr>
+                  <td>Author</td>
+                  <td> <input type="text" name="author"/> </td>
+                </tr>
+                <tr>
+                  <td>Chemistry Search</td>
+                  <td> <input type="text" name="chemistry"/> </td>
+                </tr>
+                <tr>
+                  <td>Cell Parameters and Symmetry</td>
+                  <td> <input type="text" name="cellParam"/> </td>
+                </tr>
+                <tr>
+                  <td>Diffraction Search</td>
+                  <td> <input type="text" name="diffraction"/> </td>
+                </tr>
+                <tr>
+                  <td>General Search</td>
+                  <td> <input type="text" name="general"/> </td>
+                </tr>
+              </table>
+              <input type="button" id="AMCSD_submit" value="Submit" onclick="Scrape.validateInputs(this.form, 'AMCSD')"/>
+            </form>
+</div>
+<div id="searchResults"></div>
+

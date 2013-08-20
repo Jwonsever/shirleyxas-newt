@@ -9,10 +9,12 @@ James Wonsever - Mftheory
     width: 500px;
 }
 
+
 #optionsWrapper {
     position: relative;
     margin-right:500px;
-    height:500px;
+    min-height:500px;
+    
 }
 
 .optionsDivider {
@@ -40,9 +42,22 @@ James Wonsever - Mftheory
     height: 30px;
     width: auto;
 }
+
+/* Force to window bottom, and don't intefere with active div. */
 #optionsBottomBar {
    position: absolute;
-   bottom: 0;
+   bottom: -30px;
    left: 0;
    height: 30px;
+
+}
+
+
+/* Hack to keep min size */
+.navbar {
+    min-width: 1120px;
+}
+/* Hack to override Bootstrap containter width */
+.hero-unit {
+    min-width: 1000px;
 }
