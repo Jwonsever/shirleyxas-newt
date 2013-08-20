@@ -14,7 +14,7 @@ scriptDir=`dirname $0`
 . $scriptDir/../../GlobalValues.in
 
 #Note, this is tool location dependant, not universal!  todo.
-database=$CODE_BASE_DIR/$DATA_LOC/spectraDB/${molName}${date}"
+database=$CODE_BASE_DIR/$DATA_LOC/spectraDB/${molName}${date}
 
 mkdir $database
 cd $database
