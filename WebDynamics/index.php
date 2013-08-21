@@ -23,12 +23,12 @@
 
     
     <!--Scripts required for JME injection-->
-    <script src="javascript/jsmol-13.1.15/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
+    <script src="javascript/jsmol-13.3.3/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
     </script>
 
     <!--jsMol-->
-    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/JSmol.min.nojq.js"></script>
-    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/js/JSmolJME.js"></script>
+    <script type="text/javascript" src="javascript/jsmol-13.3.3/jsmol/JSmol.min.nojq.js"></script>
+    <script type="text/javascript" src="javascript/jsmol-13.3.3/jsmol/js/JSmolJME.js"></script>
 
     <!--Downloadify (Req. Flash 10)-->
     <script type="text/javascript" src="javascript/Downloadify/js/swfobject.js"></script>
@@ -62,7 +62,7 @@
 
       //for jsmol
       use: "HTML5",
-      j2sPath: "javascript/jsmol-13.1.15/jsmol/j2s",
+      j2sPath: "javascript/jsmol-13.3.3/jsmol/j2s",
 
       //These are for java version
       //jarPath: "javascript/jmol-13-0",

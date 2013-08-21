@@ -27,15 +27,15 @@
     <script src="../GlobalValues.js"></script>
 
     <!--Scripts required for JME injection-->
-    <script src="javascript/jsmol-13.1.15/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
+    <script src="javascript/jsmol-13.3.3/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
     </script>
 
     <!--jsMol-->
-    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/JSmol.min.nojq.js"></script>
-    <script type="text/javascript" src="javascript/jsmol-13.1.15/jsmol/js/JSmolJME.js"></script>
+    <script type="text/javascript" src="javascript/jsmol-13.3.3/jsmol/JSmol.min.nojq.js"></script>
+    <script type="text/javascript" src="javascript/jsmol-13.3.3/jsmol/js/JSmolJME.js"></script>
 
     <!-- This is supposed to be for writes, but it breaks getstates && other things... idk -->
-    <!--script type="text/php" src="javascript/jsmol-13.1.15/jsmol/jsmol.php"></script-->
+    <!--script type="text/php" src="javascript/jsmol-13.3.3/jsmol/jsmol.php"></script-->
 
     <!-- Flot plotting -->
     <script src="javascript/Flot/jquery.flot.js"></script>
