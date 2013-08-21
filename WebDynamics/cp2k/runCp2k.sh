@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 #TODO switch from jwonsever home paths to web paths
 
@@ -31,7 +31,7 @@ fi
 
 cellsize=(10 10 10 90 90 90)
 if [[ $# > 2 ]]; then
-    cellsize=`echo $3 | sed 's/[a-zA-Z]*/ /g'`
+    cellsize=`echo $3 | sed 's/[a-zA-Z]/ /g'`
 fi
 
 cell=($cellsize)
@@ -107,7 +107,9 @@ sed -i "s/GAMMA_HERE/$cell[6]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/TEMP_HERE/$temp/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PRESSURE_HERE/$pressure/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PREFIX_HERE/${prefix}.${repstr}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/CP2KHOME_HERE/${CP2K_PATH}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+
+escCp2kPath=`echo $CP2K_PATH | sed 's/\//,\//g' | tr ',' '\'`
+sed -i "s/CP2KHOME_HERE/${escCp2kPath}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 
 basis_set_file="$CP2K_PATH/cp2k/tests/QS/GTH_BASIS_SETS $CP2K_PATH/cp2k/tests/QS/BASIS_MOLOPT"
 pseudo_file="$CP2K_PATH/cp2k/tests/QS/GTH_POTENTIALS $CP2K_PATH/cp2k/tests/QS/POTENTIAL"
@@ -163,7 +165,12 @@ sed -i "s/wallhours_here/04/g" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/fprefix_here/${prefix}.${repstr}.${temp}K/g" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/prefix_here/${prefix}/g" ${prefix}.${repstr}.${temp}K.cp2k.pbs
 sed -i "s/cell_p_here/$repstr/g" ${prefix}.${repstr}.${temp}K.cp2k.pbs
+
 rm -fr __tmp.dat ${prefix}.kind*.dat 
 
 #Start the calculation
-qsub *.pbs
+/opt/torque/4.2.3.h5_notcpretry/bin/qsub ${prefix}.${repstr}.${temp}K.cp2k.pbs
+
+#I wonder why the above line cant find qsub without the path
+
+exit
