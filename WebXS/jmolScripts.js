@@ -283,7 +283,9 @@ function uploadCoordinates() {
     var filename = form.uploadfile.value;
     filename = filename.replace("C:\\fakepath\\", "");//Chrome Bug
     var name = filename.split("//");
-    name = name[name.length-1].replace(/\..*/, "");
+    name = name[name.length-1];
+    var fext=name.replace(/^.*\./,"");
+    name=name.replace(/\..*/, "");
 
     form.MOLNAME.value = name;
 
@@ -298,19 +300,25 @@ function uploadCoordinates() {
 	try {
 	    reader.onload = function(r) {
 		var filedata = String(reader.result);
-		var scr = "try{\nLOAD INLINE \"";
-		scr += filedata;
-		scr +="\";}catch(e){}";
 
-		Jmol.script(previewApplet, scr);
-
-		var gotCrystal = tryToGrabCrystalData();
-		readCoordsFromJmol();
-		if (!gotCrystal) {
-		    makeAbstractCellSize();
-		    switchToModel(models.length-1);
+		if (fext == "xyz" ) {
+		    readRawXYZ(filedata);
 		} else {
-		    runThroughGdisAndReload(filedata, filename);		    
+		    var scr = "try{\nLOAD INLINE \"";
+		    scr += filedata;
+		    scr +="\";}catch(e){}";
+		    
+		    Jmol.script(previewApplet, scr);
+		    
+		    var gotCrystal = tryToGrabCrystalData();
+		    readCoordsFromJmol();
+
+		    if (!gotCrystal) {
+			makeAbstractCellSize();
+			switchToModel(models.length-1);
+		    } else {
+			runThroughGdisAndReload(filedata, filename);		    
+		    }
 		}
 		
 	    }
@@ -322,6 +330,14 @@ function uploadCoordinates() {
     } else {
 	alert("Your browser does not support file uploading, please use google chrome or firefox.");
     }
+}
+function readRawXYZ(xyzFile) {
+    //Remove first two lines
+    xyzFile = xyzFile.split("\n").slice(2).join("\n");
+    //Append to models
+    models.push(xyzFile);
+    //Switch to that model
+    switchToModel(models.length-1);
 }
 
 /*Push file to server		      
@@ -349,16 +365,15 @@ function runGdis(filedata, filename) {
 		success: function(res) {console.log(res);reloadGdisOutput(filedata, filename);},});
 }
 function reloadGdisOutput(filedata, filename) {
-    var convertedFile = "../Shirley-data/tmp/"+filename+".xyz";
-    var scr = "try{load "+convertedFile+";}catch(e){};";
-    //Draw to Jmol
-    Jmol.script(previewApplet, scr);
-    //rewrite new coordinates
-    models = models.slice(0, -1);
-    readCoordsFromJmol();
-    switchToModel(models.length-1);
-    //Get rid of temporary file
-    deleteGdisOutputFile(filename);
+    var convertedFile = "/tmp/"+filename+".xyz";
+    $.newt_ajax({type: "GET",
+		url:"/file/"+"hopper" + CODE_BASE_DIR + DATA_LOC + convertedFile + "?view=read",
+		success: function(res) {
+		console.log(res);
+		models.pop();
+		readRawXYZ(res);
+		deleteGdisOutputFile(filename);
+	    },});
 }
 function deleteGdisOutputFile(filename) {
     command = "/bin/rm " + CODE_BASE_DIR + DATA_LOC + "/tmp/" + filename + ".xyz";
@@ -427,7 +442,9 @@ function drawMolInPreview() {
     Jmol.script(previewApplet, scr);
     $(document).ready(addSelections());
 
+    //Update Predicted Values
     $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/48) + 1));
+    predictWallclock();
 }
 
 function numAtoms(xyz) {

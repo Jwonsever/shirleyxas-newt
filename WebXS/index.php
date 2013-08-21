@@ -323,7 +323,10 @@ questions and comments regarding the website to jwonsever@lbl.gov.
 		      &nbsp;&nbsp;<a href="#" onclick="window.open('http://www.nersc.gov/users/computational-systems/hopper/running-jobs/queues-and-policies/');")>About</a>
                       </td></tr>		  
 
-		      <tr><td>Walltime:</td><td><input type="Text" id="wallTime" value="01:30:00"/></td></tr>
+		      <tr><td>Walltime:</td><td>
+			  <span>Predicted Minimum: <span id="predictedWallclock">< 1</span></span><br>
+			  <input type="Text" id="wallTime" onChange="colorPrWall()" value="01:30:00"/></td></tr>
+
 		      <tr><td>Account:</td><td><input type="Text" id="acctHours" value="m1707"/></td></tr>
 		      <tr><td>PPP:</td><td><input type="Text" id="PPP" value="4"/></td></tr>
 		      <tr><td>NTG:</td><td><input type="Text" id="NTG" value="24"/></td></tr>

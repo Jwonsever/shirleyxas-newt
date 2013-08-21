@@ -26,7 +26,9 @@ James Wonsever
     background-color:#EE4545;
 }
 
-
+#predictedWallclock {
+    color: #509c2d;
+}
 .statusup {color: #509c2d;
            text-align: center;
          }

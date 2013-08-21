@@ -1163,8 +1163,57 @@ function changeDir(directory, jobName) {
 		});
 }
 
-//Check machine status
+//Predict the necessary wall hours for this job.
+function predictWallclock() {
+    var snaps = models.length;
+    var atms = sterilize(models[0]).split("\n").length;
+    var vol = cellVolume();
+    var nbf = $('#NBANDFAC').val();
+    //This rounds up quite a bit from averages, but still sometimes underestimates it...
+    var mywallclock = Math.floor( ( snaps * atms * vol * nbf ) / 30000 ) + 5;
 
+    var hrs = Math.floor( mywallclock / 60 );
+    var mins = mywallclock % 60;
+    if (hrs < 10) { hrs = "0" + hrs; }
+    if (mins < 10) { mins = "0" + mins; }
+    var time =  hrs + ":" + mins + ":00";
+    console.log(time);
+
+    $("#predictedWallclock").text(time);
+    colorPrWall();
+}
+//Color the predicted wall bar, based on comparison to wall.
+function colorPrWall() {
+    var prWall = $("#predictedWallclock");
+
+    var prWallTime = prWall.text();
+    var setWall = $('#wallTime').val();
+    var hrsflag = ( setWall.split(":")[0] < prWallTime.split(":")[0] );
+    var hrseq = ( setWall.split(":")[0] == prWallTime.split(":")[0] );
+    var mnsflag = ( setWall.split(":")[1] < prWallTime.split(":")[1] );
+
+    if (hrsflag || (hrseq && mnsflag)) {
+	prWall.css('color', '#a42510');
+    } else {
+	prWall.css('color', '#509c2d');
+    }
+    prWall.text(prWallTime);
+
+}
+//Returns the volume of this cell parallelepiped.
+function cellVolume() {
+    var myform = document.getElementById('inputs');
+    var a = myform.CellA.value;
+    var b = myform.CellB.value;
+    var c = myform.CellC.value;
+    var cosa = Math.cos(toRad(myform.CellAlpha.value));
+    var cosb = Math.cos(toRad(myform.CellBeta.value));
+    var cosg = Math.cos(toRad(myform.CellGamma.value));
+    var toroot = 1 + 2*cosa*cosb*cosg - cosa*cosa - cosb*cosb - cosg*cosg;
+    var vol = a*b*c*Math.sqrt(toroot);
+    return vol;
+}
+//Check machine status
 function updateStatus(mymachine) {
     $.newt_ajax({type: "GET",
 		url: "/status/"+mymachine,
@@ -1301,9 +1350,22 @@ function validateInputs(form) {
 	invalid = true; }
 	
     //Check walltime
-    if (form.wallTime.value.match(/^\d{2,3}:\d{2}:\d{2}$/) == null) {
+    if (form.wallTime.value.match(/^\d{1,3}:\d{1,2}:\d{1,2}$/) == null) {
 	message += "Walltime parameter must be of the form XX:XX:XX (Hours:Minutes:Seconds) \n";
 	invalid = true; }
+    //Reformat if necessary
+    else {
+	var myclock = form.wallTime.value;
+	var hrs = myclock.split(":")[0];
+	var mins = myclock.split(":")[1];
+	var secs = myclock.split(":")[2];
+	if (hrs == 0 && mins < 5) {mins = 5;}
+	if (hrs < 10) { hrs = "0" + hrs; }
+	if (mins < 10) { mins = "0" + mins; }
+	if (secs < 10) { secs = "0" + secs; }
+	$('#wallTime').val(hrs + ":" + mins + ":" + secs);	
+    }
+
     //Check totalCharge
     var tchg = form.TOTCHG.value;
     if (tchg.match(/^\-?\d$/) == null) {
