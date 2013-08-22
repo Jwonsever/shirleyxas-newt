@@ -26,7 +26,7 @@ var JmolInfo = {
       
       //for jsmol
       use: "HTML5",
-      j2sPath: "javascript/jsmol-13.1.15/jsmol/j2s",
+      j2sPath: "javascript/jsmol-13.3.3/jsmol/j2s",
 
       //These are for java version
       //jarPath: "javascript/jmol-13-0",
