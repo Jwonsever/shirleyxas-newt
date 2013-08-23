@@ -1360,9 +1360,9 @@ function validateInputs(form) {
 	var mins = myclock.split(":")[1];
 	var secs = myclock.split(":")[2];
 	if (hrs == 0 && mins < 5) {mins = 5;}
-	if (hrs < 10) { hrs = "0" + hrs; }
-	if (mins < 10) { mins = "0" + mins; }
-	if (secs < 10) { secs = "0" + secs; }
+	if (hrs.legnth < 2) { hrs = "0" + hrs; }
+	if (mins.length < 2) { mins = "0" + mins; }
+	if (secs.length < 2) { secs = "0" + secs; }
 	$('#wallTime').val(hrs + ":" + mins + ":" + secs);	
     }
 

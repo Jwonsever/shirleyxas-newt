@@ -77,8 +77,8 @@ fi
 repstr="1x1x1"
 
 tprocsflt=`echo "$nodes * $ppn" | bc -l`
-tprocs="${tprocs##*.}"
-echo "Total Processors: "tprocs
+tprocs="${tprocsflt##*.}"
+echo "Total Processors: "$tprocs
 
 filename=$(basename "$cif_file")
 ext="${filename##*.}"
@@ -98,12 +98,12 @@ cat ${prefix}.${repstr}.xyz | awk '{if(NR>2) { printf "%-4s %6.5f %6.5f %6.5f\n"
 
 cp $cp2k_template_file ${prefix}.${repstr}.${temp}K.cp2k.in
 
-sed -i "s/LA_HERE/$cell[1]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/LB_HERE/$cell[2]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/LC_HERE/$cell[3]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/ALPHA_HERE/$cell[4]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/BETA_HERE/$cell[5]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
-sed -i "s/GAMMA_HERE/$cell[6]/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/LA_HERE/${cell[1]}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/LB_HERE/${cell[2]}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/LC_HERE/${cell[3]}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/ALPHA_HERE/${cell[4]}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/BETA_HERE/${cell[5]}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
+sed -i "s/GAMMA_HERE/${cell[6]}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/TEMP_HERE/$temp/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PRESSURE_HERE/$pressure/g" ${prefix}.${repstr}.${temp}K.cp2k.in
 sed -i "s/PREFIX_HERE/${prefix}.${repstr}/g" ${prefix}.${repstr}.${temp}K.cp2k.in
