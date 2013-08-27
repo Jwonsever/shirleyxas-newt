@@ -333,10 +333,11 @@ function uploadCoordinates() {
 }
 function readRawXYZ(xyzFile) {
     //Remove first two lines
-    xyzFile = xyzFile.split("\n").slice(2).join("\n");
-    //Append to models
-    models.push(xyzFile);
-    //Switch to that model
+    xyzFile = xyzFile.split(/\n\d+\n/);
+    for (var i = 0 ; i < xyzFile.length ; i ++) {
+	models.push(sterilize(xyzFile[i]));
+    }
+    //Switch to the last model
     switchToModel(models.length-1);
 }
 
@@ -445,6 +446,7 @@ function drawMolInPreview() {
     //Update Predicted Values
     $("#NPERATOM").val("" + (Math.floor(numAtoms(xyz)/48) + 1));
     predictWallclock();
+    updatePPP();
 }
 
 function numAtoms(xyz) {

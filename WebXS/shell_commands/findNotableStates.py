@@ -7,6 +7,7 @@ from math import fabs
 from operator import itemgetter
 
 import topEvContributors
+import ShirleyEndValue
 
 #Quick Description.
 #This file grabs all "relevant states" from a directory based on the spectrum
@@ -26,11 +27,9 @@ def main(argv = None):
     path = argv[1]
     molName = argv[2]
 
-    #Rest not used...
+    #Rest of the args not currently used...
     #flags = argv[3]
 
-
-    #todo (start and end ev based on redline)
     startEv=0
     endEv=0
 
@@ -42,8 +41,7 @@ def main(argv = None):
     if (len(argv) >= 6):
         endEv = argv[5]
     else:
-        endEv = 10
-
+        endEv = ShirleyEndValue.main(path) #reads from redline script
 
 #Begin by moving in *./XAS/Spectrum-'xx'
     os.chdir(path + "/XAS/")

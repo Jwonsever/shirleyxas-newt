@@ -1636,6 +1636,26 @@ function updateModels() {
     if(CrystalSymmetry) drawMolInPreview();
     else makeCellSize();
 }
+function updatePPP() {
+    //Potentially add a flag (If user has changed this) to allow smoother user overrides.
+    var atms = models[activeModel].split("\n").length;
+    var curval = $('#PPP').val();
+	console.log(atms + " " + curval);
+    if(atms > 40 && curval < 24) {
+	$('#PPP').val(24);
+    } else if ( atms > 20 && curval < 8) {
+	$('#PPP').val(12);
+    }
+}
+
+//It works on ff, not chrome.  It works in jsfiddle.  Not sure if bug exploit of ff or chromes not good enough here
+function resetUpload() {
+    var e=$('#uploadfile');
+    e.wrap('<form>').closest('form').get(0).reset();
+    e.unwrap();
+    console.log("Reset");
+}
+
 function switchToModel(i) {
     activeModel = i;
     makeCoordsDiv();

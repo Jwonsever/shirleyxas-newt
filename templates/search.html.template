@@ -21,11 +21,11 @@
       <div id="PubChem_searchTerms" class="searchTermSet" data-te-list-slash="true">
         <div data-te-skip="true" style="padding-bottom:10px; padding-left:20px">
           For help on these drop-down items, click
-          <a href="http://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>.
+          <a href="httpos://pubchem.ncbi.nlm.nih.gov/pug_rest/PUG_REST.html" target="_blank">here</a>.
           <br>
         </div>
         Domain<br>
-        <input type="hidden" id="PubChem_baseURL" value="http://pubchem.ncbi.nlm.nih.gov/rest/pug"/>
+        <input type="hidden" id="PubChem_baseURL" value="https://pubchem.ncbi.nlm.nih.gov/rest/pug"/>
 	
         <select id="PubChem_domainChosen" data-te-forward-through="true" onchange="PubChem.chooseDomain(this.value);">
           <option value="compound" selected>Compound</option>

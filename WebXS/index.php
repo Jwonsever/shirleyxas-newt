@@ -270,7 +270,7 @@ questions and comments regarding the website to jwonsever@lbl.gov.
 		      Coordinates<br><div id = "Coordinates"></div>
 		      <script>makeCoordsDiv()</script><br>
 		      Upload Coordinates<br>
-		      <input type=file id='uploadfile' name='uploadfile' onchange="uploadCoordinates();$(this).trigger('reset');">
+		      <input type=file id='uploadfile' name='uploadfile' onclick='resetUpload()' onchange="uploadCoordinates()">
 		      <!-- Adds a new coordinates, upload loads to the current coordinates. -->
 		      <br>
 		      <div id="advancedOptions" style="display:none;"><br>
