@@ -1595,6 +1595,10 @@ function openTransferFile() {
 		//TODO?
 		//Open the submit form and read this file in, on page load, if possible
 
+		//Do not overwrite this automatically && Clear Models of Temp Standin methanes or empties
+		if (ModelsEmptyFlag) models = [];
+		ModelsEmptyFlag=false;
+
 		console.log(res);
 		Jmol.script(previewApplet, "LOAD INLINE '"+res+"';javascript readInTransferedFile();");
 	    },  error: function(request,testStatus,errorThrown) { 
@@ -1603,10 +1607,9 @@ function openTransferFile() {
 	});
 }
 function readInTransferedFile() {
+
     readCoordsFromJmol();
-    models.splice(0, 1);
-    drawMolInPreview();
-    makeCoordsDiv();
+    switchToModel(models.length-1);
 }
 function writeCellFromArray(cArray) {
     $("#CellA").val(cArray[0]);
@@ -1633,6 +1636,7 @@ function makeCoordsDiv() {
 }
 
 function updateModels() {
+    ModelsEmptyFlag=false;
     models[activeModel] = $('#activeCoords').val();
     if(CrystalSymmetry) drawMolInPreview();
     else makeCellSize();
@@ -1659,8 +1663,10 @@ function resetUpload() {
 
 function switchToModel(i) {
     activeModel = i;
+
     makeCoordsDiv();
-    drawMolInPreview();
+    if(CrystalSymmetry) drawMolInPreview();
+    else makeCellSize();
 }
 function removeCurrentModel() {
     var mIndex = Number(activeModel);
@@ -1670,6 +1676,7 @@ function removeCurrentModel() {
 }
 function removeAllModels() {
     models = [""];
+    ModelsEmptyFlag=true;
     switchToModel(0);
 }
 function addNewModel() {
