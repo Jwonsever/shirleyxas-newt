@@ -169,7 +169,8 @@ echo TYPES = $TYPES
 echo NTYP = $NTYP
 
 # Get periodic table info
-. $BibDir/periodic.table $PSEUDO_FUNCTIONAL
+# Modified to access periodic.table from within Psuedos.
+. $PSEUDO_DIR/periodic.table $PSEUDO_FUNCTIONAL
 
 # loop over types
 for TYP_SYMBOL in $TYPES; do

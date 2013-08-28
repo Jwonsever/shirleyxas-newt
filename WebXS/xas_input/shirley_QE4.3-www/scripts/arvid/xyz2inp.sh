@@ -12,7 +12,8 @@ fi
 . ./Input_Block.in
 
 BibDir="$SHIRLEY_ROOT/scripts/arvid/Bibliothek"
-. ${BibDir}/periodic.table $PSEUDO_FUNCTIONAL
+#USed to read from Bib-dir, better abstaction if read from pseudos.
+. ${PSEUDO_DIR}/periodic.table $PSEUDO_FUNCTIONAL
 
 XYZ=$1
 shift
