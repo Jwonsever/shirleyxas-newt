@@ -1,7 +1,7 @@
 // alsapi.js
 
 var alsapi_server="https://portal-auth.nersc.gov";
-var alsapi_base_path="/als2";
+var alsapi_base_path="/als";
 var alsapi_base_url=alsapi_server+alsapi_base_path;
 var stayInDOM = true;
 

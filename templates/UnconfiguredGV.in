@@ -15,7 +15,7 @@ XCH_SHIFTS="xas_input/XCHShifts.csv"
 
 # Shirley and Psuedos (In WebXS/xas_input/INPUT_BLOCK.in!  BE CAREFUL, THEY MUST MATCH)
 SHIRLEY_ROOT=TMP_HOME/WebXS/xas_input/shirley_QE4.3-www
-PSEUDO_DIR=/project/projectdirs/mftheory/pseudos
+PSEUDO_DIR=TMP_HOME/pseudos
 
 #Other locations
 JMOL_VERSION="jmol-13-0"

@@ -56,7 +56,7 @@
       success:function(res) {
       if (res[0].status != "up") {
       $("#alarm-bar").html("<b>The NERSC Hopper machine is down!  Carver will be used, job submission will not work.</b>");
-      mymachine="carver";
+      machine="carver";
       }
 
       },});
@@ -214,7 +214,7 @@ simulations on high-performance computing resources at the National Energy Resea
 upload/build their molecule/crystal of choice, visualize it, generate its NEXAFS spectrum and interpret spectral features based on visualization of 
 electronic excited states.<br><br>This tool uses modern HTML 5 techniques, and is not buit with backwards compatibility for  IE.  Please use a
 different browser, such as the latest Firefox or Google Chrome for full functionionality.  Other browsers are not tested.<br><br> Please send 
-questions and comments regarding the website to jwonsever@lbl.gov.
+questions and comments regarding the website to dgprendergast@lbl.gov.
   	  	    <!--Needs work-->
 		    <button valign="middle" onclick="window.open( './faq.html');">FAQ and Tutorial</button></p>
 		    <p><center>

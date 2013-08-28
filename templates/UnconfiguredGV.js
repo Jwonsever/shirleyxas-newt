@@ -25,7 +25,7 @@ var SERVER_URL = "TMP_ADDR/WebXS";
 
 //Shirley and Psuedos
 var SHIRLEY_ROOT="TMP_HOME/WebXS/xas_input/shirley_QE4.3-www";
-var PSEUDO_DIR="/project/projectdirs/mftheory/pseudos";//IDK IF THIS HAS TO CHANGE OR NOT
+var PSEUDO_DIR="TMP_HOME/pseudos";//IDK IF THIS HAS TO CHANGE OR NOT
 
 //Relative locations
 var CODE_LOC="WebXS";

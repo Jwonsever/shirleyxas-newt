@@ -89,6 +89,9 @@ function portCoordinates() {
 	console.log("ERROR, Failed to export coords.");
 	console.log(err);
     }
+ 
+    //Do not overwrite this automatically (if this was the first step)
+    ModelsEmptyFlag=false;
 
     makeCellSize();
     //fix so draws from .mol file?
@@ -278,6 +281,10 @@ function readCoordsFromJmol() {
 function uploadCoordinates() {
     form = document.getElementById('inputs');
     var file = form.uploadfile.files[0];
+
+    //Clear Models of Temp Standins
+    if (ModelsEmptyFlag) models = [];
+
     //console.log(file);
 
     var filename = form.uploadfile.value;
@@ -332,7 +339,7 @@ function uploadCoordinates() {
     }
 }
 function readRawXYZ(xyzFile) {
-    //Remove first two lines
+    //Remove first two lines of each one
     xyzFile = xyzFile.split(/\n\d+\n/);
     for (var i = 0 ; i < xyzFile.length ; i ++) {
 	models.push(sterilize(xyzFile[i]));
