@@ -232,7 +232,11 @@ function centerCoords() {
 
     for (var l = 0; l < lines.length; l++) {
 	var line = lines[l].split(" ");
-	xmin = Math.min(line[1], xmin);
+	console.log(line);
+
+	xmin = Math.min(line[1],xmin);
+	console.log(xmin);
+
 	xmax = Math.max(line[1], xmax);
 	ymin = Math.min(line[2], ymin);
 	ymax = Math.max(line[2], ymax);		
@@ -242,7 +246,6 @@ function centerCoords() {
     var xmid = (xmin + xmax) / 2;
     var ymid = (ymin + ymax) / 2;
     var zmid = (zmin + zmax) / 2;
-
     for (var l = 0; l < lines.length; l++) {
 	var line = lines[l].split(" ");
 	var newx = line[1] - xmid;
@@ -552,9 +555,9 @@ function supercellPreview() {
     var alp = myform.CellAlpha.value;
     var bet = myform.CellBeta.value;
     var gam = myform.CellGamma.value;
-    var vector = "{"+a+" "+b+" "+c+" "+alp+" "+bet+" "+gam+"}";
-    var offset = "{"+(a/2.0)+" "+(b/2.0)+" "+(c/2.0)+"}";
-    var cellParams = "{" + "555" + " " + (4+inx) + (4+iny) + (4+inz) + " 1}";
+    var vector = "{"+a+" "+b+" "+c+" "+alp+" "+bet+" "+gam+"} ";
+    var offset = "{"+(a/2.0)+" "+(b/2.0)+" "+(c/2.0)+"} ";
+    var cellParams = "{" + "555" + " " + (4+inx) + (4+iny) + (4+inz) + " 1} ";
 
     console.log(cellParams);
     if (!CrystalSymmetry) {
@@ -567,7 +570,7 @@ function supercellPreview() {
 	scr += " unitcell " + vector;
     }
 
-    scr += "selectionHalos on; ";
+    scr += "; selectionHalos on; ";
     scr += "set PickCallback \"jmolscript:javascript selectionCallback();\";";
     scr += "set picking select atom;";
     scr += "unitcell ON;";

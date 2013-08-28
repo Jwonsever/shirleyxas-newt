@@ -1178,7 +1178,7 @@ function predictWallclock() {
     if (hrs < 10) { hrs = "0" + hrs; }
     if (mins < 10) { mins = "0" + mins; }
     var time =  hrs + ":" + mins + ":00";
-    console.log(time);
+    //console.log(time);
 
     $("#predictedWallclock").text(time);
     colorPrWall();
@@ -1245,6 +1245,7 @@ function showAdvancedOptions() {
 //Ensures that coordinates are properly written.
 function sterilize(xyzcoords) {
     var lines = xyzcoords.split("\n");
+    var firstline = true;
     var out = "";
     for (l in lines) {
 	var line = lines[l];
@@ -1258,8 +1259,9 @@ function sterilize(xyzcoords) {
 	line = line.replace(/^((?!([a-zA-Z]{1,2}([ \t]-?(\d+\.?\d*|\.\d+)(e-?\d+)?){3})).)*$/, '');
 	//console.log(line);
 	if (line != "") {
-	    if (l == 0) {
+	    if (firstline) {
 		out += line;
+		firstline = false;
 	    } else {
 		out +="\n" + line;
 	    }
@@ -1645,7 +1647,7 @@ function updatePPP() {
     //Potentially add a flag (If user has changed this) to allow smoother user overrides.
     var atms = models[activeModel].split("\n").length;
     var curval = $('#PPP').val();
-	console.log(atms + " " + curval);
+    //console.log(atms + " " + curval);
     if(atms > 40 && curval < 24) {
 	$('#PPP').val(24);
     } else if ( atms > 20 && curval < 8) {
