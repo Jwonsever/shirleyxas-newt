@@ -34,7 +34,7 @@ var DATA_LOC="Shirley-data";
 var XCH_SHIFTS="xas_input/XCHShifts.csv";
 
 //Other relative locations
-var JMOL_VERSION="jmol-13-0";
+var JMOL_VERSION="jmol-13.3.3";
 var JAVASCRIPT="javascript";
 var JMOL_SCRIPTS="jmolScripts";
 var IMAGES="images";
