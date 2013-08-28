@@ -339,6 +339,7 @@ function readRawXYZ(xyzFile) {
     }
     //Switch to the last model
     switchToModel(models.length-1);
+    makeAbstractCellSize();
 }
 
 /*Push file to server		      

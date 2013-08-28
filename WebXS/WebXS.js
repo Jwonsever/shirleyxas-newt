@@ -47,6 +47,7 @@ function DSRcallback() {
 
 
 //Globals for multiple models and related functions, to control jmol and submission of multiple files...
+var ModelsEmptyFlag=true;
 var models = ["C -0.00025 -0.00025 -0.00025\nH 0.64018 0.64018 0.64018\nH -0.64075 -0.64075 0.64049\nH -0.64075 0.64049 -0.64075\nH 0.64049 -0.64075 -0.64075"];
 activeModel = 0;
 

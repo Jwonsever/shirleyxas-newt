@@ -56,7 +56,7 @@
       success:function(res) {
       if (res[0].status != "up") {
       $("#alarm-bar").html("<b>The NERSC Hopper machine is down!  Carver will be used, job submission will not work.</b>");
-      mymachine="carver";
+      machine="carver";
       }
 
       },});
