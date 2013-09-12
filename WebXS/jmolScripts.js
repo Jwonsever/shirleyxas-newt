@@ -343,7 +343,7 @@ function uploadCoordinates() {
 }
 function readRawXYZ(xyzFile) {
     //Remove first two lines of each one
-    xyzFile = xyzFile.split(/\n\d+\n/);
+    xyzFile = xyzFile.split(/\n\s*\d+\s*\n/);
     for (var i = 0 ; i < xyzFile.length ; i ++) {
 	models.push(sterilize(xyzFile[i]));
     }
