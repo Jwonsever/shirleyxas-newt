@@ -29,3 +29,4 @@ sed -i $sedCmd WebXS/xas_input/Input_Block.in
 
 chmod -R 755 *
 chmod -R 777 Shirley-data/tmp 
+chmod -R 775 pseudos/
