@@ -49,7 +49,7 @@ var DEFAULT_INPUT_BLOCK="xas_input/InputBlock.in";
 var FILES_PER_PAGE = 20; //for reading results/jobs (OLD)
 var SHELL_CMD_DIR = CODE_BASE_DIR + "/WebXS/shell_commands/"; //Where related bash scritps are.
 var DATABASE_DIR = CODE_BASE_DIR + DATA_LOC; //Where spectra-database is.  Also home to temp state files.
-var GLOBAL_SCRATCH_DIR = "/global/scratch/sd/"; //postpend USER, global output Directory
+var GLOBAL_SCRATCH_DIR = "/global/scratch2/sd/"; //postpend USER, global output Directory
 var LOCAL_SCRATCH_DIR = "${SCRATCH}"; //Dont postpend USER, local output dir
 var SHIFTS_DATABASE_CSV = CODE_BASE_DIR + "/WebXS/xas_input/XCHShifts.csv";//EV Shifts
 
