@@ -28,5 +28,11 @@ sed -i $sedCmd WebXS/xas_input/Input_Block.in
 
 
 chmod -R 755 *
+
+if [[ `dirname $0`=="webtools" ]]
+then
+    chmod -R 775 *
+fi
+
 chmod -R 777 Shirley-data/tmp 
 chmod -R 775 pseudos/
