@@ -1,0 +1,72 @@
+
+Distribution
+============
+
+GDIS, Copyright (C) 2000-2008 by Sean Fleming
+
+sean@ivec.org
+
+GDIS comes with ABSOLUTELY NO WARRANTY.
+
+This is free software. You are welcome to redistribute copies
+provided the conditions of the GPL (GNU Public License) are met.
+
+Although you are not required to do so, the author would consider
+it a courtesy if you submit to him any changes you consider to be
+worthwhile. The goal would be to keep the development of GDIS more
+or less centralized.
+
+
+Compile Notes
+=============
+
+The "install" script that came with the source distribution of GDIS
+can be executed to assist with the compile process.
+
+Hit the <enter> key for default settings at each query, for example
+hitting <enter> when the script prompts you for the install directory
+will compile GDIS to the current working directory.
+
+The script uses pkg-config to locate and configure your local compile.
+It should also report if there are required libraries you need to
+install before a GDIS executable can be created.
+
+
+Optional
+========
+
+There are a few optional packages that enhance the GDIS experience.
+
+1. For ray tracing (and subsequent image viewing) you will need:
+  - POVRay 
+  - ImageMagick (or an image viewer similar to 'display')
+
+2. For rendered animations, you will need:
+  - ImageMagick
+  - mpeg2encode (if you want to output MPEG's)
+
+3. For energy calculations you may need to be able to execute:
+  - GULP
+  - GAMESS
+
+
+Credits
+=======
+
+Some cool features of GDIS are entirely due to the hard work that
+has gone into creating the following packages:
+
+1. GPeriodic for pretty Periodic Table display and editing.
+   (c) 1999 Kyle R. Burton 
+
+2. SgInfo for Space Group generator lookup.
+   (c) 1994-96 Ralf W. Grosse-Kunstleve
+
+3. Brute force symmetry analyzer.
+   (c) 1996 S. Pachkovsky 
+
+Additional thanks to:
+
+Andrew Rohl, Andrew Walker, Craig Fisher, Joshua McKinnon,
+Julian Gale, Keith Refson. Marcin Wojdyr, and Menno Deij.
+

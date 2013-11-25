@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<?php 
+  include('relpath.php');
+  if (defined('RELPATH')) { $dir=RELPATH; } else { $dir=''; }
+?>
+<html>
+  <head>
+    <title>WebRelax</title>
+    <!-- Style -->
+    <?php include($dir.'php/style.php') ?>
+
+    <!-- JavaScript -->
+    <?php include($dir.'php/javascript.php') ?>
+    
+  </head>
+  <body>
+
+    <!-- Navigation Bar -->
+    <?php include($dir.'php/navbar.php') ?>
+
+    <div class="container">
+      <div class="hero-unit">
+        <h2>WebRelax</h2>
+        <p>This utility will relax a given structure using various methods.
+        </p>
+
+      </div>
+
+<?php
+echo <<< HTML
+      <center>
+	  <img src="{$dir}images/MFLogo.png" width="300px" height="100px"/>
+	  <img src="{$dir}images/NERSCLogo.png" width="200px" height="100px"/>
+	  <img src="{$dir}images/JSmol_logo13.png" width="250px" height="100px"/><br>
+      </center>
+HTML
+?>
+
+      <r>
+      <footer>
+        <p>
+          JSmol: an open-source HTML5 viewer for chemical structures in 3D. http://www.jmol.org/<br>
+	  &copy; LBNL Molecular Foundry 2013
+        </p>
+      </footer>
+
+    </div> <!-- /container -->
+
+    <!-- Authentication -->
+    <?php include($dir.'php/authenticate.php') ?>
+
+  </body>
+</html>

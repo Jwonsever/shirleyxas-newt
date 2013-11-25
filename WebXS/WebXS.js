@@ -338,7 +338,7 @@ function previousJobs() {
 
 //Rubmission function
 function resubmit(jobName) {
-    var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
+    var shortDir = GLOBAL_SCRATCH_DIR + myUsername + "/" + jobName;
     var command = SHELL_CMD_DIR+"resubmit.sh " + shortDir;
     //Post job.
     $.newt_ajax({type: "POST",
@@ -498,7 +498,7 @@ function loadJobOutputs(myHtml, directory, jobName, webdata)
     $("#states").html(stHtml); 
 
     //Find Crashes 
-    var shortDir = "/global/scratch/sd/" + myUsername + "/" + jobName;
+    var shortDir = GLOBAL_SCRATCH_DIR + myUsername + "/" + jobName;
     var findCrash = "/usr/bin/find " + shortDir + " -type f -name 'CRASH'";
     $.newt_ajax({type: "POST",
 
@@ -705,7 +705,7 @@ function postProcessing(atomNo, activeMo, state) {
     }
 
     var jobName = $('#jobName').text();
-    var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+shortAtom(atomNo)+"/";
+    var activeDir = GLOBAL_SCRATCH_DIR+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+shortAtom(atomNo)+"/";
     var prefix = jobName + '.' + longAtom(atomNo) + "-XCH";
     var command = SHELL_CMD_DIR+"pp.sh " + activeDir + " " + prefix + " 24 24 " + state + " " + state; //todo (advanced procs)
     $.newt_ajax({type: "POST",
@@ -721,7 +721,7 @@ function postProcessing(atomNo, activeMo, state) {
 //draw the molecular orbital
 function drawState(atomNo, activeMo, state) {
     var jobName = $('#jobName').text();
-    var activeDir = "/global/scratch/sd/"+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+atomNo+"/";
+    var activeDir = GLOBAL_SCRATCH_DIR+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+shortAtom(atomNo)+"/";
     var command = SHELL_CMD_DIR + "fetchState.sh " + activeDir + " " + jobName + " " + state;
     var scr = "zap;set echo top left;font echo 16;echo \"loading...\";refresh;";
     Jmol.script(resultsApplet, scr);
@@ -1053,7 +1053,7 @@ function individualJob(jobName) {
 			     + "</th><tr><button onclick='previousJobsWrapper()'>Return to list</button>"
 			     + "</tr></table><center><img src=\"ajax-loader-2.gif\" width=40></center>");
     machine = machine.toLowerCase();
-    var directory = "/file/" + machine + "/global/scratch/sd/" + myUsername + "/"+jobName;
+    var directory = "/file/" + machine + GLOBAL_SCRATCH_DIR + myUsername + "/"+jobName;
     $.newt_ajax({type: "GET",
 		url: directory,
 		success: function(res){

@@ -1,0 +1,15 @@
+&INPUTPP
+  prefix="Ammonia28Jun2012170011.N1-XCH"
+  outdir="."
+  filplot="state.$1.dat"
+  plot_num=7
+  kpoint=1
+  kband=$1
+  spin_component=0
+  lsign=.true.
+/
+&PLOT
+  iflag=3
+  output_format=6
+  fileout="state.$1.cube"
+/

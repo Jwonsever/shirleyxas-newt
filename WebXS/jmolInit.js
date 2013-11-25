@@ -1,6 +1,11 @@
 //Initialize all of the jsmol info settings.
 //Defines the basic settings for jsmol to run.
 
+//Very important definition so that jsmol can be found
+//I think there is a more elegant way to get this relative path from PHP
+//or HTML using a span tag
+var Pathtojs = "../";
+
 var amIMobile = navigator.userAgent.match(/iPad|iPhone|iPod|android/i) != null || screen.width <= 600;
 
 
@@ -22,11 +27,11 @@ var JmolInfo = {
       debug: false,
       color: "black",
       addSelectionOptions: false,
-      serverURL: "./javascript",
+      serverURL: Pathtojs + "js",
       
       //for jsmol
       use: "HTML5",
-      j2sPath: "javascript/jsmol-13.3.3/jsmol/j2s",
+      j2sPath: Pathtojs + "js/jsmol-13.3.3/jsmol/j2s",
 
       //These are for java version
       //jarPath: "javascript/jmol-13-0",

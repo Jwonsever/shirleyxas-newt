@@ -1,0 +1,71 @@
+SystemLabel      benzene
+
+NumberOfAtoms    12
+
+NumberOfSpecies  2
+%block ChemicalSpeciesLabel
+    1    1  H
+    2    6  C
+%endblock ChemicalSpeciesLabel
+
+LatticeConstant 1.0 Ang
+%block LatticeParameters
+  20.000000  20.000000  20.000000  90.0000 90.0000 90.0000
+%endblock LatticeParameters
+
+AtomicCoordinatesFormat NotScaledCartesianAng
+%block AtomicCoordinatesAndAtomicSpecies
+    8.49870951    3.28004699    6.49056528   2  C          1
+    9.05980599    3.27984114    5.55185964   1  H          2
+    6.56619865    3.28047015    5.51563357   1  H          3
+    7.09892131    3.28024804    6.47068563   2  C          4
+    8.99564470    3.27986984    9.86993617   1  H          5
+    6.50367997    3.28046377    9.83406160   1  H          6
+    5.28784706    3.28042067    7.65792499   1  H          7
+    8.46279193    3.28007614    8.91506904   2  C          8
+    9.18040827    3.28004605    7.71316084   2  C          9
+    6.38136161    3.28029945    7.67268297   2  C         10
+    7.06360025    3.28024282    8.89478303   2  C         11
+   10.27371008    3.27997885    7.72909489   1  H         12
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+XC.functional GGA
+XC.authors PBE
+
+PAO.EnergyShift  0.0025 Ry 
+PAO.SplitNorm    0.50
+
+%block PAO.Basis
+C  2     
+ n=2 0 3 
+   0.000  0.000  0.000
+   1.000  1.000  1.000
+ n=2 1 3 P 2
+   0.000  0.000  0.000
+   1.000  1.000  1.000
+H  1     
+ n=1 0 3 P 2
+   0.000  0.000  0.000
+   1.000  1.000  1.000
+%endblock PAO.Basis
+
+kgrid_cutoff    0.0 Ang
+MeshCutoff     250.0 Ry
+
+ElectronicTemperature 0 K
+
+%block GridCellSampling
+ 0.5    0.5    0.5
+%endblock GridCellSampling
+
+DM.MixingWeight      0.30
+DM.NumberPulay       5
+
+MD.TypeofRun CG
+MD.VariableCell false
+MD.NumCGsteps 100       
+MD.MaxForceTol 0.01 eV/Ang
+#MD.MaxCGDispl 0.5 Bohr
+
+LongOutput true
+UseSaveData true

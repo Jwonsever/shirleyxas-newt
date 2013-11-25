@@ -1,0 +1,126 @@
+
+1. Get the grisu WSDL (from ngportal.vpac.org/grisu-ws/services/grisu)
+
+2. Create C header (no sample xml)
+
+  wsdl2h -c -x -o grisu_ws.h grisu.wsdl
+
+(NB: was a complaint here about missing typemap.dat)
+
+3. Create C stub functions (no sample xml, client side only)
+
+  soapcpp2 -C -L -c -x grisu_ws.h
+
+===========================
+
+soapStub.h    -> prototypes extracted from the WSDL
+soapClient.c  -> actual code for calling these web services
+
+NB: link against soapssl NOT soap ... or it will complain.
+
+--------------------------------
+
+GRISU Authentication
+
+Requires adding info to the soap header.
+
+The basic steps are:
+
+1) rewrite the SOAP_ENV__Header struct (soapStub.h) to
+   contain fields for the information we want to send
+
+2) then we add some calls to the serializer routine 
+   soap_out_SOAP_ENV__Header() (soapC.c) to embed and tag
+   these fields with the appropriate namespace and element names
+
+3) now the client can allocate and set a new soap header, fill out
+   the fields and then make soap calls and the new header containing
+   authentication info will be serialized and sent as well.
+
+
+myproxy credentials
+===================
+
+NB - the -a is needed for retrieval to work. Not 100% sure, but
+     could be because the myproxy server doesnt recognize the
+     certificate of the remote host that tries to retireve a credential 
+
+NB - also need to do setenv GT_PROXY_MODE = "old" for grisu to work.
+     This is a legacy issue, that will hopefully be fixed soon
+
+NB - on my ubuntu box at home - some complaints about
+     MYPROXY_SERVER_DN which I havent yet been able to fix
+
+Uploading: (do before running GDIS)
+
+myproxy-init -l <name> -a -s myproxy.arcs.org.au
+
+Retrieving: (test - if works - GDIS' soap requests should work)
+
+myproxy-logon -l <name> -s myproxy.arcs.org.au
+
+
+NB - alternate method
+
+Obtain get the myproxy java package 
+http://grid.ncsa.uiuc.edu/myproxy/
+
+This can be invoked from the commandline:
+
+java -cp MyProxyLogon.jar edu/uiuc/ncsa/MyProxy/MyProxyLogon
+
+
+=======================
+
+
+Current - create a text string containing XML (below) that describes
+          the job we want run. Pass this as the JDL to grisu ws?
+
+Sample jdl taken from.
+http://projects.gridaus.org.au/trac/grisu/wiki/GrisuTemplates
+
+<?xml version="1.0" encoding="UTF-8"?>
+<JobDefinition xmlns="http://schemas.ggf.org/jsdl/2005/11/jsdl">
+	<JobDescription>
+	
+		<JobIdentification>
+			<JobName>cat_job</JobName>
+		</JobIdentification>
+		
+		<Application>
+			<ApplicationName>cat</ApplicationName>
+			<POSIXApplication
+				xmlns="http://schemas.ggf.org/jsdl/2005/11/jsdl-posix">
+
+				<Executable>/bin/cat</Executable>
+				<Argument>textfile.txt</Argument>
+				<WorkingDirectory>path_relative_to_user_home_directory_to_where_stage_in_files_are</WorkingDirectory>
+				<Output>stdout.txt</Output>
+				<Error>stderr.txt</Error>
+				<Email>markus@vpac.org</Email> <!-- this is actually not in the jsdl specification -->
+
+			</POSIXApplication>
+			<TotalCPUTime>60</TotalCPUTime>
+			<TotalCPUCount>1</TotalCPUCount>
+		</Application>
+		<Resources>
+			<CandidateHosts>
+				<HostName>ng2.vpac.org</HostName>
+			</CandidateHosts>
+			<FileSystem name="userExecutionHostFs">
+				<MountSource>gsiftp://ngdata.vpac.org/home/grid-admin</MountSource>
+				<FileSystemType>normal</FileSystemType>
+			</FileSystem>
+		</Resources>
+
+		<DataStaging>
+			<FileName>workingDirectory/textfile.txt</FileName>
+			<FileSystemName>userExecutionHostFs</FileSystemName>
+			<Source>
+				<URI>gsiftp://ngdata.vpac.org/tmp/textfile.txt</URI>
+			</Source>
+		</DataStaging>
+	</JobDescription>
+</JobDefinition>
+
+

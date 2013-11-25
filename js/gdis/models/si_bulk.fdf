@@ -1,0 +1,64 @@
+SystemLabel      si_bulk
+NumberOfAtoms    8
+NumberOfSpecies  1
+
+%block ChemicalSpeciesLabel
+    1   14  Si
+%endblock ChemicalSpeciesLabel
+
+LatticeConstant 5.580716 Ang
+%block LatticeVectors
+    1.0 0.0 0.0
+    0.0 1.0 0.0
+    0.0 0.0 1.0
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Fractional
+%block AtomicCoordinatesAndAtomicSpecies
+   0.0   0.0   0.0   1
+   0.0   0.5   0.5   1  
+   0.5   0.0   0.5   1 
+   0.5   0.5   0.0   1
+   0.75  0.75  0.25  1 
+   0.75  0.25  0.75  1 
+   0.25  0.75  0.75  1 
+   0.25  0.25  0.25  1 
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+PAO.BasisSize    SZP
+%block kgrid_Monkhorst_Pack
+ 10 0 0 0.5
+ 0 10 0 0.5
+ 0 0 10 0.5
+%endblock kgrid_Monkhorst_Pack
+
+MeshCutoff 200 Ry
+PAO.EnergyShift 0.02 Ry
+
+WriteKpoints true
+
+%block WavefuncKPoints
+0.000 0.000 0.000 from 13 to 25
+%endblock WavefuncKPoints
+
+SaveElectrostaticPotential true
+SaveTotalPotential true
+SaveRHO
+SaveDRHO
+%block LocalDensityofStates
+ -4.1 -3.4 eV
+%endblock LocalDensityofStates
+
+WriteMullikenPop 0
+MD.TypeOfRun CG
+MD.NumCGSteps 0
+MD.MaxForceTol 0.02 eV/Ang
+MD.VariableCell true
+MD.MaxStressTol 200 bar
+SolutionMethod diagon
+DM.NumberPulay 3
+XC.Functional GGA
+XC.Authors PBE
+LongOutput true
+UseSaveData true
+WriteDM true

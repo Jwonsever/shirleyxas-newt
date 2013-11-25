@@ -1,0 +1,83 @@
+SystemLabel      tco2_pcc_acc_nospin
+
+NumberOfAtoms    12
+
+NumberOfSpecies  2
+%block ChemicalSpeciesLabel
+    1   43  tc_pcc.tm2
+    2    8  O
+%endblock ChemicalSpeciesLabel
+
+LatticeConstant 1.0 Ang
+%block LatticeParameters
+  5.686200  4.751800  5.516000  90.000000  121.466000  90.000000
+%endblock LatticeParameters
+
+AtomicCoordinatesFormat Fractional
+%block AtomicCoordinatesAndAtomicSpecies
+     0.262100000     0.007300000     0.984400000    1
+     0.103700000     0.188300000     0.195000000    2
+     0.391900000     0.708500000     0.270400000    2
+     0.737900000     0.507300000     0.515600000    1
+     0.896300000     0.688300000     0.305000000    2
+     0.608100000     0.208500000     0.229600000    2
+     0.737900000     0.992700000     0.015600000    1
+     0.896300000     0.811700000     0.805000000    2
+     0.608100000     0.291500000     0.729600000    2
+     0.262100000     0.492700000     0.484400000    1
+     0.103700000     0.311700000     0.695000000    2
+     0.391900000     0.791500000     0.770400000    2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+MD.Type_Of_Run CG
+MD.NumCGSteps 1000
+MD.MaxForceTol 0.01 eV/Ang
+MD.VariableCell false
+MD.MaxStressTol 100 bar
+
+SolutionMethod diagon
+DM.NumberBroyden 5
+DM.MixingWeight 0.25
+ElectronicTemperature 0 K
+SpinPolarized false
+
+kgrid_cutoff 12.0 Ang
+
+MeshCutoff 450 Ry
+
+XC.functional GGA
+XC.Authors    PBE
+
+LongOutput true
+UseSaveData true
+
+PAO.SplitNorm    0.25
+PAO.SplitNormH   0.50
+PAO.EnergyShift 0.01 Ry
+
+%block PAO.Basis  
+tc_pcc.tm2  3
+ n=5   0   2 P   1       
+   7.500      5.982
+   1.000      1.000
+ n=4   2   2            
+   7.000      2.655
+   1.000      1.000
+ n=5   1   1 
+   7.500   
+   1.000   
+O     3
+ n=2    0    2
+   7.0 0.0
+   1.0 1.0
+ n=2    1    2
+   7.0 0.0
+   1.0 1.0
+ n=3    2    1 E 120.0 0.00
+   7.0
+   1.0
+%endblock PAO.Basis
+
+PAO.SoftDefault true
+PAO.SoftPotential 100.0 Ry
+PAO.SoftInnerRadius 0.95

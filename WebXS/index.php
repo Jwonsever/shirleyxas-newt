@@ -1,53 +1,51 @@
 <!DOCTYPE html>
+<?php 
+  include('relpath.php');
+  if (defined('RELPATH')) { $dir=RELPATH; } else { $dir=''; }
+?>
 <html>
   <head>
-    <title>Web XS</title>
-
-    <!-- Bootstrap & CSS -->
-    <link href="../bootstrap/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <title>WebXS</title>
+    <!-- Style -->
+    <?php include($dir.'php/style.php') ?>
     <style>
       body {
         padding-top: 60px; /* 60px to make the container go all the way to the bottom of the topbar */
       }
     </style>
-    <link href="../bootstrap/css/bootstrap-responsive.min.css" rel="stylesheet" media="screen">
-    <link href="../als_portal.css" rel="stylesheet" type="text/css" />
     <link rel="stylesheet" href="WebXS.css">
 
-
-    <!-- Als Bootstrap, JQuery, etc-->
-    <script src="../js/jquery-latest.js"></script>    
-    <script src="../bootstrap/js/bootstrap.min.js"></script>
-    <script src="../js/mynewt.js"></script>
-    <script src="../js/alsapi.js"></script>
-    <script src="../js/als_portal.js"></script>
-
-
+    <!-- JavaScript -->
+    <?php include($dir.'php/javascript.php') ?>
+    
+<?php
+echo <<< HTML
     <!-- Major Function Values-->
-    <script src="../GlobalValues.js"></script>
+    <script src="${dir}GlobalValues.js"></script>
 
     <!--Scripts required for JME injection-->
-    <script src="javascript/jsmol-13.3.3/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
+    <script src="${dir}js/jsmol-13.3.3/jsmol/jsme/jsme/jsme.nocache.js" language="javascript" type="text/javascript">
     </script>
 
     <!--jsMol-->
-    <script type="text/javascript" src="javascript/jsmol-13.3.3/jsmol/JSmol.min.nojq.js"></script>
-    <script type="text/javascript" src="javascript/jsmol-13.3.3/jsmol/js/JSmolJME.js"></script>
+    <script type="text/javascript" src="${dir}js/jsmol-13.3.3/jsmol/JSmol.min.nojq.js"></script>
+    <script type="text/javascript" src="${dir}js/jsmol-13.3.3/jsmol/js/JSmolJME.js"></script>
 
     <!-- This is supposed to be for writes, but it breaks getstates && other things... idk -->
-    <!--script type="text/php" src="javascript/jsmol-13.3.3/jsmol/jsmol.php"></script-->
+    <!--script type="text/php" src="${dir}js/jsmol-13.3.3/jsmol/jsmol.php"></script-->
 
     <!-- Flot plotting -->
-    <script src="javascript/Flot/jquery.flot.js"></script>
-    <script src="javascript/Flot/jquery.flot.navigate.js"></script>
+    <script src="${dir}js/Flot/jquery.flot.js"></script>
+    <script src="${dir}js/Flot/jquery.flot.navigate.js"></script>
 
+    <!-- Should these javascripts be located in {$dir}js -->
     <!-- Potential for improved browser support, uploads on older browsers -->
     <script src="ajaxfileupload.js"></script>
 
     <!-- Local JS-->
     <script src="WebXS.js"></script>
     <script src="jmolScripts.js"></script>
-    <Script src="jmolInit.js"></script>
+    <script src="jmolInit.js"> </script>
 
     <!-- Notice Hopper Downtime, and alert the user. -->
     <script>
@@ -61,55 +59,14 @@
 
       },});
     </script>
+HTML
+?>
 
   </head>
   <body>
 
-    <div class="navbar navbar-inverse navbar-fixed-top">
-      <div class="navbar-inner">
-        <div class="container">
-          <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-          </a>
-          <div class="nav-collapse collapse">
-	    <ul class="nav">
-              <li><img src="../images/mfnewlogo.png" width=105 padding=0 border=0></li>
-              <li><a href="../index.html">Home</a></li>
-              <li><a href="https://portal.nersc.gov/project/als/beta/index.html">ALS Simulation Portal</a></li>
-              <li class="dropdown active">
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown">Simulation Tools <b class="caret"></b></a>
-                <ul class="dropdown-menu">
-                  <li class="nav-header">X-Ray Absorption</li>
-                  <li class="active"><a href="#">WebXS</a></li>
-		  <li><a href="../WebDynamics/index.php">WebDynamics</a></li>
-                  <li><a href="http://leonardo.phys.washington.edu/feff/">FEFF</a></li>
-                  <li class="divider"></li>
-                  <li class="nav-header">Web Scraping</li>
-		  <li><a href="http://matzo.lbl.gov">Matzo</a></li>
-                  <li class="divider"></li>
-                </ul>
-              </li>
-            </ul>
-            <div class="pull-right" id="auth-spinner"> <img src="../images/white-ajax-loader.gif"></div>
-            <div id=login-area style='display:none;' class="pull-right">
-              <form class="navbar-form pull-right" method=POST action='javascript: submission();'>
-                <input class="span2" type="text" placeholder="Username" id="id_username">
-                <input class="span2" type="password" placeholder="Password" id="id_password"> </button>
-                <button type="submit" class="btn">Sign in</button>
-              </form>
-            </div>
-            <div id=logout-area class="pull-right" style='display:none;'>
-              <form class="navbar-form pull-right" method=POST action='javascript: logout();'>
-                <button type="submit" class="btn">Logout</button>
-              </form>
-              <div id=username-area class="pull-right" style="padding:10px"></div>
-            </div>
-          </div><!--/.nav-collapse -->
-        </div>
-      </div>
-    </div>
+    <!-- Navigation Bar -->
+    <?php include($dir.'php/navbar.php') ?>
 
     <div class="container">
 
@@ -217,11 +174,15 @@ different browser, such as the latest Firefox or Google Chrome for full function
 questions and comments regarding the website to dgprendergast@lbl.gov.
   	  	    <!--Needs work-->
 		    <button valign="middle" onclick="window.open( './faq.html');">FAQ and Tutorial</button></p>
+<?php
+echo <<< HTML
 		    <p><center>
-		    <img src="images/MFLogo.png" width="300px" height="100px"/>
-		    <img src="images/NERSCLogo.png" width="200px" height="100px"/>
-		    <img src="images/JSmol_logo13.png" width="250px" height="100px"/><br>
+		    <img src="{$dir}images/MFLogo.png" width="300px" height="100px"/>
+		    <img src="{$dir}images/NERSCLogo.png" width="200px" height="100px"/>
+		    <img src="{$dir}images/JSmol_logo13.png" width="250px" height="100px"/><br>
 		    </center><p>
+HTML
+?>
 	      </div>
 	      <!-- End -->
 
@@ -250,7 +211,11 @@ questions and comments regarding the website to dgprendergast@lbl.gov.
 		    <button onClick="minimizeStructure()">Optimize Structure</button>
 		    <button onClick="toggleModelkitMode()" id="mkmode" value="Off">Toggle Model Kit Mode</button>
 		    <button onClick="portCoordinates()">Port Coordinates</button><br>
-		    <a href="../WebDynamics/index.html">WebDynamics</a>
+<?php
+echo <<< HTML
+		    <a href="${dir}WebDynamics/index.html">WebDynamics</a>
+HTML
+?>
 	      </div> 
 	      <!-- End -->
 
@@ -290,7 +255,7 @@ questions and comments regarding the website to dgprendergast@lbl.gov.
 		      <br><br>
                       <table cellpadding=8>
 			<tr><td>
-			    Output Directory:</td><td><input type="Text" size="25" id="outputDir" value="/global/scratch/sd/invalid"/>
+			    Output Directory:</td><td><input type="Text" size="25" id="outputDir" value="/global/scratch/sd2/invalid"/>
 			</td></tr>
 			<tr><td>
 			    Input Block:</td><td><input type="Text" size="35" id="customInputBlock" value="DEFAULT"/>
@@ -393,17 +358,22 @@ questions and comments regarding the website to dgprendergast@lbl.gov.
         </div>
       </div>
 
+      <br>
       <hr>
 
       <footer>
-	<p>JSmol: an open-source HTML5 viewer for chemical structures in 3D. http://www.jmol.org/<br>
-	  &copy; LBL LDRD 2013</p>
+        <p>
+          JSmol: an open-source HTML5 viewer for chemical structures in 3D. http://www.jmol.org/<br>
+	  &copy; LBNL Molecular Foundry 2013
+        </p>
       </footer>
 
     </div> <!-- /container -->
 
+    <!-- Authentication -->
+    <?php include($dir.'php/authenticate.php') ?>
+
     <script>
-      myCheckAuth();
       makeCoordsDiv();
       getXCHShift();
     </script>

@@ -1,0 +1,116 @@
+SystemLabel         CaZrO3_111_bc
+                                                                                                                                                             
+NumberOfAtoms       20
+                                                                                                                                                             
+NumberOfSpecies     3
+%block ChemicalSpeciesLabel
+ 1  40  Zr
+ 2  20  Ca
+ 3   8  O
+%endblock ChemicalSpeciesLabel
+                                                                                                                                                             
+LatticeConstant 1.0 Ang
+%block LatticeParameters
+  5.647761    5.832237    8.103092 90.0033     90.0118     90.0050
+%endblock LatticeParameters
+                                                                                                                              
+AtomicCoordinatesFormat Fractional
+%block AtomicCoordinatesAndAtomicSpecies
+    0.99102646    0.51802495    0.22551838   2       1  Casemicore
+   -0.02116672   -0.02985930   -0.02526176   1       2  Zrionpbe
+    0.87050282    0.92801196    0.22424782   3       3  O_tm2_pbe
+    0.17609893    0.27118268    0.03138381   3       4  O_tm2_pbe
+   -0.03229366    0.42154794    0.72530855   2       5  Casemicore
+   -0.02059139   -0.03065402    0.47454292   1       6  Zrionpbe
+    0.08668456    0.01106877    0.72437699   3       7  O_tm2_pbe
+    0.78492547    0.66731103    0.53040918   3       8  O_tm2_pbe
+    0.49081978    0.92242389    0.72492429   2       9  Casemicore
+    0.47911492    0.47073415   -0.02493642   1      10  Zrionpbe
+    0.37093430    0.51157313    0.72421694   3      11  O_tm2_pbe
+    0.67715607    0.17149522    0.91654982   3      12  O_tm2_pbe
+    0.46686321    0.01897150    0.22533359   2      13  Casemicore
+    0.47941160    0.47002828    0.47498338   1      14  Zrionpbe
+    0.58691740    0.42854007    0.22416505   3      15  O_tm2_pbe
+    0.28340753    0.77054180    0.41767006   3      16  O_tm2_pbe
+    0.78073333    0.67176581    0.91617178   3      17  O_tm2_pbe
+    0.17720986    0.26957041    0.41708333   3      18  O_tm2_pbe
+    0.28145513    0.77112900    0.03175850   3      19  O_tm2_pbe
+    0.67632350    0.16842414    0.53046414   3      20  O_tm2_pbe
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+MD.TypeOfRun FC
+MD.FCfirst    1
+MD.FClast    20
+
+BornCharge true
+
+%block PolarizationGrids
+2 1 1
+1 2 1
+1 1 2
+%endblock PolarizationGrids
+
+SolutionMethod diagon
+DM.NumberPulay 5
+DM.Tolerance   0.0400000000E-03
+
+MeshCutoff 350 Ry
+
+%block PS.lmax
+   Zrionpbe    3
+   Casemicore  3
+    O_tm2_pbe  3
+%endblock PS.lmax
+
+%block PAO.Basis
+Zrionpbe     5     2.35
+ n=4    0    1   E  13.164  2.6194336
+   3.274292
+   1.000000
+ n=4    1    1   E  13.164  3.1204
+   3.900500
+   1.000000
+ n=5    0    2   E  13.164  6.4428392
+   8.053549        6.431
+   1.000000        1.00000
+ n=4    2    2   E  13.164  5.9772984
+   7.471623        3.950
+   1.000000        1.00000
+ n=5    1    1   E  13.164  7.8693128
+   9.836641
+   1.000000
+Casemicore   5      1.90213
+n=3   0   1   E    61.56667     4.61281
+     5.29940
+     1.00000
+n=4   0   2   E   164.86383     5.38785
+     6.76569     4.96452
+     1.00000     1.00000
+n=3   1   1   E    86.94959     3.48034
+     6.32716
+     1.00000
+n=4   1   1   E   112.03339     4.98424
+     7.49434
+     1.00000
+n=3   2   1   E    87.65847     5.83989
+     6.49046
+     1.00000
+O_tm2_pbe    3     -0.28
+ n=2    0    2   E     40.58      3.95
+   4.95272270428712        3.60331408800389
+   1.00000000000000        1.00000000000000
+ n=2    1    2   E     36.78      4.35
+   4.99990228025066        3.89745395068600
+   1.00000000000000        1.00000000000000
+ n=3    2    1   E     21.69      0.93
+   2.73276990670788
+   1.00000000000000
+%endblock PAO.Basis
+ 
+xc.functional         GGA
+xc.authors            PBE
+ 
+Kgrid_cutoff 10.0 Ang
+ 
+LongOutput true
+UseSaveData true
