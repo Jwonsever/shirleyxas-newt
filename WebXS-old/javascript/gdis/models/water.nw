@@ -1,0 +1,20 @@
+start h2o_freq
+
+charge 1
+
+geometry units angstroms
+  O       0.0  0.0  0.0
+  H       0.0  0.0  1.0
+  H       0.0  1.0  0.0
+end
+
+basis
+  H library sto-3g
+  O library sto-3g
+end
+
+scf
+  uhf; doublet
+  print low
+end
+

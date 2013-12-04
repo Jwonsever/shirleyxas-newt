@@ -1,0 +1,23 @@
+nsteps         100000
+timestep       0.001
+
+temperature    TEMP
+
+thermostat     TEMP         0.1
+barostat       0.001        1.0        orthorhombic
+
+cutoff         vdw          9.
+cutoff         buffer       1.
+update_list    100
+
+nwrite         energy       10
+nwrite         trajectory   1000
+
+grid           bonds        100
+grid           angles       100
+grid           dihedrals    2000
+grid           impropers    2000
+grid           vdw          20000
+grid           elec         20000
+
+finish

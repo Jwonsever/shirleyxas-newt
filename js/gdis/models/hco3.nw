@@ -1,0 +1,54 @@
+
+start hco3_h2o_zmat_fix
+
+charge -1
+
+geometry noautoz noautosym
+ zmatrix noautoz noautosym
+ C
+ XX 1 xx1
+ O  1 co1 2 a90
+ H  3 oh1 1 a1 2 t0
+ O  1 co2 3 a2 2 t0
+ O  1 co3 3 a3 2 t180
+ O  3 oh2 1 a1 2 t0
+ H  7 oh3 3 a5 1 t0
+ H  7 oh4 3 a5 1 t180
+ variables
+   co1  1.42637
+   co2  1.27865
+   co3  1.23244
+   oh1  0.95988
+   oh2  2.92420
+   oh3  0.96131
+   oh4  0.96131
+   a1   101.51114
+   a2   113.44559
+   a3   113.62396
+   a5   127.51114
+ constants
+   xx1    1.0
+   t0     0.0
+   t180 180.0
+   a90   90.0
+ end
+end
+
+basis
+C library aug-cc-pvdz
+O library aug-cc-pvdz
+H library aug-cc-pvdz
+end
+
+driver
+ maxiter 200
+end
+
+dft
+ iterations 400
+ XC m06-L
+ grid xfine
+end
+
+task dft optimize
+

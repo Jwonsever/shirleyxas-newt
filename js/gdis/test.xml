@@ -1,0 +1,4 @@
+<project label="test" path="/home/sean/prog/gdis">
+  <import>/home/sean/prog/gdis/siesta_18-02-2009_17:00:47/nh3_dzp_150_001.fdf</import>
+  <import>/home/sean/prog/gdis/gamma_mol_CVFF_solv.gin</import>
+</project>

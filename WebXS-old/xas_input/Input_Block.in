@@ -1,0 +1,40 @@
+# Version of the code
+SHIRLEY_ROOT=/project/projectdirs/mftheory/www/davegp/webtools/WebXS/xas_input/shirley_QE4.3-www
+# pseudopotentials
+PSEUDO_DIR=/project/projectdirs/mftheory/www/davegp/webtools/pseudos
+
+PARA_PREFIX="aprun"
+PARA_POSTFIX=""
+
+# where will output be dumped
+TMP_DIR=./
+
+# xc functional
+PSEUDO_FUNCTIONAL=pbe
+#pseudopotential postfix
+PSEUDO_POT_ES_POST_FIX=pbe-van-dgp-1s1.UPF
+
+#XAS info
+XAS_ARG=5
+CHAPPROX="XCH"
+
+#Defines the variables from the 'system' namespace
+ECUT_WFC='25'
+ECUT_RHO='200'
+NBND_FAC=8
+OCCUPATIONS='smearing'
+SMEARING='fd'
+DEGAUSS=0.0019
+
+#Defines the variables from the 'electrons' namespace
+DIAG='david'
+DIAG_NSCF='david'
+ELEC_CONV_THR='1.0d-8'
+ELEC_MIXING_BETA='0.3'
+
+# SCF k-points for molecules
+K_POINTS="K_POINTS automatic
+ 1 1 1 0 0 0"
+
+XYZFILES="*.xyz"
+XYZUNIT="angstrom"

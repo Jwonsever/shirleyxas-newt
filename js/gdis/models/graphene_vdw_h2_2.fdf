@@ -1,0 +1,94 @@
+SystemLabel      graphene_vdw_h2_2
+
+NumberOfAtoms    34
+
+NumberOfSpecies  2
+%block ChemicalSpeciesLabel
+    1    6  C.vdw
+    2    1  H
+%endblock ChemicalSpeciesLabel
+
+LatticeConstant 1.0 Ang
+%block LatticeVectors
+   9.9533160000    0.0000000000    0.0000000000
+  -4.9708636191    8.6242430466    0.0000000000
+  -0.0000000005   -0.0000000009  100.0000000000
+%endblock LatticeVectors
+
+AtomicCoordinatesFormat Fractional
+%block AtomicCoordinatesAndAtomicSpecies
+     0.247948238     0.002055650     0.000000000    1
+     0.081126078     0.168872905     0.000000000    1
+     0.997948237     0.752055650     0.000000000    1
+     0.831126078     0.918872905     0.000000000    1
+     0.747948237     0.752055650     0.000000000    1
+     0.581126078     0.918872905     0.000000000    1
+     0.497948238     0.752055650     0.000000000    1
+     0.331126078     0.918872905     0.000000000    1
+     0.247948238     0.752055650     0.000000000    1
+     0.081126078     0.918872905     0.000000000    1
+     0.997948237     0.502055650     0.000000000    1
+     0.831126078     0.668872905     0.000000000    1
+     0.747948237     0.502055650     0.000000000    1
+     0.581126078     0.668872905     0.000000000    1
+     0.497948238     0.502055650     0.000000000    1
+     0.331126078     0.668872905     0.000000000    1
+     0.247948238     0.502055650     0.000000000    1
+     0.081126078     0.668872905     0.000000000    1
+     0.997948237     0.252055650     0.000000000    1
+     0.831126078     0.418872905     0.000000000    1
+     0.747948237     0.252055650     0.000000000    1
+     0.581126078     0.418872905     0.000000000    1
+     0.497948238     0.252055650     0.000000000    1
+     0.331126078     0.418872905     0.000000000    1
+     0.247948238     0.252055650     0.000000000    1
+     0.081126078     0.418872905     0.000000000    1
+     0.997948237     0.002055650     0.000000000    1
+     0.831126078     0.168872905     0.000000000    1
+     0.747948237     0.002055650     0.000000000    1
+     0.581126078     0.168872905     0.000000000    1
+     0.497948238     0.002055650     0.000000000    1
+     0.331126078     0.168872905     0.000000000    1
+     0.399238624     0.548499785     0.014668310    2
+     0.442887431     0.637000160     0.013939398    2
+%endblock AtomicCoordinatesAndAtomicSpecies
+
+PAO.EnergyShift  0.005 Ry
+PAO.SplitNorm    0.25
+
+PAO.SoftDefault true
+PAO.SoftPotential 100.0 Ry
+PAO.SoftInnerRadius 0.90
+
+PAO.BasisSize DZP
+
+SolutionMethod diagon
+DM.NumberPulay 5 
+DM.MixingWeight         0.25
+
+SpinPolarized false
+
+ElectronicTemperature 0 K
+
+%block kgrid_Monkhorst_Pack
+2 0 0  0.5
+0 2 0  0.5
+0 0 1  0.0
+%endblock kgrid_Monkhorst_Pack
+
+MeshCutoff 350.0 Ry
+%block GridCellSampling
+ 0.5    0.5    0.5
+%endblock GridCellSampling
+
+MD.TypeofRun CG
+MD.NumCGsteps 1000
+MD.VariableCell false
+MD.MaxForceTol 0.01 eV/Ang
+MD.MaxStressTol 200 bar
+
+XC.functional VDW
+XC.authors DRSLL
+
+LongOutput true
+UseSaveData false

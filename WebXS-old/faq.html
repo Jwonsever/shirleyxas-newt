@@ -1,0 +1,71 @@
+<Html><HEAD></HEAD>
+<BODY><p>
+<h4>FAQ</h4>
+7/24/13 <br>
+<a href="./index.html">Home</a>
+<a href="./tut.html">Basic Tutorial</a> 
+<br><br><br><br>
+
+
+Why can't I upload coordinates?<br>
+<br>
+The uploading mechanism is only supported on recent versions google chrome and firefox.  Safari 6 may have support when it is relased, so may IE 11.  Make sure you browser is HTML5 enabled.<br>
+<br>
+<br>
+<br>
+
+Why does submit put 4 jobs in the queue, not one?<br><br>
+The tool has 4 parts, a XAS, REF, Analyze, and State step.  Running them seperately allows you to save walltime and resubmit singular parts of the calculation, given one fails, or does not finish. 
+<br><br><br><br>
+
+
+What are the advanced options for?<br><br>
+The advanced options are a bunch of inputs that users with specific needs can use to improve their calculations.  They are not necessary, but very helpful.  Please contact us for more information.
+<br><br><br><br>
+
+
+
+JSmol will not load, what do I do?<br><br>
+
+On opening the page, a methane molecule should show up. If not, try <br><br>
+
+-Ensuring you have java enabled in your web browser.<br>
+-Refreshing the page and clearing the browser cache.<br>
+-Loading the page using the https:// prefix, not http://<br>
+-Using Firefox, Safari, or Google Chrome. Other browsers are not tested.<br><br><br><br>
+
+
+
+
+
+
+What is that red line on the Spectrum?<br><br>
+
+That line marks where valid data ends.  Anything computed past that edge may be garbage and is simply interpolated data.<br><br><br><br>
+
+
+
+
+
+When I upload my file, there are extra bonds or missing bonds in the molecular viewer, why is that? <br><br>
+
+The tool only requires the atomic coordinates, the bonding information is not necessary.  The 3D image is made from the positions of the atoms, an defaults to single bonds between atoms, connecting any atoms that are close enough together.  As long as the coordinates are right, this will not affect the output.<br><br><br><br>
+
+
+
+
+
+Everything I run crashes, why won't it run?<br><br>
+
+Please make sure you are not using too many processors, and that you have given enough walltime for your calculation to finish.  This may take some fine tuning.  If you have more trouble, try lowering the NBANDFAC variable to 2 or 4.<br><br>
+
+Not all molecules have psuedopotentials calculated, please do not try to run excited plutoniums and the like, the tool will not be able to calculate them.<br><br><br><br>
+
+
+
+
+
+
+Submit further questions to <a href="mailto:dgprendergast@lbl.gov?Subject=Shirley XAS Questions">dgprendergast@lbl.gov</a>
+</p></BODY>
+</html>

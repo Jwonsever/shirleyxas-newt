@@ -721,7 +721,7 @@ function postProcessing(atomNo, activeMo, state) {
 //draw the molecular orbital
 function drawState(atomNo, activeMo, state) {
     var jobName = $('#jobName').text();
-    var activeDir = GLOBAL_SCRATCH_DIR+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+atomNo+"/";
+    var activeDir = GLOBAL_SCRATCH_DIR+myUsername+"/" + jobName + "/XAS/" + jobName + "_"+activeMo+"/"+shortAtom(atomNo)+"/";
     var command = SHELL_CMD_DIR + "fetchState.sh " + activeDir + " " + jobName + " " + state;
     var scr = "zap;set echo top left;font echo 16;echo \"loading...\";refresh;";
     Jmol.script(resultsApplet, scr);

@@ -1,0 +1,12 @@
+ReaxMD Argon
+
+molecule Argon
+atoms     1
+Ar        Ar          0.000000    39.948
+finish
+
+vdw
+lj     Ar     Ar      0.010832     3.345000     6.0000000    9.000
+endvdw
+
+close

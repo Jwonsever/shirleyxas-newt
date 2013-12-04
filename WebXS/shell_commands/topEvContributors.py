@@ -2,7 +2,7 @@
 import sys
 import os
 import fileinput
-from re import match
+from re import match, compile
 from math import fabs
 from operator import itemgetter
 
@@ -51,15 +51,10 @@ def main(argv = None):
                 continue
 
             #take care of those wierd 0's in the names
-            longatom = atom
-
-            if (match('^[A-Za-z]{1,2}\d{1}$', atom) and len(totalAtoms) > 2):
-                longatom = longatom[0:-1] + "00" + longatom[-1]
-            elif (match('^[A-Za-z]{1,2}\d{1}$', atom) and len(totalAtoms) > 1):
-                longatom = longatom[0:-1] + "0" + longatom[-1]
-
-            if (match('^[A-Za-z]{1,2}\d{2}$', atom) and len(totalAtoms) > 2):
-                longatom = longatom[0:-2] + "0" + longatom[-2:]
+            p = compile('^[A-za-z]{1,2}')
+            m = p.match(atom)
+            num = atom.split(m.group())[1]
+            longatom = m.group() + num.zfill(len(totalAtoms))
 
             fileloc = 'XAS/' + molName + '_' + str(model) + '/' + atom + '/'
             filename = fileloc+molName+'.'+longatom+"-XCH.xas.5.stick.  0"
@@ -73,8 +68,8 @@ def main(argv = None):
                 ostrength = float(l[3])
 
                 #Not strong enough
-                if (round(float(l[5])*1000000, 2) == 0):
-                    continue
+                #if (round(float(l[5])*1000000, 2) == 0):
+                #    continue
 
                 #Not close enough
                 if (fabs(ev - activeEv) > ebars):
@@ -93,7 +88,7 @@ def main(argv = None):
 
     goodStates = [];
     for l in topBands:
-        goodStates.append(str(l[0]) + ',' + str(l[1]+1) + ',' + str(l[2]) + ',' + str(round(float(l[4]), 2)) + ',' + str(round(float(l[5])*1000000, 2)))
+        goodStates.append(str(l[0]) + ',' + str(l[1]+1) + ',' + str(l[2]) + ',' + str(round(float(l[4]), 3)) + ',' + str(round(float(l[5])*1000000, 5)))
     
 
     goodStates = goodStates[:maximumResults]

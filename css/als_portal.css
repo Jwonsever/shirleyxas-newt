@@ -1,0 +1,18 @@
+.transfer_frame {width: 100%; height: 416px; border: none;}
+
+.table tbody tr.warningodd td {
+  background-color: #f6f4e9;
+}
+
+#flotwrapper {
+    background-color: #eeeeee;
+}
+
+#placeholder {
+    width:320px; height: 280px;
+}
+
+.modal-body {
+    max-height: 800px;
+    max-width: 1000px;
+}

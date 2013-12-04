@@ -1,0 +1,244 @@
+0.80pre
+Complete rewrite of core/shell manipulation.
+Rewrote the molecular surface code; handles both 2D & 3D cases.
+Implemented a docking (SIMPLEX) mechanism in the energetics dialog.
+Implemented a polyhedral drawing mode.
+Started on powder diffraction routines.
+Morphology surfaces dialog now allows editing.
+Modified the behaviour of the bond manipulation tools.
+Added a combo boxes to allow switching between viewing/bonding modes.
+Added more sophisticated text logging.
+Improved OpenGL/POVRay rendering interface.
+Rearanged and renamed some of the menu/toolbar items.
+
+0.77
+.3 Added more functionality to the surfaces dialog.
+.3 Added a print dump to the geometry measurements dialog.
+.3 Implemented ribbon drawing in POVRay.
+.3 Implemented a better POVRay molecular surface drawing method.
+.3 Implemented a workaround to allow 2D cif and fdf files to be saved.
+.3 Fixed the atom placement routine when adding atoms in OpenGL mode.
+.2 Improved the speed of the molecular defragmentation routine.
+.2 Improved the functionality of the animation setup dialog.
+.2 Tweaked the fast rotation (low quality render) code.
+.2 Fixed an occasional discontinuity in the mouse rotation behaviour.
+.2 Fixed some precision errors by moving from floats to doubles.
+.2 Fixed some problems with the POVRay animation code.
+.2 Fixed the reading and animation of .arc files.
+.2 Fixed some cif parsing bugs.
+.1 Added a connectivity mode box to the model editing tool.
+.1 Added a H-bonding display mode.
+.1 Notebook partitioned the options in the measurements panel.
+.1 Tweaked the phonon/vibrational dialog.
+.1 Tweaked the depth queueing controls in the render dialog.
+.1 Fixed some bugs in GULP output file processing.
+.1 Fixed a bug in the construction of rotation symmetry matrices.
+.1 Fixed a bug in the POVRay morphology rendering code.
+.1 Restored the alphabetic directory listings.
+.1 The vanishing axis/selection box problem may finally be fixed.
+.1 Fixed some bugs in the phonon setup and processing code.
+.0 Added a new atom info box, allows property editing.
+.0 Added a routine to compute transformation (reflection/rotation) matrices.
+.0 Added phonon eigenvector display to the GULP dialog. 
+.0 Modified the way selected atoms are drawn in OpenGL (colour remains visible)
+.0 GULP output files are now only read internally (for energy but NOT coords)
+.0 Fixed an allocation bug in OpenGL vector labelling.
+.0 Fixed some bugs in the GULP job setup and processing code.
+.0 Fixed some bugs in the directory and file handling code.
+.0 Partially fixed a bug that causes the axes/selection box to randomly vanish.
+
+0.76
+.1 Added a delete_bond option to the creator.
+.1 Shift click now unselects atoms.
+.1 Worked around a problem parsing short (continued) lines in cif files.
+.1 When a model is rotating, OpenGL drawing is cruder & faster. 
+.1 Implemented a ribbon drawing algorithm for a particular type of C chain.
+.1 Implemented vector/plane object creation.
+.1 Started implementing a special object dialog for vector/plane/ribbons.
+.1 Fixed some bugs in the surfaces shift and energy calculations.
+.0 Added a display properties dialog.
+.0 Added a font selection dialog.
+.0 Added support for SIESTA's fdf file format.
+.0 Reorganized some of the source code and header file data.
+.0 Removed gtk-extra (morphology planes now displayed in surfaces dialog).
+.0 Rewrote the surface dialog.
+.0 Rewrote the way file recognition & loading/writing works.
+.0 Redesigned the .gmf (gdis morphology file) format.
+.0 Enhanced the task dialog - displays CPU/Mem useage.
+.0 Enhanced the geometry measurement dialog to enable searching.
+.0 Enhanced the coordinate editing dialog to allow user defined transformations.
+.0 Fixed some bugs in the animation/analysis code.
+.0 Simplified the task handling code by using linked lists.
+.0 Converted the rendering setup dialog into notebook format.
+.0 Improved selection handling, particularly in OpenGL mode.
+.0 Axes, labels and charges are now drawn in OpenGL mode.
+.0 Fixed an OpenGL buffer flushing bug.
+.0 Fixed the specular lighting problem in OpenGL.
+.0 Added a light source manipulation tool to the rendering setup dialog.
+.0 Added depth queueing to OpenGL rendering.
+.0 Added an AFM style viewing mode to the 2D molecular surface plotter.
+.0 Improved sphere and cylinder drawing speed in OpenGL.
+
+0.75
+.1 Better cif file support.
+.1 Enhanced the measurement panel.
+.1 Enhanced surface creation dialog.
+.1 Enhanced rendering dialog.
+.1 Improved selection handling.
+.0 Polar surfaces are now allowed & can be manipulated to remove the dipole.
+.0 Charge information now stored, consequently dipole calcs done internally.
+.0 Separate element library file with new data format (gdis.elements).
+.0 Added some OpenGL performance tweaks.
+.0 Improved cif file parsing.
+.0 Improved rendering setup dialog.
+
+0.74
+.0 Rewrote using a unified element lookup scheme (1 = H, 2 = He, etc.)
+.0 Improved/fixed the path handling code in the file load dialog.
+.0 Fixed a bunch of problems with GULP calculations.
+.0 Periodic cell images are now drawn (display option to hide).
+.0 Improved on-the-fly bond updating (selections and general coord editing)
+.0 Enhanced the surface generation dialog.
+.0 Enhanced the OpenGL/POVRay rendering setup dialog.
+.0 Fixed a bug in the OpenGL cylinder drawing code.
+
+0.73
+.3 Improved the handling of background tasks (added queueing).
+.3 Combined (and extended) the POVRay and OpenGL rendering setup dialogs.
+.3 OpenGL rendering is now done in the main drawing area.
+.3 Added an OpenGL cylinder drawing routine for B&S mode.
+.3 Added a sin/cos lookup table for faster rendering.
+.3 Added morphology facet labelling for OpenGL rendered images.
+.3 Employed Gtk_Sheet to list morphology facets.
+.3 Fixed a number of OpenGL related bugs.
+.3 Trying to create a dialog window will now raise an existing one if available.
+.2 Fixed the crystal morphology drawing bug.
+.2 Fixed the povray crystal morphology rotation bug.
+.2 Fixed the drawn cartesian axes (periodic models).
+.2 Pruned genpos() for speed.
+.2 partitioned the file read/write code (easier to maintain).
+.2 Updates for GULP attachment energy calculation.
+.2 use glib linked lists for bond and loaded model lists.
+.2 changed mouse button events & selection handling (see gdis_manual.txt).
+.2 added a workaround for execvp() flakiness on OS-X.
+.1 rewrote lattice matrix code to match GULP more closely.
+.1 rewrote unfragment molecules code, it's now much faster.
+.1 implemented a new mechanism for running background jobs.
+.1 implemented new scheme for atom status flags.
+.1 added ability to add/remove single atoms (shift click) to selections.
+.1 fixed some bugs in the molecular surface generation code.
+.1 fixed some bugs (relating to shells) in the symmetry code.
+.0 arbitrary surfaces can now be generated from a loaded unit cell.
+.0 BFDH morphology can be predicted.
+.0 Improved interfacing with GULP (eg Surface Energy calculation).
+.0 improved GULP handling code (NB: only tested for version 1.4).
+.0 added arrow buttons for changing the currently displayed model.
+.0 added basic support for loading CIF files.
+.0 Making selections in drag box & molecule pick mode is improved.
+.0 hide/unhide implemented for selections.
+.0 added option to change element type in the creator.
+.0 default model orientation changed - z (not y) is now "up".
+.0 labelled width & height in povray dialog.
+.0 fixed a povray region lighting render bug.
+.0 Added a button to create an OpenGL rendered window.
+.0 Animation delay & frame stepping options implemented.
+
+0.72
+.5 fixed a problem with pixel_coord_map() for models > 0.
+.5 repaired yet another gtk-crit problem in the model tree.
+.5 repaired some core dumps related to the symmetry finding routines.
+.4 partially (yhbw) implemented a 3D molecular/solvent surface calculation.
+.4 added an option to force a model (eg a supercell) to the P1 spacegroup.
+.4 tweaked selection and atom_info modes for slightly more sensible behaviour.
+.4 changed the graphics font to a more standard type.
+.4 repaired a gtk-critical warning relating to the model tree.
+.3 added some drawing tweaks relating to atom site occupancy factors.
+.3 better handling of the unfragment and constrain to pbc routines (for mols).
+.3 better temporary file naming used during rendering.
+.3 the .. dir should now always be present, even with insufficient permissions.
+.3 eliminated some redundant model_ptr()/init_objs() calls.
+.2 periodic table element colours are now immediately updated when altered.
+.2 gulp input files with fractions for coords are now parsed properly.
+.2 fixed a core dump that sometimes occurred when deleting a crystal habit.
+.2 fixed a core dump when atoms that have an attached measurement are removed.
+.1 adjusted the sky_sphere in order to render better looking crystals.
+.1 improved handling of cut/paste/move atoms for fractional models.
+.0 included code for point group/symmetry element determination & removal.
+.0 expanded the number of loadable file types via babel conversion.
+.0 crystal morphologies can now be rendered as solid glass like objects.
+.0 nicer line styles are now used for morphology display.
+.0 the model pane is now resizeable, and has hiddable rotation spinners.
+.0 added model dependent pixmaps to the model tree.
+.0 scaling is now done by pressing shift, LMB & dragging the mouse.
+.0 prevented core dumping if environment vars PWD & HOME are not defined.
+.0 proper cropping achieved via the GC clip mechanism.
+
+0.71
+ - rewrote the periodic image creation and constrain routines.
+ - rewrote many of the loops and vector/matrix code.
+ - added some code (scandir.c) to help with sun compilation.
+ - fixed some bugs related to shell handling.
+ - added support for dimension keyword in XTL files.
+ - made periodicity dialog spinners remember the image numbers.
+ - fixed a problem with rotation of any model numbered > 0.
+ - fixed some glitches in the vdW surface area calculation.
+ - ImageMagick's display is now the default viewer (instead of xv).
+ - on startup, gdis now checks for optional executables & flags if not found.
+ - added mem_shrink() function that frees (deleted) atom memory.
+ - vdW/cova editing allowed in gperiodic dialog.
+ - CPK scaling added to render dialog.
+ - improved the handling of selections.
+ - changes to the file load filter are now remembered.
+ - fixed a crash that sometimes occurs when displaying space group info.
+ - the rendered colours in region highlight mode are now correct.
+ - added a 'complete molecules' option to the periodicity dialog.
+ - added a wire frame thickness spinner to the render dialog.
+ - the file mask is now visible in the load file dialog.
+ - improved GULP job setup/handling.
+
+0.70
+ - more stuff saved to the gdisrc file
+ - new interface look, with a tree display for model & assoc. properties
+ - spruced up mdi to cope with new model/dialog manipulation schemes
+ - implemented mouse & centroid position dependent rotation
+ - implemented a centralized dialog creation/deletion scheme (request_dialog)
+ - added space group lookup code (sginfo).
+ - added morphology display code (cdd).
+
+0.68
+ - fixed (yet more) problem with centering some fractional models.
+ - fixed some crashes that occur due to failed file loads.
+ - added gperiodic code for prettier element viewing & colour editing.
+ - implemented background rendering via fork().
+
+0.67
+ - fixed a problem with processing -ve surfvecs in MARVIN output files.
+ - fixed a bug that sometimes prevented rendered images being displayed.
+ - implementing option to render axes. (unfinished)
+ - implemented VdW surface calculation and display/rendering codes.
+
+0.66
+- fixed offx/offy (no init!) bug which caused random errors in model drawing
+- fixed a filename corruption error when editing element properties.
+- added support for measuring torsional angles.
+- added bond type support (at present - user must set the type)
+  which is displayed & rendered appropriately.
+- modified the creator to allow the user to set bond types.
+- fixed a bug that could cause the element properties dialogue to core dump.
+- box of colour and filename to aid editing element properties.
+- template_model() routine to be applied on all new models, to
+  do the necessary allocations.
+- fixed a bug relating to data->geom not being allocated
+  (ie no labels created) and thus core dumping when freed.
+- fixed a rendering bug for periodic models (inverse x,y directions)
+  and also a 2D rendering problem (degenerate cell frame cyclinders).
+- added mvout & mvnout as recognised marvin output file extensions.
+- added support for marvin output file parsing and also 2D
+  periodic display.
+- added a periodic image tool to the creator.
+- implemented a more consistent method for creating and manipulating
+  selections, plus you can now move and rotate a selection.
+- implemented a revitalized geometric label creation dialogue.
+
+0.65
+- unleashed on the world.

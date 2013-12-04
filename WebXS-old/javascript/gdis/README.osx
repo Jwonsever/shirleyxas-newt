@@ -1,0 +1,28 @@
+********************************************************************************
+* General
+********************************************************************************
+
+* You will need either fink or macports installed.  Make sure pkg-config is
+  installed as part of one of them.
+
+* You might need to add to the LIBS line in the Makefile:
+  -Wl,-dylib_file,/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib:/System/Library/Frameworks/OpenGL.framework/Versions/A/Libraries/libGL.dylib
+
+* Use the latest version of X11, not the default.
+
+********************************************************************************
+* Making a portable disk image
+********************************************************************************
+
+* To make a disk image it may be necessary to recompile pango to have
+  statically include the modules.  The symptom of not doing this is that the
+  fonts will not work.
+
+* Fink has had some big problems with pango packaging, so macports might be easier to use.
+
+* Download and install:
+- platypus from www.sveinbjorn.org/platyus
+- dylibbundler from macdylibbundler.sourcforge.net
+
+* create the gdis executable normally by running the install script.  Then do "make gdis.dmg".
+

@@ -1,0 +1,16 @@
+# --- gdis Makefile (custom for Win32)
+
+CC = gcc
+CFLAGS = -O2 -mwindows -mno-cygwin -mms-bitfields -DWITH_GUI -DWITH_GRISU
+
+# --- openssl + gsoap stuff
+
+CFLAGS := $(CFLAGS) -DWITH_OPENSSL -DWITH_DOM
+
+# --- python hack
+
+ifeq ($(USE_PYTHON), YES)
+CFLAGS := $(CFLAGS) -Ic:\Python26\include
+LIBS := $(LIBS) -Lc:\Python26\libs -lpython26
+endif
+
